@@ -1,0 +1,104 @@
+chAccount::getResults "{
+    "aTime": {
+        "0": 1472475729,
+        "hours": 15,
+        "mday": 29,
+        "minutes": 2,
+        "mon": 8,
+        "month": "August",
+        "seconds": 9,
+        "wday": 1,
+        "weekday": "Monday",
+        "yday": 241,
+        "year": 2016
+    },
+    "fightId": "b8c286c4a790fd358a424493299b9b91",
+    "fights": {
+        "doneFights": 2,
+        "maxFights": 35
+    },
+    "is_cp": 0,
+    "myhofadd": "KEINE<br>VERÄNDERUNG<br>UNTER DEN<br>MOST WANTED!",
+    "myid": "326106",
+    "mylevel": "5",
+    "myname": "DaimonMicha",
+    "myraceid": "5",
+    "narrFight": 0,
+    "noFight": 1,
+    "opponent": {
+        "allAttrs": {
+            "maxLifeEnergy": 474
+        },
+        "codedId": "ADGFGJ",
+        "id": "135335",
+        "level": "16",
+        "name": "Corleone1987",
+        "race_id": "7"
+    },
+    "postWinToSb": "200",
+    "results": {
+        "fightWasWon": true,
+        "log": null,
+        "p1": {
+            "PlaceOfHonour": {
+                "after": 1813,
+                "before": 1813
+            },
+            "_weaponDamage": {
+                "from": "4",
+                "to": "7"
+            },
+            "artefakte": 0,
+            "blocked": 0,
+            "criticalHits": 0,
+            "dealer_bonus": "",
+            "dealer_category": "",
+            "dealer_id": 0,
+            "dealer_name": "",
+            "dealer_stage": 0,
+            "fightDamage": {
+                "from": 214,
+                "to": 375
+            },
+            "gold": 0,
+            "guildHp": 15,
+            "hits": 0,
+            "hp": 5,
+            "isFounder": 0,
+            "lp": 3634,
+            "magicDamage": 867,
+            "maxLp": 3735,
+            "pfadfinder_id": 0,
+            "pfadfinder_spruch": "",
+            "platting": 178,
+            "series_current": 14284,
+            "series_max": 14284,
+            "timeToFullLP": 0
+        },
+        "p2": {
+            "PlaceOfHonour": {
+                "after": 9770,
+                "before": 9770
+            },
+            "artefakte": 0,
+            "blocked": 0,
+            "criticalHits": 0,
+            "fightDamage": {
+                "from": 43,
+                "to": 65
+            },
+            "gold": 0,
+            "guildHp": 0,
+            "hits": 0,
+            "hp": 0,
+            "isFounder": 1,
+            "lp": 0,
+            "magicDamage": 101,
+            "maxLp": 474,
+            "platting": 73,
+            "series_current": null,
+            "series_max": null
+        }
+    }
+}
+" 

@@ -1,0 +1,54 @@
+
+
+<!-- accountPlugin -->
+<div id="accountPlugin" style="position: absolute; float: left; width: 151px; height: 95%; top: 15px; padding-left: 5px; text-align: left;">
+    <div id="opponents" style="font-size: 10pt; position: absolute; bottom: 10px; width: 143px; height: 70%; background-color:rgba(0, 0, 0, 0.55); border: 3px solid black;">
+        <table id="fighterTable" width="100%">
+            <tbody>
+                <tr>
+                    <td colspan="2" style="font-size: 14pt; font-weight: bold; text-align: center;">Klick Meister</td>
+                </tr>
+                <tr>
+                    <td><input id="clickChecker" type="checkbox" onClick="account.toggle(jQuery('#clickChecker').prop('checked'));"></input></td>
+                    <td><label for="clickChecker">KlickVertretung</label></td>
+                </tr>
+                <tr>
+                    <td colspan="2" align="center">
+                    <select id="raceSelect" onChange="account.raceChanged(jQuery('#raceSelect').val());" style="font-family:Arial;">
+                        <option value="0">alle Gebiete</option>
+                        <option value="1">Dunning</option>
+                        <option value="2">Uptown</option>
+                        <option value="3">Lawndale</option>
+                        <option value="4">Loop</option>
+                        <option value="5">Newcity</option>
+                        <option value="6">Woodlawn</option>
+                        <option value="7">Ashburn</option>
+                        <option value="8">Southdeering</option>
+                    </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        </br>
+        <table id="opponentsTable" width="100%">
+            <tbody>
+                <tr><td colspan="2" align="center"><span id="opponentsName">&nbsp;</span></td></tr>
+                <tr><td id="opponentsRace">&nbsp;</td><td id="opponentsLevel" align="right"></td></tr>
+                <tr><td colspan="2" align="center"><progress id="opponentsFights" value="0" max="10">1 - 10</progress></td></tr>
+            </tbody>
+        </table>
+        </br><hr noshade /></br>
+        <table id="specialsTable" width="100%">
+            <tbody>
+                <tr>
+                    <td colspan="2" style="font-size: 12pt; font-weight: bold; text-align: center;">Heist</td>
+                </tr>
+                <tr>
+                    <td><input disabled="true" id="heistChecker" type="checkbox" onClick="account.heistToggle(jQuery('#heistChecker').prop('checked'));"></input></td>
+                    <td><label for="heistChecker">GeldTransporter</label></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+

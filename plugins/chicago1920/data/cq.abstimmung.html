@@ -1,0 +1,709 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta http-equiv="expires" content="0">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="pragma" content="no-cache">
+
+<script type="text/javascript" src="/img/js/scriptaculous-js-1.9.0/prototype.js"></script>
+<script type="text/javascript" src="/img/js/scriptaculous-js-1.9.0/scriptaculous.js?load=effects,dragdrop"></script><script type="text/javascript" src="http://www.chicago1920.com/img/js/scriptaculous-js-1.9.0/effects.js"></script><script type="text/javascript" src="http://www.chicago1920.com/img/js/scriptaculous-js-1.9.0/dragdrop.js"></script>    
+<script type="text/javascript" src="/highslide/highslide.js"></script>
+<link rel="stylesheet" type="text/css" href="/highslide/highslide.css">
+<script type="text/javascript">
+    // override Highslide settings heres
+    // instead of editing the highslide.js file
+    hs.graphicsDir = '/highslide/graphics/';
+</script>
+
+<script type="text/javascript" src="/img/flash/swfobject.js"></script>
+<script type="text/javascript" src="/img/js/jquery-1.8.2.js"></script>
+<script type="text/javascript" src="/img/js/jquery-ui-1-9.js"></script>
+<script type="text/javascript" src="/img/js/jquery.blockUI.js"></script>
+<script type="text/javascript" src="/img/js/jquery.countdown.min.js"></script>
+<script type="text/javascript" src="/img/js/jquery.countdown-de.js"></script>
+<script>
+  var $j = jQuery.noConflict();
+</script>
+
+         	 
+<script type="text/javascript" src="/img/js/countdowntitle.js"></script>
+        
+		<script type="text/javascript">
+		
+		 countdownRest( 33 ,"Kampfwartezeit:");    
+          jQuery.noConflict();
+          window.$j = jQuery;
+
+		  var currentCrystals   = 280;
+          var currentGold       = 2071;
+          var currentStone      = 12123;
+     </script><title>Chicago1920.com</title>
+
+        <script type="text/javascript">
+
+             function updateCharState()
+            {
+                if(lifePercent < 10) $j('#charState').text('Erschossen');
+                else if(lifePercent < 20) $j('#charState').text('Am Boden');
+                else if(lifePercent < 30) $j('#charState').text('Angeschossen');
+                else if(lifePercent < 40) $j('#charState').text('Kampfunfähig');
+                else if(lifePercent < 50) $j('#charState').text('Erschlagen');
+                else if(lifePercent < 60) $j('#charState').text('Ausgepumpt');
+                else if(lifePercent < 70) $j('#charState').text('Entkräftet');
+                else if(lifePercent < 80) $j('#charState').text('Erschöpft');
+                else if(lifePercent < 90) $j('#charState').text('Außer Atem');
+                else if(lifePercent < 99) $j('#charState').text('Geschwächt');
+               else $j('#charState').text('Ausgeruht');
+
+            }
+
+            function getSWF(movieName) {
+              var isIE = navigator.appName.indexOf("Microsoft") != -1;
+              return  (isIE) ? window[movieName] : document[movieName];
+            }
+
+
+            var lifeCurrent = parseInt(3729);
+            var blinking = 1;
+            var lifeMax = parseInt(3729);
+            var secsDone = 0;
+            var lifePercent = 100;
+            var fullLifeAfter = 0;
+
+            function lifeBar()
+            {
+                var timeToFullLP = 10 * 60;
+                var maxLife = parseInt(lifeMax) || lifeCurrent;
+                var secs = fullLifeAfter - secsDone;
+                secsDone++;
+                if(secs > 0)
+                {
+                    var quote = (timeToFullLP - secs) / timeToFullLP;
+                    lifeCurrent = Math.round(maxLife * quote);
+                    lifePercent = Math.round(lifeCurrent / maxLife * 100);
+
+                     var oVars = {
+                       lp: lifeCurrent,
+                       max_lp: lifeMax,
+                       percent: lifePercent,
+                       blink: blinking,
+                       water: currentGold,
+                       uran: currentCrystals,
+                       stone: currentStone,
+                       action: 'index'
+                    };
+
+					getSWF('stats').jsStats(oVars);
+
+
+                    $j('#statLifeMax').text(lifeMax);
+	               	$j('#statLifeCurrent').text(lifeCurrent);
+                }
+              updateCharState();
+            }
+
+            //Navi
+            var flashvars = {
+               spezialist: "false",site: "cq",gamePlay: "false",baseUrl: "http://www.chicago1920.com/",favorit:"challenge_diary,union_index,guildvitrine_index,abenteuer_map",favoritnavigation:"cq_index",global_activity:"C.G.U Week<br>96:52:11<br><br>Loot<br>04:28:44<br><br>Hafenrazzia<br>17:34:31<br><br>",navi_highlight:"",action:"index"            };
+            var params = {
+               menu: "false",
+               allowScriptAccess: "sameDomain",
+               scale: "noscale",
+			   wmode: "transparent"
+            };
+            var attributes = {
+               id: "navi",
+               name: "navi"
+            };
+			
+            swfobject.embedSWF("/img/flash/navi10.swf", "navi", "161", "730", "8.0.24", "/img/flash/expressInstall.swf", flashvars, params, attributes);
+            //Stats
+            var flashvars = {
+               water: "2071",uran: "280",stone: "12123",hof: "87228",lvl: "5",ep: "519",ep_nlv: "531",lp: "3729",lifePercent: "100",max_lp: "3729",fullLifeAfter: "0",action: "index"             };
+            var params = {
+               menu: "false",
+               allowScriptAccess: "sameDomain",
+               scale: "noscale",
+			   wmode: "transparent"
+            };
+            var attributes = {
+               id: "stats",
+               name: "stats"
+            };
+            swfobject.embedSWF("/img/flash/stats6.swf", "stats", "372", "164", "8.0.24", "/img/flash/expressInstall.swf", flashvars, params, attributes);
+        </script><style type="text/css" media="screen">#navi {visibility:hidden}#stats {visibility:hidden}</style>
+        <title>
+            Chicago1920.com
+        </title>
+
+
+
+
+
+
+         <base href="http://www.chicago1920.com/">
+
+<link href="/img/css/front.css" rel="stylesheet" type="text/css">
+
+<style type="text/css" media="screen">
+    object { outline:none; }
+</style>
+
+<style type="text/css">
+<!--
+body {
+	background-color: #000000;
+	background-image:url(/BilderM/back.jpg);
+	background-repeat:no-repeat;
+	background-position:top center;
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+ font-family:"Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", Times, sans-serif;
+ 	font-size:0.7em;
+	color: #fdffe1;
+}
+
+#navi{
+   padding: 0; 
+  position: absolute; 
+  left: 50%; 
+  top:164px; 
+  width: 161px; 
+  height:670px;
+  margin-left: -481px; 
+  z-index:10000;
+}
+-->
+</style><style type="text/css">.highslide img {cursor: url(/highslide/graphics/zoomin.cur), pointer !important;}</style></head>
+
+<body onload="window.setInterval('lifeBar()', 1000);">
+
+            <object type="application/x-shockwave-flash" id="navi" name="navi" data="/img/flash/navi10.swf" width="161" height="730" style="visibility: visible;"><param name="menu" value="false"><param name="allowScriptAccess" value="sameDomain"><param name="scale" value="noscale"><param name="wmode" value="transparent"><param name="flashvars" value="spezialist=false&amp;site=cq&amp;gamePlay=false&amp;baseUrl=http://www.chicago1920.com/&amp;favorit=challenge_diary,union_index,guildvitrine_index,abenteuer_map&amp;favoritnavigation=cq_index&amp;global_activity=C.G.U Week&lt;br&gt;96:52:11&lt;br&gt;&lt;br&gt;Loot&lt;br&gt;04:28:44&lt;br&gt;&lt;br&gt;Hafenrazzia&lt;br&gt;17:34:31&lt;br&gt;&lt;br&gt;&amp;navi_highlight=&amp;action=index"></object>
+<center>
+<table id="UA" width="962" height="809" border="0" cellpadding="0" cellspacing="0">
+	<tbody><tr>
+		<td colspan="3" align="left">
+
+
+
+<table id="Header" width="962" height="164" border="0" cellpadding="0" cellspacing="0">
+	<tbody><tr>
+		<td>
+
+			<object type="application/x-shockwave-flash" id="stats" name="stats" data="/img/flash/stats6.swf" width="372" height="164" style="visibility: visible;"><param name="menu" value="false"><param name="allowScriptAccess" value="sameDomain"><param name="scale" value="noscale"><param name="wmode" value="transparent"><param name="flashvars" value="water=2071&amp;uran=280&amp;stone=12123&amp;hof=87228&amp;lvl=5&amp;ep=519&amp;ep_nlv=531&amp;lp=3729&amp;lifePercent=100&amp;max_lp=3729&amp;fullLifeAfter=0&amp;action=index"></object>
+		
+		</td>
+		<td>
+							<img src="/BilderM/headertab_02.jpg" width="363" height="164" alt="">
+					</td>
+		<td>
+		                    <a href="/special/heist"><img src="/Bilderx/sh01.png"></a> 
+           		    </td>
+	</tr>
+</tbody></table>
+
+
+
+          </td>
+	</tr>
+	<tr>
+		<td valign="top" background="/BilderM/5_05.png">
+
+        </td>
+        
+		<td rowspan="2" align="left" valign="top" style="background-color:#000000; height:501px; width:714px;">
+
+
+  <div style="width: 714px; float: right; padding: 0px; margin 0px;" id="main">
+                                <div style="border: 0px solid yellow ; margin: 0px; padding: 0px;" id="cfl">                                                                <script type="text/javascript" src="/img/js/overlib_mini.js"></script>
+
+
+<style type="text/css">
+<!--
+
+div#wrapper {
+    position:relative;
+}
+
+
+#polizei {
+	position:absolute;
+	left:300px;
+	top:15px;
+font-size:24px;
+	font-weight:bold;
+	color:#000;
+}
+
+      div.Tabelle_Eroberung {
+  font-size:12px;
+  font-weight:bold;
+	left:0px;
+	top:0px;
+	width:714px;
+	height:771px;
+ 	background: #241c18 url('/Bilder/ueberback_new.jpg') top left;
+
+ }
+div.Tabelle_last_man {
+  font-size:12px;
+  font-weight:bold;
+	left:0px;
+	top:0px;
+	width:714px;
+	height:603px;
+ 	background: #241c18 url('/Bilder/lms01.jpg') top left;
+
+ }
+
+
+div.dienste {
+	position:absolute;
+	padding: 6px 6px 6px 6px;
+	left:60px;
+	top:100px;
+	width:586px;
+	height:231px;
+	text-align: left;
+}
+
+#new_btns {
+    position:absolute;   
+    width:171px;
+    height:69px;
+    z-index:150;
+  
+
+}
+
+.raid_right{
+  background: url('/Bilder/btn_raid.png') top left;  
+  left:375px;
+  top:310px;
+  
+    
+}
+.raid_left{
+  background: url('/Bilder/btn_raid.png') top left;  
+  left:20px;
+  top:310px;
+    
+}
+
+.mission_right{
+  background: url('/Bilder/btn_spec_mission.png') top left;  
+  left:545px;
+  top:310px;
+    
+}
+.mission_left{
+  background: url('/Bilder/btn_spec_mission.png') top left;  
+  left:190px;
+  top:310px;
+    
+}
+
+#switch_btns{
+  position:relative;   
+    width:47px;
+    height:45px;
+    z-index:150;  
+    
+   
+    
+}
+
+.btn_bwd_left{
+   background: url('/Bilder/spec_btn_bwd.png') top left;   
+   top:35px;
+   left:30px;
+    
+}
+
+.btn_fwd_left{
+   background: url('/Bilder/spec_btn_fwd.png') top left;   
+   left:245px;
+   top:-10px; 
+}
+
+.btn_bwd_right{
+   background: url('/Bilder/spec_btn_bwd.png') top left;   
+   top:35px;
+   left:30px;
+    
+}
+
+.btn_fwd_right{
+   background: url('/Bilder/spec_btn_fwd.png') top left;   
+   left:245px;
+   top:-10px; 
+}
+
+#Aktuellx20Datum {
+	position:absolute;
+	left:23px;
+	top:63px;
+	width:91px;
+	height:17px;
+}
+
+#Aktuellx20Angreifer {
+	position:absolute;
+	left:123px;
+	top:63px;
+	width:97px;
+	height:17px;
+}
+
+#Aktuellx20Verteidiger {
+	position:absolute;
+	left:229px;
+	top:63px;
+	width:113px;
+	height:17px;
+}
+
+#Aktuellx20Zielgebiet {
+	position:absolute;
+	left:351px;
+	top:63px;
+	width:97px;
+	height:17px;
+}
+
+#Aktuellx20Eroberung {
+	position:absolute;
+	left:457px;
+	top:63px;
+	width:112px;
+	height:17px;
+}
+
+#Aktuellx20Option {
+	position:absolute;
+	left:579px;
+	top:63px;
+	width:112px;
+	height:17px;
+}
+
+
+#uebersicht033 {
+	position:absolute;
+	left:163px;
+	top:155px;
+	width:190px;
+	height:100px;
+	font-size:14px;
+}
+
+#uebersicht034 {
+	position:absolute;
+	left:383px;
+	top:155px;
+	width:190px;
+	height:100px;
+	font-size:14px;
+}
+#uebersicht035 {
+	position:absolute;
+	left:163px;
+	top:180px;
+	width:190px;
+	height:100px;
+	font-size:14px;
+}
+
+#uebersicht036 {
+	position:absolute;
+	left:383px;
+	top:180px;
+	width:190px;
+	height:100px;
+	font-size:14px;
+}
+
+
+#infotext {
+	position:absolute;
+  font-size:16px;
+	left:29px;
+	top:112px;
+	width:660px;
+	height:100px;
+}
+
+
+#status {
+	position:absolute;
+	left:19px;
+	top:16px;
+	width:550px;
+	height:28px;
+}
+
+#weitere {
+position:absolute;
+	left:22px;
+	top:176px;
+	width:304px;
+	height:22px;
+}
+
+#attacker_strikebreaker_bg {
+	position:absolute;
+	left:20px;
+	top:360px;
+	width:313px;
+	font-size:13px;
+}
+
+#attacker_strikebreaker {
+	padding-left:30px;
+}
+
+#defender_strikebreaker_bg {
+	position:absolute;
+	left:380px;
+	top:360px;
+	width:313px;
+	font-size:13px;
+}
+
+#defender_strikebreaker {
+	padding-left:30px;
+	padding-top:70px;
+}
+
+
+#infoPopup
+{
+	margin-top:5px;
+	padding:10px; 
+	color:#ff5005; 
+	font-size:10px;
+	text-align:center;
+}
+    div.Tabelle_sdw {
+
+}
+
+#contents {
+	position:absolute;
+	left:280px;
+	top:155px;
+	width:445px;
+	height:465px;
+	font-size:12px;
+}
+#lms {
+	position:absolute;
+	width:200px;
+	font-size:13px;
+}
+-->
+</style>
+
+<script type="text/javascript">
+
+function infoOver(value, w) 
+{ 
+	return overlib('<div id="infoPopup">'+ value +  '</div>', 
+	DELAY, 50, 
+	WIDTH, w, 
+	HEIGHT , 40, 
+	BORDER, 8 , 
+	FGCOLOR, '#000000', 
+	BACKGROUND, '', 
+	HAUTO, VAUTO, ABOVE, RIGHT
+	); 
+}
+
+</script>
+
+<div id="wrapper">
+	<div class="Tabelle_Eroberung">
+   <!-- <div id="new_btns" class="raid_left"></div>
+                    <div id="new_btns" class="mission_left"></div>
+                    <div id="new_btns" class="raid_right"></div>
+                    <div id="new_btns" class="mission_right"></div> -->
+			   
+		 		<div style="position:absolute; left:225px; top:310px; width:272px; height:90px; z-index:100;">
+		 		    
+		  			<a href="/cq/insider/"><img src="/Bilder/z1.png" width="272" height="90" border="0"></a>
+		 		 		
+		 		</div>
+                
+	    			
+ 		<div style="position:absolute; left:35px; top:110px; width:253px; height:37px; font-size:22px; text-align:center;">
+    		Dunning / Uptown 		</div>
+ 
+		<div style="position:absolute; left:409px; top:110px; width:253px; height:37px; font-size:22px; text-align:center;">
+    		Lawndale / Newcity 		</div>
+		
+ 		<div style="position:absolute; left:250px; top:27px; width:205px; height:53px; text-align:center; line-height:16px;">
+	  	  		        	Die Abstimmung läuft noch! <br>				
+	        	<span style="color:#bfffb4">
+	    		 8 Std	      		</span>
+	    	 		</div>  
+   <div id="uebersicht035">
+
+                  <img src="/Bilder/polizeiMarke.png" width="30" height="30" border="0">
+                     <img src="/Bilder/polizeiMarke.png" width="30" height="30" border="0">
+                     <img src="/Bilder/polizeiMarke.png" width="30" height="30" border="0">
+                     <img src="/Bilder/polizeiMarke.png" width="30" height="30" border="0">
+                     <img src="/Bilder/polizeiMarke.png" width="30" height="30" border="0">
+                      
+   </div>
+   <div id="uebersicht036">
+                  <img src="/Bilder/polizeiMarke.png" width="30" height="30" border="0">
+                     <img src="/Bilder/polizeiMarke.png" width="30" height="30" border="0">
+              </div>
+   
+   
+	<div id="uebersicht033">
+    <br><br> <br>
+
+  	  	    			Abstimmung läuft   <br>
+    		
+		</div>
+		<div id="attacker_strikebreaker_bg">
+		<table border="0" cellspacing="0" cellpadding="0">
+		<tbody><tr>
+			<td background="/Bilder/conquest_spec_head.png" width="317" height="75"></td>
+		</tr>
+		<tr>
+			<td background="/Bilder/conquest_sb_cont.png" width="317" height="80" id="attacker_strikebreaker">
+
+	   
+			</td>
+		</tr>
+		<tr>
+			<td background="/Bilder/conquest_sb_foot.png" width="317" height="119">
+			    
+			    <!--<div id="switch_btns" class="btn_bwd_left"></div>
+			    <div id="switch_btns" class="btn_fwd_left"></div>-->
+			    
+			    </td>
+		</tr>
+		</tbody></table>
+	</div>
+
+	<div id="uebersicht034">
+    <br><br> <br>
+
+  	  	    			Abstimmung läuft   <br>
+    		
+		
+	</div>	
+		<div id="defender_strikebreaker_bg">
+		<table border="0" cellspacing="0" cellpadding="0">
+		<tbody><tr>
+			<td background="/Bilder/conquest_spec_head.png" width="317" height="75"></td>
+		</tr>
+		<tr>
+			<td background="/Bilder/conquest_sb_cont.png" width="317" height="80" id="attacker_strikebreaker">
+	   	   </td>
+		</tr>
+		<tr>
+			<td background="/Bilder/conquest_sb_foot.png" width="317" height="119">
+			    
+			    <!--<div id="switch_btns" class="btn_bwd_right"></div>
+                <div id="switch_btns" class="btn_fwd_right"></div>-->
+			    
+			</td>
+		</tr>
+		</tbody></table>
+	    </div>
+        </div>
+<div style="height:0px;"></div>
+
+ </div>
+</div>
+                                </div>
+
+
+                                                                
+
+      </td>
+	<td valign="top" style="background: url(/BilderM/6_06_test.png) repeat-y;">
+                     <div style="height:350px;">
+<a href="/cq/index"><img src="/BilderM2/s-uebersicht.png" width="85" height="49" border="0"></a><br>
+<a href="/cq/other"><img src="/BilderM2/s-andere.png" width="83" height="48" border="0"></a><br>
+<a href="/cq/old"><img src="/BilderM2/s-vergangen.png" width="83" height="48" border="0"></a><br>
+<a href="/cq/sdw"><img src="/BilderM2/s-gdw.png" width="83" height="48" border="0"></a><br>
+<a href="/cq/infos"><img src="/BilderM2/s-infos.png" width="85" height="49" border="0"></a><br>
+<a href="/conquest/hq"><img src="/BilderM2/btn_lz.png" width="84" height="50" border="0"></a><br>
+</div>
+		</td>
+	</tr>
+	<tr>
+		<td style="background: url(/BilderM/5_05.png) repeat-y;" width="161" height="44"></td>
+		<td style="background: url(/BilderM/6_06_test.png) repeat-y;" width="87" height="44"></td>
+	</tr>
+		<tr>
+		<td colspan="3" align="left"><img src="/BilderM/7_07.png" width="962" height="144" alt=""></td>
+	</tr>
+</tbody></table>
+</center>
+
+
+
+
+
+<div class="highslide-container" style="padding: 0px; border: none; margin: 0px; position: absolute; left: 0px; top: 0px; width: 100%; z-index: 1001; direction: ltr;"><a class="highslide-loading" title="Click to cancel" href="javascript:;" style="position: absolute; top: -9999px; opacity: 0.75; z-index: 1;">Loading...</a><div style="display: none;"></div><table cellspacing="0" style="padding: 0px; border: none; margin: 0px; visibility: hidden; position: absolute; border-collapse: collapse; width: 0px;"><tbody style="padding: 0px; border: none; margin: 0px;"><tr style="padding: 0px; border: none; margin: 0px; height: auto;"><td style="padding: 0px; border: none; margin: 0px; line-height: 0; font-size: 0px; background-image: url(http://www.chicago1920.com/highslide/graphics/outlines/drop-shadow.png); height: 20px; width: 20px; background-position: 0px 0px; background-repeat: initial initial;"></td><td style="padding: 0px; border: none; margin: 0px; line-height: 0; font-size: 0px; background-image: url(http://www.chicago1920.com/highslide/graphics/outlines/drop-shadow.png); height: 20px; width: 20px; background-position: 0px -40px; background-repeat: initial initial;"></td><td style="padding: 0px; border: none; margin: 0px; line-height: 0; font-size: 0px; background-image: url(http://www.chicago1920.com/highslide/graphics/outlines/drop-shadow.png); height: 20px; width: 20px; background-position: -20px 0px; background-repeat: initial initial;"></td></tr><tr style="padding: 0px; border: none; margin: 0px; height: auto;"><td style="padding: 0px; border: none; margin: 0px; line-height: 0; font-size: 0px; background-image: url(http://www.chicago1920.com/highslide/graphics/outlines/drop-shadow.png); height: 20px; width: 20px; background-position: 0px -80px; background-repeat: initial initial;"></td><td style="padding: 0px; border: none; margin: 0px; position: relative;" class="drop-shadow highslide-outline"></td><td style="padding: 0px; border: none; margin: 0px; line-height: 0; font-size: 0px; background-image: url(http://www.chicago1920.com/highslide/graphics/outlines/drop-shadow.png); height: 20px; width: 20px; background-position: -20px -80px; background-repeat: initial initial;"></td></tr><tr style="padding: 0px; border: none; margin: 0px; height: auto;"><td style="padding: 0px; border: none; margin: 0px; line-height: 0; font-size: 0px; background-image: url(http://www.chicago1920.com/highslide/graphics/outlines/drop-shadow.png); height: 20px; width: 20px; background-position: 0px -20px; background-repeat: initial initial;"></td><td style="padding: 0px; border: none; margin: 0px; line-height: 0; font-size: 0px; background-image: url(http://www.chicago1920.com/highslide/graphics/outlines/drop-shadow.png); height: 20px; width: 20px; background-position: 0px -60px; background-repeat: initial initial;"></td><td style="padding: 0px; border: none; margin: 0px; line-height: 0; font-size: 0px; background-image: url(http://www.chicago1920.com/highslide/graphics/outlines/drop-shadow.png); height: 20px; width: 20px; background-position: -20px -20px; background-repeat: initial initial;"></td></tr></tbody></table><img style="padding: 0px; border: none; margin: 0px; position: absolute; top: -9999px;" src="/highslide/graphics/outlines/drop-shadow.png"></div>
+
+<!-- accountPlugin -->
+<div id="accountPlugin" style="position: absolute; float: left; width: 151px; height: 95%; top: 15px; padding-left: 5px; text-align: left;">
+    <div id="opponents" style="font-size: 10pt; position: absolute; bottom: 10px; width: 143px; height: 70%; background-color:rgba(0, 0, 0, 0.55); border: 3px solid black;">
+        <table id="fighterTable" width="100%">
+            <tbody>
+                <tr>
+                    <td colspan="2" style="font-size: 14pt; font-weight: bold; text-align: center;">Kampf Meister</td>
+                </tr>
+                <tr>
+                    <td><input id="clickChecker" type="checkbox" onclick="account.toggle(jQuery('#clickChecker').prop('checked'));" checked="checked"></td>
+                    <td><label for="clickChecker">KlickVertretung</label></td>
+                </tr>
+                <tr>
+                    <td colspan="2" align="center">
+                    
+                    <select id="raceSelect" onchange="account.raceChanged(jQuery('#raceSelect').val());" style="font-family:Arial;">
+                        <option value="0">alle Gebiete</option>
+                        <option value="1">Dunning</option>
+                        <option value="2">Uptown</option>
+                        <option value="3" selected="selected">Lawndale</option>
+                        <option value="4">Loop</option>
+                        <option value="5">Newcity</option>
+                        <option value="6">Woodlawn</option>
+                        <option value="7">Ashburn</option>
+                        <option value="8">Southdeering</option>
+                    </select></td>
+                </tr>
+            </tbody>
+        </table>
+        <table id="opponentsTable" width="100%">
+            <tbody>
+                <tr><td id="opponentsName" colspan="2" align="center">LtHexal</td></tr>
+                <tr><td id="opponentsRace">&nbsp;</td><td id="opponentsLevel" align="right"></td></tr>
+                <tr><td colspan="2" align="center"><progress id="opponentsFights" value="0" max="10">1 - 10</progress></td></tr>
+            </tbody>
+        </table>
+        <br><br>
+        <table id="specialsTable" width="100%">
+            <tbody>
+                <tr>
+                    <td colspan="2" style="font-size: 12pt; font-weight: bold; text-align: center;">Heist</td>
+                </tr>
+                <tr>
+                    <td><input id="heistChecker" type="checkbox" onclick="account.heistToggle(jQuery('#heistChecker').prop('checked'));"></td>
+                    <td><label for="heistChecker">GeldTransporter</label></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body></html>

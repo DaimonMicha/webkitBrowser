@@ -1,0 +1,1056 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta http-equiv="expires" content="0">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="pragma" content="no-cache">
+
+<script type="text/javascript" src="/img/js/scriptaculous-js-1.9.0/prototype.js"></script>
+<script type="text/javascript" src="/img/js/scriptaculous-js-1.9.0/scriptaculous.js?load=effects,dragdrop"></script><script type="text/javascript" src="http://www.chicago1920.com/img/js/scriptaculous-js-1.9.0/effects.js"></script><script type="text/javascript" src="http://www.chicago1920.com/img/js/scriptaculous-js-1.9.0/dragdrop.js"></script>    
+<script type="text/javascript" src="/highslide/highslide.js"></script>
+<link rel="stylesheet" type="text/css" href="/highslide/highslide.css">
+<script type="text/javascript">
+    // override Highslide settings heres
+    // instead of editing the highslide.js file
+    hs.graphicsDir = '/highslide/graphics/';
+</script>
+
+<script type="text/javascript" src="/img/flash/swfobject.js"></script>
+<script type="text/javascript" src="/img/js/jquery-1.8.2.js"></script>
+<script type="text/javascript" src="/img/js/jquery-ui-1-9.js"></script>
+<script type="text/javascript" src="/img/js/jquery.blockUI.js"></script>
+<script type="text/javascript" src="/img/js/jquery.countdown.min.js"></script>
+<script type="text/javascript" src="/img/js/jquery.countdown-de.js"></script>
+<script>
+  var $j = jQuery.noConflict();
+</script>
+
+         	 
+<script type="text/javascript" src="/img/js/countdowntitle.js"></script>
+        
+		<script type="text/javascript">
+		
+		 countdownRest( 410 ,"Kampfwartezeit:");    
+          jQuery.noConflict();
+          window.$j = jQuery;
+
+		  var currentCrystals   = 297;
+          var currentGold       = 1802;
+          var currentStone      = 8312;
+     </script><title>Chicago1920.com</title>
+
+        <script type="text/javascript">
+
+             function updateCharState()
+            {
+                if(lifePercent < 10) $j('#charState').text('Erschossen');
+                else if(lifePercent < 20) $j('#charState').text('Am Boden');
+                else if(lifePercent < 30) $j('#charState').text('Angeschossen');
+                else if(lifePercent < 40) $j('#charState').text('Kampfunfähig');
+                else if(lifePercent < 50) $j('#charState').text('Erschlagen');
+                else if(lifePercent < 60) $j('#charState').text('Ausgepumpt');
+                else if(lifePercent < 70) $j('#charState').text('Entkräftet');
+                else if(lifePercent < 80) $j('#charState').text('Erschöpft');
+                else if(lifePercent < 90) $j('#charState').text('Außer Atem');
+                else if(lifePercent < 99) $j('#charState').text('Geschwächt');
+               else $j('#charState').text('Ausgeruht');
+
+            }
+
+            function getSWF(movieName) {
+              var isIE = navigator.appName.indexOf("Microsoft") != -1;
+              return  (isIE) ? window[movieName] : document[movieName];
+            }
+
+
+            var lifeCurrent = parseInt(3372);
+            var blinking = 1;
+            var lifeMax = parseInt(3429);
+            var secsDone = 0;
+            var lifePercent = 98;
+            var fullLifeAfter = 10;
+
+            function lifeBar()
+            {
+                var timeToFullLP = 10 * 60;
+                var maxLife = parseInt(lifeMax) || lifeCurrent;
+                var secs = fullLifeAfter - secsDone;
+                secsDone++;
+                if(secs > 0)
+                {
+                    var quote = (timeToFullLP - secs) / timeToFullLP;
+                    lifeCurrent = Math.round(maxLife * quote);
+                    lifePercent = Math.round(lifeCurrent / maxLife * 100);
+
+                     var oVars = {
+                       lp: lifeCurrent,
+                       max_lp: lifeMax,
+                       percent: lifePercent,
+                       blink: blinking,
+                       water: currentGold,
+                       uran: currentCrystals,
+                       stone: currentStone,
+                       action: 'index'
+                    };
+
+					getSWF('stats').jsStats(oVars);
+
+
+                    $j('#statLifeMax').text(lifeMax);
+	               	$j('#statLifeCurrent').text(lifeCurrent);
+                }
+              updateCharState();
+            }
+
+            //Navi
+            var flashvars = {
+               spezialist: "false",site: "cq",gamePlay: "false",baseUrl: "http://www.chicago1920.com/",favorit:"challenge_diary,union_index,guildvitrine_index,abenteuer_map",favoritnavigation:"cq_index",global_activity:"Geldtransporter<br>00:01:33<br><br>Tommys Gunshop<br>23:44:21<br><br>C.G.U Week<br>76:58:50<br><br>Hehlerware<br>77:44:02<br><br>",navi_highlight:"",action:"index"            };
+            var params = {
+               menu: "false",
+               allowScriptAccess: "sameDomain",
+               scale: "noscale",
+			   wmode: "transparent"
+            };
+            var attributes = {
+               id: "navi",
+               name: "navi"
+            };
+			
+            swfobject.embedSWF("/img/flash/navi10.swf", "navi", "161", "730", "8.0.24", "/img/flash/expressInstall.swf", flashvars, params, attributes);
+            //Stats
+            var flashvars = {
+               water: "1802",uran: "297",stone: "8312",hof: "76123",lvl: "5",ep: "519",ep_nlv: "531",lp: "3372",lifePercent: "98",max_lp: "3429",fullLifeAfter: "10",action: "index"             };
+            var params = {
+               menu: "false",
+               allowScriptAccess: "sameDomain",
+               scale: "noscale",
+			   wmode: "transparent"
+            };
+            var attributes = {
+               id: "stats",
+               name: "stats"
+            };
+            swfobject.embedSWF("/img/flash/stats6.swf", "stats", "372", "164", "8.0.24", "/img/flash/expressInstall.swf", flashvars, params, attributes);
+        </script><style type="text/css" media="screen">#navi {visibility:hidden}#stats {visibility:hidden}</style>
+        <title>
+            Chicago1920.com
+        </title>
+
+
+
+
+
+
+         <base href="http://www.chicago1920.com/">
+
+<link href="/img/css/front.css" rel="stylesheet" type="text/css">
+
+<style type="text/css" media="screen">
+    object { outline:none; }
+</style>
+
+<style type="text/css">
+<!--
+body {
+	background-color: #000000;
+	background-image:url(/BilderM/back.jpg);
+	background-repeat:no-repeat;
+	background-position:top center;
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+ font-family:"Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", Times, sans-serif;
+ 	font-size:0.7em;
+	color: #fdffe1;
+}
+
+#navi{
+   padding: 0; 
+  position: absolute; 
+  left: 50%; 
+  top:164px; 
+  width: 161px; 
+  height:670px;
+  margin-left: -481px; 
+  z-index:10000;
+}
+-->
+</style><style type="text/css">.highslide img {cursor: url(/highslide/graphics/zoomin.cur), pointer !important;}</style></head>
+
+<body onload="window.setInterval('lifeBar()', 1000);">
+
+            <object type="application/x-shockwave-flash" id="navi" name="navi" data="/img/flash/navi10.swf" width="161" height="730" style="visibility: visible;"><param name="menu" value="false"><param name="allowScriptAccess" value="sameDomain"><param name="scale" value="noscale"><param name="wmode" value="transparent"><param name="flashvars" value="spezialist=false&amp;site=cq&amp;gamePlay=false&amp;baseUrl=http://www.chicago1920.com/&amp;favorit=challenge_diary,union_index,guildvitrine_index,abenteuer_map&amp;favoritnavigation=cq_index&amp;global_activity=Geldtransporter&lt;br&gt;00:01:33&lt;br&gt;&lt;br&gt;Tommys Gunshop&lt;br&gt;23:44:21&lt;br&gt;&lt;br&gt;C.G.U Week&lt;br&gt;76:58:50&lt;br&gt;&lt;br&gt;Hehlerware&lt;br&gt;77:44:02&lt;br&gt;&lt;br&gt;&amp;navi_highlight=&amp;action=index"></object>
+<center>
+<table id="UA" width="962" height="809" border="0" cellpadding="0" cellspacing="0">
+	<tbody><tr>
+		<td colspan="3" align="left">
+
+
+
+<table id="Header" width="962" height="164" border="0" cellpadding="0" cellspacing="0">
+	<tbody><tr>
+		<td>
+
+			<object type="application/x-shockwave-flash" id="stats" name="stats" data="/img/flash/stats6.swf" width="372" height="164" style="visibility: visible;"><param name="menu" value="false"><param name="allowScriptAccess" value="sameDomain"><param name="scale" value="noscale"><param name="wmode" value="transparent"><param name="flashvars" value="water=1802&amp;uran=297&amp;stone=8312&amp;hof=76123&amp;lvl=5&amp;ep=519&amp;ep_nlv=531&amp;lp=3372&amp;lifePercent=98&amp;max_lp=3429&amp;fullLifeAfter=10&amp;action=index"></object>
+		
+		</td>
+		<td>
+							<img src="/BilderM/headertab_02.jpg" width="363" height="164" alt="">
+					</td>
+		<td>
+		                    <a href="/special/heist"><img src="/Bilderx/sh01.png"></a> 
+           		    </td>
+	</tr>
+</tbody></table>
+
+
+
+          </td>
+	</tr>
+	<tr>
+		<td valign="top" background="/BilderM/5_05.png">
+
+        </td>
+        
+		<td rowspan="2" align="left" valign="top" style="background-color:#000000; height:501px; width:714px;">
+
+
+  <div style="width: 714px; float: right; padding: 0px; margin 0px;" id="main">
+                                <div style="border: 0px solid yellow ; margin: 0px; padding: 0px;" id="cfl">                                                                <script type="text/javascript" src="/img/js/overlib_mini.js"></script>
+
+
+<style type="text/css">
+<!--
+
+div#wrapper {
+    position:relative;
+}
+
+
+#polizei {
+	position:absolute;
+	left:300px;
+	top:15px;
+font-size:24px;
+	font-weight:bold;
+	color:#000;
+}
+
+      div.Tabelle_Eroberung {
+  font-size:12px;
+  font-weight:bold;
+	left:0px;
+	top:0px;
+	width:714px;
+	height:771px;
+ 	background: #241c18 url('/Bilder/ueberback_new.jpg') top left;
+
+ }
+div.Tabelle_last_man {
+  font-size:12px;
+  font-weight:bold;
+	left:0px;
+	top:0px;
+	width:714px;
+	height:603px;
+ 	background: #241c18 url('/Bilder/lms02.jpg') top left;
+
+ }
+
+
+div.dienste {
+	position:absolute;
+	padding: 6px 6px 6px 6px;
+	left:60px;
+	top:100px;
+	width:586px;
+	height:231px;
+	text-align: left;
+}
+
+#new_btns {
+    position:absolute;   
+    width:171px;
+    height:69px;
+    z-index:150;
+  
+
+}
+
+.raid_right{
+  background: url('/Bilder/btn_raid.png') top left;  
+  left:375px;
+  top:310px;
+  
+    
+}
+.raid_left{
+  background: url('/Bilder/btn_raid.png') top left;  
+  left:20px;
+  top:310px;
+    
+}
+
+.mission_right{
+  background: url('/Bilder/btn_spec_mission.png') top left;  
+  left:545px;
+  top:310px;
+    
+}
+.mission_left{
+  background: url('/Bilder/btn_spec_mission.png') top left;  
+  left:190px;
+  top:310px;
+    
+}
+
+#switch_btns{
+  position:relative;   
+    width:47px;
+    height:45px;
+    z-index:150;  
+    
+   
+    
+}
+
+.btn_bwd_left{
+   background: url('/Bilder/spec_btn_bwd.png') top left;   
+   top:35px;
+   left:30px;
+    
+}
+
+.btn_fwd_left{
+   background: url('/Bilder/spec_btn_fwd.png') top left;   
+   left:245px;
+   top:-10px; 
+}
+
+.btn_bwd_right{
+   background: url('/Bilder/spec_btn_bwd.png') top left;   
+   top:35px;
+   left:30px;
+    
+}
+
+.btn_fwd_right{
+   background: url('/Bilder/spec_btn_fwd.png') top left;   
+   left:245px;
+   top:-10px; 
+}
+
+#Aktuellx20Datum {
+	position:absolute;
+	left:23px;
+	top:63px;
+	width:91px;
+	height:17px;
+}
+
+#Aktuellx20Angreifer {
+	position:absolute;
+	left:123px;
+	top:63px;
+	width:97px;
+	height:17px;
+}
+
+#Aktuellx20Verteidiger {
+	position:absolute;
+	left:229px;
+	top:63px;
+	width:113px;
+	height:17px;
+}
+
+#Aktuellx20Zielgebiet {
+	position:absolute;
+	left:351px;
+	top:63px;
+	width:97px;
+	height:17px;
+}
+
+#Aktuellx20Eroberung {
+	position:absolute;
+	left:457px;
+	top:63px;
+	width:112px;
+	height:17px;
+}
+
+#Aktuellx20Option {
+	position:absolute;
+	left:579px;
+	top:63px;
+	width:112px;
+	height:17px;
+}
+
+
+#uebersicht033 {
+	position:absolute;
+	left:163px;
+	top:155px;
+	width:190px;
+	height:100px;
+	font-size:14px;
+}
+
+#uebersicht034 {
+	position:absolute;
+	left:383px;
+	top:155px;
+	width:190px;
+	height:100px;
+	font-size:14px;
+}
+#uebersicht035 {
+	position:absolute;
+	left:163px;
+	top:180px;
+	width:190px;
+	height:100px;
+	font-size:14px;
+}
+
+#uebersicht036 {
+	position:absolute;
+	left:383px;
+	top:180px;
+	width:190px;
+	height:100px;
+	font-size:14px;
+}
+
+
+#infotext {
+	position:absolute;
+  font-size:16px;
+	left:29px;
+	top:112px;
+	width:660px;
+	height:100px;
+}
+
+
+#status {
+	position:absolute;
+	left:19px;
+	top:16px;
+	width:550px;
+	height:28px;
+}
+
+#weitere {
+position:absolute;
+	left:22px;
+	top:176px;
+	width:304px;
+	height:22px;
+}
+
+#attacker_strikebreaker_bg {
+	position:absolute;
+	left:20px;
+	top:360px;
+	width:313px;
+	font-size:13px;
+}
+
+#attacker_strikebreaker {
+	padding-left:30px;
+}
+
+#defender_strikebreaker_bg {
+	position:absolute;
+	left:380px;
+	top:360px;
+	width:313px;
+	font-size:13px;
+}
+
+#defender_strikebreaker {
+	padding-left:30px;
+	padding-top:70px;
+}
+
+
+#infoPopup
+{
+	margin-top:5px;
+	padding:10px; 
+	color:#ff5005; 
+	font-size:10px;
+	text-align:center;
+}
+    div.Tabelle_sdw {
+
+}
+
+#contents {
+	position:absolute;
+	left:280px;
+	top:155px;
+	width:445px;
+	height:465px;
+	font-size:12px;
+}
+#lms {
+	position:absolute;
+	width:200px;
+	font-size:13px;
+}
+-->
+</style>
+
+<script type="text/javascript">
+
+function infoOver(value, w) 
+{ 
+	return overlib('<div id="infoPopup">'+ value +  '</div>', 
+	DELAY, 50, 
+	WIDTH, w, 
+	HEIGHT , 40, 
+	BORDER, 8 , 
+	FGCOLOR, '#000000', 
+	BACKGROUND, '', 
+	HAUTO, VAUTO, ABOVE, RIGHT
+	); 
+}
+
+</script>
+
+<div id="wrapper">
+<div class="Tabelle_last_man">
+<div style="position:absolute; left:410px; top:57px; width:205px; height:53px; text-align:center; line-height:16px;font-size:16px;">
+	    		<a href="/cq/index/284/0/1">Tag 1</a> <a href="/cq/index/284/0/2">Tag 2</a> (noch  12 Std)</div>
+<div style="position:absolute;	left:438px; 	top:133px;">
+ <a href="/cq/index/284/0/2" style="font-size:14px; color:#ff7233;">1-25 </a>
+ <a href="/cq/index/284/25/2" style="font-size:14px; color:#ff7233;">26-50 </a>
+</div>
+
+<div class="Tabelle_sdw">
+
+ <div id="contents">
+
+ <table id="Tabelle_01" width="415" border="0" cellpadding="0" cellspacing="0">
+		
+		<tbody><tr>
+		<td width="42" height="16" align="center">
+			1    	</td>
+					<td width="20"><a href="http://gimages.chicago1920.com/icon/de/4/76a17d9d22f1da1fda2b4f3ac27138a6.jpg?rnd=1472189015" class="highslide" onclick="return hs.expand(this)"> <img src="http://gimages.chicago1920.com/icon/de/4/76a17d9d22f1da1fda2b4f3ac27138a6.jpg" height="15" width="15"></a></td>
+				<td width="20"><a href="/poh/usermw/CADEDK" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16">
+		<a href="/characters/profile/CADEDK" target="_blank"><b> Hackbeiltony </b></a>
+    	</td>
+		<td width="20">
+			52		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Uptown		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">866    </td>
+	</tr>
+		
+		<tr>
+		<td width="42" height="16" align="center">
+			2    	</td>
+					<td width="20"><a href="http://gimages.chicago1920.com/icon/de/c/7/3/fc29897e837791cb1159dc78b31befe7.jpg?rnd=1472189015" class="highslide" onclick="return hs.expand(this)"> <img src="http://gimages.chicago1920.com/icon/de/c/7/3/fc29897e837791cb1159dc78b31befe7.jpg" height="15" width="15"></a></td>
+				<td width="20"><a href="/poh/usermw/CCGJLH" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16">
+		<a href="/characters/profile/CCGJLH" target="_blank"><b> Geraldus </b></a>
+    	</td>
+		<td width="20">
+			35		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Ashburn		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">385    </td>
+	</tr>
+		
+		<tr>
+		<td width="42" height="16" align="center">
+			3    	</td>
+					<td width="20"><a href="http://gimages.chicago1920.com/icon/de/4/76a17d9d22f1da1fda2b4f3ac27138a6.jpg?rnd=1472189015" class="highslide" onclick="return hs.expand(this)"> <img src="http://gimages.chicago1920.com/icon/de/4/76a17d9d22f1da1fda2b4f3ac27138a6.jpg" height="15" width="15"></a></td>
+				<td width="20"><a href="/poh/usermw/GHKKH" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16">
+		<a href="/characters/profile/GHKKH" target="_blank"><b> Schaky Dun </b></a>
+    	</td>
+		<td width="20">
+			125		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Dunning		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">299    </td>
+	</tr>
+		
+		<tr>
+		<td width="42" height="16" align="center">
+			4    	</td>
+					<td width="20"><a href="http://gimages.chicago1920.com/icon/de/2/9/9/5e83a7dc6aab7830afbf6d664c4f0440.jpg?rnd=1472189015" class="highslide" onclick="return hs.expand(this)"> <img src="http://gimages.chicago1920.com/icon/de/2/9/9/5e83a7dc6aab7830afbf6d664c4f0440.jpg" height="15" width="15"></a></td>
+				<td width="20"><a href="/poh/usermw/AHHDHG" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16">
+		<a href="/characters/profile/AHHDHG" target="_blank"><b> Don Vito Cascio </b></a>
+    	</td>
+		<td width="20">
+			125		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Uptown		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">279    </td>
+	</tr>
+		
+		<tr>
+		<td width="42" height="16" align="center">
+			5    	</td>
+					<td width="20"><a href="http://gimages.chicago1920.com/icon/de/6/b/8/3bb9d6f2a66b3519da0030d83e68921f.jpg?rnd=1472189015" class="highslide" onclick="return hs.expand(this)"> <img src="http://gimages.chicago1920.com/icon/de/6/b/8/3bb9d6f2a66b3519da0030d83e68921f.jpg" height="15" width="15"></a></td>
+				<td width="20"><a href="/poh/usermw/AHKLIL" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16">
+		<a href="/characters/profile/AHKLIL" target="_blank"><b> Capone jun. </b></a>
+    	</td>
+		<td width="20">
+			55		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Newcity		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">246    </td>
+	</tr>
+		
+		<tr>
+		<td width="42" height="16" align="center">
+			6    	</td>
+					<td width="20"><a href="http://gimages.chicago1920.com/icon/de/3/9/2/9a3f13195d73531d57cfad9617943c18.jpg?rnd=1472189015" class="highslide" onclick="return hs.expand(this)"> <img src="http://gimages.chicago1920.com/icon/de/3/9/2/9a3f13195d73531d57cfad9617943c18.jpg" height="15" width="15"></a></td>
+				<td width="20"><a href="/poh/usermw/CBEHME" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16">
+		<a href="/characters/profile/CBEHME" target="_blank"><b> der huba </b></a>
+    	</td>
+		<td width="20">
+			80		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Uptown		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">236    </td>
+	</tr>
+		
+		<tr>
+		<td width="42" height="16" align="center">
+			7    	</td>
+					<td width="20"><a href="http://gimages.chicago1920.com/icon/de/2/9/9/5e83a7dc6aab7830afbf6d664c4f0440.jpg?rnd=1472189015" class="highslide" onclick="return hs.expand(this)"> <img src="http://gimages.chicago1920.com/icon/de/2/9/9/5e83a7dc6aab7830afbf6d664c4f0440.jpg" height="15" width="15"></a></td>
+				<td width="20"><a href="/poh/usermw/AGFIMM" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16">
+		<a href="/characters/profile/AGFIMM" target="_blank"><b> Spike O Donnel </b></a>
+    	</td>
+		<td width="20">
+			125		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Dunning		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">217    </td>
+	</tr>
+		
+		<tr>
+		<td width="42" height="16" align="center">
+			8    	</td>
+					<td width="20"><a href="http://gimages.chicago1920.com/icon/de/b/7/de6965f99e7fede7c232662a2243d39e.jpg?rnd=1472189015" class="highslide" onclick="return hs.expand(this)"> <img src="http://gimages.chicago1920.com/icon/de/b/7/de6965f99e7fede7c232662a2243d39e.jpg" height="15" width="15"></a></td>
+				<td width="20"><a href="/poh/usermw/CBEKJI" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16">
+		<a href="/characters/profile/CBEKJI" target="_blank"><b> mitalles </b></a>
+    	</td>
+		<td width="20">
+			32		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Ashburn		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">195    </td>
+	</tr>
+		
+		<tr>
+		<td width="42" height="16" align="center">
+			9    	</td>
+					<td width="20"><a href="http://gimages.chicago1920.com/icon/de/4/76a17d9d22f1da1fda2b4f3ac27138a6.jpg?rnd=1472189015" class="highslide" onclick="return hs.expand(this)"> <img src="http://gimages.chicago1920.com/icon/de/4/76a17d9d22f1da1fda2b4f3ac27138a6.jpg" height="15" width="15"></a></td>
+				<td width="20"><a href="/poh/usermw/BDDEJJ" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16">
+		<a href="/characters/profile/BDDEJJ" target="_blank"><b> Oyabun 14 </b></a>
+    	</td>
+		<td width="20">
+			71		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Dunning		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">194    </td>
+	</tr>
+		
+		<tr>
+		<td width="42" height="16" align="center">
+			10    	</td>
+					<td width="20"><a href="http://gimages.chicago1920.com/icon/de/a/c/f/073b8b70c3ca74fae495fd460a32428a.jpg?rnd=1472189015" class="highslide" onclick="return hs.expand(this)"> <img src="http://gimages.chicago1920.com/icon/de/a/c/f/073b8b70c3ca74fae495fd460a32428a.jpg" height="15" width="15"></a></td>
+				<td width="20"><a href="/poh/usermw/BCFKIF" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16">
+		<a href="/characters/profile/BCFKIF" target="_blank"><b> Mr. Orange </b></a>
+    	</td>
+		<td width="20">
+			125		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Loop		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">153    </td>
+	</tr>
+		
+		<tr>
+		<td width="42" height="16" align="center">
+			11    	</td>
+					<td width="20"><a href="http://gimages.chicago1920.com/icon/de/6/b/8/3bb9d6f2a66b3519da0030d83e68921f.jpg?rnd=1472189015" class="highslide" onclick="return hs.expand(this)"> <img src="http://gimages.chicago1920.com/icon/de/6/b/8/3bb9d6f2a66b3519da0030d83e68921f.jpg" height="15" width="15"></a></td>
+				<td width="20"><a href="/poh/usermw/AFEHMN" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16">
+		<a href="/characters/profile/AFEHMN" target="_blank"><b> shotgunsusi </b></a>
+    	</td>
+		<td width="20">
+			115		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Newcity		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">152    </td>
+	</tr>
+		
+		<tr>
+		<td width="42" height="16" align="center">
+			12    	</td>
+					<td width="20"><a href="http://gimages.chicago1920.com/icon/de/6/b/8/3bb9d6f2a66b3519da0030d83e68921f.jpg?rnd=1472189015" class="highslide" onclick="return hs.expand(this)"> <img src="http://gimages.chicago1920.com/icon/de/6/b/8/3bb9d6f2a66b3519da0030d83e68921f.jpg" height="15" width="15"></a></td>
+				<td width="20"><a href="/poh/usermw/CBIKFG" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16">
+		<a href="/characters/profile/CBIKFG" target="_blank"><b> Homunculus </b></a>
+    	</td>
+		<td width="20">
+			11		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Newcity		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">152    </td>
+	</tr>
+		
+		<tr>
+		<td width="42" height="16" align="center">
+			13    	</td>
+					<td width="20"><a href="http://gimages.chicago1920.com/icon/de/6/b/8/3bb9d6f2a66b3519da0030d83e68921f.jpg?rnd=1472189015" class="highslide" onclick="return hs.expand(this)"> <img src="http://gimages.chicago1920.com/icon/de/6/b/8/3bb9d6f2a66b3519da0030d83e68921f.jpg" height="15" width="15"></a></td>
+				<td width="20"><a href="/poh/usermw/BGBGEK" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16">
+		<a href="/characters/profile/BGBGEK" target="_blank"><b> RAG </b></a>
+    	</td>
+		<td width="20">
+			17		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Newcity		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">148    </td>
+	</tr>
+		
+		<tr>
+		<td width="42" height="16" align="center">
+			14    	</td>
+					<td width="20"><a href="http://gimages.chicago1920.com/icon/de/5/0/4/fe354cb1868735f3133370d2f3b4f46e.jpg?rnd=1472189015" class="highslide" onclick="return hs.expand(this)"> <img src="http://gimages.chicago1920.com/icon/de/5/0/4/fe354cb1868735f3133370d2f3b4f46e.jpg" height="15" width="15"></a></td>
+				<td width="20"><a href="/poh/usermw/CAGDDM" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16">
+		<a href="/characters/profile/CAGDDM" target="_blank"><b> ikoch559 </b></a>
+    	</td>
+		<td width="20">
+			5		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Dunning		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">143    </td>
+	</tr>
+		
+		<tr>
+		<td width="42" height="16" align="center">
+			15    	</td>
+					<td width="20"><a href="http://gimages.chicago1920.com/icon/de/6/b/8/3bb9d6f2a66b3519da0030d83e68921f.jpg?rnd=1472189015" class="highslide" onclick="return hs.expand(this)"> <img src="http://gimages.chicago1920.com/icon/de/6/b/8/3bb9d6f2a66b3519da0030d83e68921f.jpg" height="15" width="15"></a></td>
+				<td width="20"><a href="/poh/usermw/DIHKL" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16">
+		<a href="/characters/profile/DIHKL" target="_blank"><b> DP2010 </b></a>
+    	</td>
+		<td width="20">
+			78		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Newcity		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">122    </td>
+	</tr>
+		
+		<tr>
+		<td width="42" height="16" align="center">
+			16    	</td>
+					<td width="20">&nbsp;</td>
+				<td width="20"><a href="/poh/usermw/HACC" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16">
+		<a href="/characters/profile/HACC" target="_blank"><b> oyonin48 </b></a>
+    	</td>
+		<td width="20">
+			112		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Dunning		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">115    </td>
+	</tr>
+		
+		<tr>
+		<td width="42" height="16" align="center">
+			17    	</td>
+					<td width="20"><a href="http://gimages.chicago1920.com/icon/de/2/7/8/e4c7a6be905f4173a6402329826979e0.jpg?rnd=1472189015" class="highslide" onclick="return hs.expand(this)"> <img src="http://gimages.chicago1920.com/icon/de/2/7/8/e4c7a6be905f4173a6402329826979e0.jpg" height="15" width="15"></a></td>
+				<td width="20"><a href="/poh/usermw/AJFGEL" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16">
+		<a href="/characters/profile/AJFGEL" target="_blank"><b> Brian De Palma </b></a>
+    	</td>
+		<td width="20">
+			24		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Loop		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">109    </td>
+	</tr>
+		
+		<tr>
+		<td width="42" height="16" align="center">
+			18    	</td>
+					<td width="20"><a href="http://gimages.chicago1920.com/icon/de/6/b/8/3bb9d6f2a66b3519da0030d83e68921f.jpg?rnd=1472189015" class="highslide" onclick="return hs.expand(this)"> <img src="http://gimages.chicago1920.com/icon/de/6/b/8/3bb9d6f2a66b3519da0030d83e68921f.jpg" height="15" width="15"></a></td>
+				<td width="20"><a href="/poh/usermw/CCHDDK" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16" style="color:#ff7233;">
+		<a style="color:#ff7233;" href="/characters/profile/CCHDDK" target="_blank"><b> DaimonMicha </b></a>
+    	</td>
+		<td width="20">
+			5		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Newcity		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">106    </td>
+	</tr>
+		
+		<tr>
+		<td width="42" height="16" align="center">
+			19    	</td>
+					<td width="20"><a href="http://gimages.chicago1920.com/icon/de/7/f/e/9f172250d7688278e013c55aabfb084d.jpg?rnd=1472189015" class="highslide" onclick="return hs.expand(this)"> <img src="http://gimages.chicago1920.com/icon/de/7/f/e/9f172250d7688278e013c55aabfb084d.jpg" height="15" width="15"></a></td>
+				<td width="20"><a href="/poh/usermw/BGJKGK" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16">
+		<a href="/characters/profile/BGJKGK" target="_blank"><b> Babyface Nelson </b></a>
+    	</td>
+		<td width="20">
+			22		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Loop		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">104    </td>
+	</tr>
+		
+		<tr>
+		<td width="42" height="16" align="center">
+			20    	</td>
+					<td width="20"><a href="http://gimages.chicago1920.com/icon/de/1/5/f/55e8f693fd46741f565c8ba24c15a6d2.jpg?rnd=1472189015" class="highslide" onclick="return hs.expand(this)"> <img src="http://gimages.chicago1920.com/icon/de/1/5/f/55e8f693fd46741f565c8ba24c15a6d2.jpg" height="15" width="15"></a></td>
+				<td width="20"><a href="/poh/usermw/ADJFIN" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16">
+		<a href="/characters/profile/ADJFIN" target="_blank"><b> Don Miguel </b></a>
+    	</td>
+		<td width="20">
+			31		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Uptown		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">103    </td>
+	</tr>
+		
+		<tr>
+		<td width="42" height="16" align="center">
+			21    	</td>
+					<td width="20"><a href="http://gimages.chicago1920.com/icon/de/c/8/4/125504010d9483490602e5a8d1f51360.jpg?rnd=1472189015" class="highslide" onclick="return hs.expand(this)"> <img src="http://gimages.chicago1920.com/icon/de/c/8/4/125504010d9483490602e5a8d1f51360.jpg" height="15" width="15"></a></td>
+				<td width="20"><a href="/poh/usermw/ADIFEG" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16">
+		<a href="/characters/profile/ADIFEG" target="_blank"><b> Mingo144 </b></a>
+    	</td>
+		<td width="20">
+			54		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Ashburn		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">95    </td>
+	</tr>
+		
+		<tr>
+		<td width="42" height="16" align="center">
+			22    	</td>
+					<td width="20"><a href="http://gimages.chicago1920.com/icon/de/f/6ba40277e846ddcd9be7cc3708710b08.jpg?rnd=1472189015" class="highslide" onclick="return hs.expand(this)"> <img src="http://gimages.chicago1920.com/icon/de/f/6ba40277e846ddcd9be7cc3708710b08.jpg" height="15" width="15"></a></td>
+				<td width="20"><a href="/poh/usermw/BHIGJJ" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16">
+		<a href="/characters/profile/BHIGJJ" target="_blank"><b> Dino Santo </b></a>
+    	</td>
+		<td width="20">
+			31		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Dunning		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">95    </td>
+	</tr>
+		
+		<tr>
+		<td width="42" height="16" align="center">
+			23    	</td>
+					<td width="20"><a href="http://gimages.chicago1920.com/icon/de/6/b/8/3bb9d6f2a66b3519da0030d83e68921f.jpg?rnd=1472189015" class="highslide" onclick="return hs.expand(this)"> <img src="http://gimages.chicago1920.com/icon/de/6/b/8/3bb9d6f2a66b3519da0030d83e68921f.jpg" height="15" width="15"></a></td>
+				<td width="20"><a href="/poh/usermw/CCDKKI" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16">
+		<a href="/characters/profile/CCDKKI" target="_blank"><b> MadDonna </b></a>
+    	</td>
+		<td width="20">
+			5		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Newcity		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">94    </td>
+	</tr>
+		
+		<tr>
+		<td width="42" height="16" align="center">
+			24    	</td>
+					<td width="20"><a href="http://gimages.chicago1920.com/icon/de/1/5/f/55e8f693fd46741f565c8ba24c15a6d2.jpg?rnd=1472189015" class="highslide" onclick="return hs.expand(this)"> <img src="http://gimages.chicago1920.com/icon/de/1/5/f/55e8f693fd46741f565c8ba24c15a6d2.jpg" height="15" width="15"></a></td>
+				<td width="20"><a href="/poh/usermw/AJFHHF" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16">
+		<a href="/characters/profile/AJFHHF" target="_blank"><b> d0nau </b></a>
+    	</td>
+		<td width="20">
+			80		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Dunning		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">92    </td>
+	</tr>
+		
+		<tr>
+		<td width="42" height="16" align="center">
+			25    	</td>
+					<td width="20"><a href="http://gimages.chicago1920.com/icon/de/4/76a17d9d22f1da1fda2b4f3ac27138a6.jpg?rnd=1472189015" class="highslide" onclick="return hs.expand(this)"> <img src="http://gimages.chicago1920.com/icon/de/4/76a17d9d22f1da1fda2b4f3ac27138a6.jpg" height="15" width="15"></a></td>
+				<td width="20"><a href="/poh/usermw/AAIEGE" target="_blank"> <img src="/Bilder/conquest_ico_hof.jpg" height="15" width="15"></a></td>
+		<td width="165" height="16">
+		<a href="/characters/profile/AAIEGE" target="_blank"><b> Riggs </b></a>
+    	</td>
+		<td width="20">
+			46		</td>
+		<td width="80" height="16">
+		<div style="padding-left:5px">Loop		</div>
+    </td>
+     	<td>
+		<div style="width:9px; height:16px;"></div></td>
+		<td width="110" height="16" align="center">86    </td>
+	</tr>
+		</tbody></table>
+</div>
+</div>
+<div id="polizei">11/15								<a style="font-size:17px;font-weight:bold;" href="/fights/start_police/"><div id="polizei_attack" style="position:relative;left:-160px;width:120px;height:80px"></div></a>
+						 
+   	</div>
+<div id="lms" style="top:319px;left:145px">106</div>
+<div id="lms" style="top:336px;left:145px">3210</div>  
+<div id="lms" style="top:353px;left:145px">18</div>  
+<div id="lms" style="top:371px;left:145px">13</div> 
+<div id="lms" style="top:407px;left:163px">106</div> 
+<div id="lms" style="top:425px;left:163px">5</div> 
+<div id="lms" style="top:443px;left:163px">3500</div>  
+<div id="lms" style="top:28px;left:658px;font-size:20px;width:50px;align:center;">0%</div> 
+<div style="top:497px;left:25px;width:250px;align:center;position:absolute;font-size:13px;">10 RP</div>
+<div id="lms" style="top:533px;left:45px">+13 Polizeiangriff</div>   
+<div id="lms" style="top:570px;left:45px">+14 Polizeiangriff</div>  
+    </div>
+                                </div>
+
+
+                                                                </div>
+
+      </div></td>
+	<td valign="top" style="background: url(/BilderM/6_06_test.png) repeat-y;">
+                     <div style="height:350px;">
+<a href="/cq/index"><img src="/BilderM2/s-uebersicht.png" width="85" height="49" border="0"></a><br>
+<a href="/cq/other"><img src="/BilderM2/s-andere.png" width="83" height="48" border="0"></a><br>
+<a href="/cq/old"><img src="/BilderM2/s-vergangen.png" width="83" height="48" border="0"></a><br>
+<a href="/cq/sdw"><img src="/BilderM2/s-gdw.png" width="83" height="48" border="0"></a><br>
+<a href="/cq/infos"><img src="/BilderM2/s-infos.png" width="85" height="49" border="0"></a><br>
+<a href="/conquest/hq"><img src="/BilderM2/btn_lz.png" width="84" height="50" border="0"></a><br>
+</div>
+		</td>
+	</tr>
+	<tr>
+		<td style="background: url(/BilderM/5_05.png) repeat-y;" width="161" height="44"></td>
+		<td style="background: url(/BilderM/6_06_test.png) repeat-y;" width="87" height="44"></td>
+	</tr>
+		<tr>
+		<td colspan="3" align="left"><img src="/BilderM/7_07.png" width="962" height="144" alt=""></td>
+	</tr>
+</tbody></table>
+</center>
+
+
+
+
+
+<div class="highslide-container" style="padding: 0px; border: none; margin: 0px; position: absolute; left: 0px; top: 0px; width: 100%; z-index: 1001; direction: ltr;"><a class="highslide-loading" title="Click to cancel" href="javascript:;" style="position: absolute; top: -9999px; opacity: 0.75; z-index: 1;">Loading...</a><div style="display: none;"></div><table cellspacing="0" style="padding: 0px; border: none; margin: 0px; visibility: hidden; position: absolute; border-collapse: collapse; width: 0px;"><tbody style="padding: 0px; border: none; margin: 0px;"><tr style="padding: 0px; border: none; margin: 0px; height: auto;"><td style="padding: 0px; border: none; margin: 0px; line-height: 0; font-size: 0px; background-image: url(http://www.chicago1920.com/highslide/graphics/outlines/drop-shadow.png); height: 20px; width: 20px; background-position: 0px 0px; background-repeat: initial initial;"></td><td style="padding: 0px; border: none; margin: 0px; line-height: 0; font-size: 0px; background-image: url(http://www.chicago1920.com/highslide/graphics/outlines/drop-shadow.png); height: 20px; width: 20px; background-position: 0px -40px; background-repeat: initial initial;"></td><td style="padding: 0px; border: none; margin: 0px; line-height: 0; font-size: 0px; background-image: url(http://www.chicago1920.com/highslide/graphics/outlines/drop-shadow.png); height: 20px; width: 20px; background-position: -20px 0px; background-repeat: initial initial;"></td></tr><tr style="padding: 0px; border: none; margin: 0px; height: auto;"><td style="padding: 0px; border: none; margin: 0px; line-height: 0; font-size: 0px; background-image: url(http://www.chicago1920.com/highslide/graphics/outlines/drop-shadow.png); height: 20px; width: 20px; background-position: 0px -80px; background-repeat: initial initial;"></td><td style="padding: 0px; border: none; margin: 0px; position: relative;" class="drop-shadow highslide-outline"></td><td style="padding: 0px; border: none; margin: 0px; line-height: 0; font-size: 0px; background-image: url(http://www.chicago1920.com/highslide/graphics/outlines/drop-shadow.png); height: 20px; width: 20px; background-position: -20px -80px; background-repeat: initial initial;"></td></tr><tr style="padding: 0px; border: none; margin: 0px; height: auto;"><td style="padding: 0px; border: none; margin: 0px; line-height: 0; font-size: 0px; background-image: url(http://www.chicago1920.com/highslide/graphics/outlines/drop-shadow.png); height: 20px; width: 20px; background-position: 0px -20px; background-repeat: initial initial;"></td><td style="padding: 0px; border: none; margin: 0px; line-height: 0; font-size: 0px; background-image: url(http://www.chicago1920.com/highslide/graphics/outlines/drop-shadow.png); height: 20px; width: 20px; background-position: 0px -60px; background-repeat: initial initial;"></td><td style="padding: 0px; border: none; margin: 0px; line-height: 0; font-size: 0px; background-image: url(http://www.chicago1920.com/highslide/graphics/outlines/drop-shadow.png); height: 20px; width: 20px; background-position: -20px -20px; background-repeat: initial initial;"></td></tr></tbody></table><img style="padding: 0px; border: none; margin: 0px; position: absolute; top: -9999px;" src="/highslide/graphics/outlines/drop-shadow.png"></div>
+
+<div id="accountPlugin" style="position: absolute; float: left; width: 155px; height: 95%; top: 15px; padding-left: 5px; text-align: left; border: 1px solid yellow;">
+	<div id="opponents" style="font-size: 10pt; position: absolute; bottom: 10px; width: 143px; height: 70%; background-color:rgba(0, 0, 0, 0.65);">
+		<table width="100%">
+			<tbody id="opponentsTable">
+				<tr><td><input id="toggleHeist" type="checkbox" onClick="account.heist();"></input></td><td>GeldTransporter</td></tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<script>
+	jQuery('#playerName').click(function(){account.toggle();if(account.isActive()){jQuery(this).css({color:'red'});}else{jQuery(this).css({color:'rgb(253,255,225)'});}});
+	if(account.isActive()){jQuery(this).css({color:'red'});}else{jQuery(this).css({color:'rgb(253,255,225)'});}
+</script>
+
+</body></html>

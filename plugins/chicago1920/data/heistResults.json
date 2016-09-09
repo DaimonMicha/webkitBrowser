@@ -1,0 +1,99 @@
+chAccount::getHeistResults "{
+    "aTime": {
+        "0": 1472384645,
+        "hours": 13,
+        "mday": 28,
+        "minutes": 44,
+        "mon": 8,
+        "month": "August",
+        "seconds": 5,
+        "wday": 0,
+        "weekday": "Sunday",
+        "yday": 240,
+        "year": 2016
+    },
+    "fightId": "42b7da847a9bd7a529ec4827d6625c6b",
+    "fights": {
+        "doneFights": 72,
+        "maxFights": 2090
+    },
+    "is_cp": 0,
+    "mylevel": "5",
+    "myname": "DaimonMicha",
+    "noFight": 1,
+    "opponent": {
+        "id": 333,
+        "level": 20,
+        "name": "Geldtransporter",
+        "pic": 1,
+        "race_id": 1,
+        "race_name": null
+    },
+    "powercrystals": 311,
+    "results": {
+        "fightWasWon": true,
+        "log": null,
+        "opponent": {
+            "id": 333,
+            "level": 20,
+            "name": "Geldtransporter",
+            "pic": 1,
+            "race_id": 1,
+            "race_name": null
+        },
+        "p1": {
+            "_weaponDamage": {
+                "from": "4",
+                "range_damage": "6",
+                "to": "7"
+            },
+            "artefakte": 0,
+            "blocked": 0,
+            "count_narr": 0,
+            "criticalHitChance": null,
+            "criticalHits": 0,
+            "fightDamage": {
+                "from": 208,
+                "to": 364
+            },
+            "gold": 479,
+            "guildHp": 32,
+            "hits": 0,
+            "hp": 13,
+            "lp": 3618,
+            "magicDamage": 823,
+            "maxLp": 3618,
+            "npc_points": 0,
+            "platting": 178,
+            "timeToFullLP": 0
+        },
+        "p2": {
+            "_weaponDamage": {
+                "from": 1,
+                "range_damage": 6,
+                "to": 1
+            },
+            "artefakte": 0,
+            "blocked": 0,
+            "count_narr": 0,
+            "criticalHitChance": null,
+            "criticalHits": 0,
+            "fightDamage": {
+                "from": 1,
+                "to": 2
+            },
+            "gold": -479,
+            "guildHp": -32,
+            "hits": 0,
+            "hp": -13,
+            "lp": 0,
+            "magicDamage": 78,
+            "maxLp": 762,
+            "npc_points": 0,
+            "platting": 10,
+            "series_current": null,
+            "series_max": null,
+            "timeToFullLP": 0
+        }
+    }
+}" 
