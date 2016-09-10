@@ -530,17 +530,16 @@ void chAccount::injectHtml(QWebFrame* mainFrame)
 
 void chAccount::loadFinished(WebPage* page)
 {
+    QWebFrame* mainFrame = page->mainFrame();
+    QUrl url = mainFrame->url();
+    QStringList paths = url.path().split("/",QString::SkipEmptyParts);
+
+    if(!paths.count()) return; // nothing to do, login evtl?
 
     if(m_workingPage == NULL) {
         m_workingPage = new QWebPage();
         m_workingPage->setNetworkAccessManager(page->networkAccessManager());
         connect(m_workingPage, SIGNAL(loadFinished(bool)), this, SLOT(workFinished(bool)));
-    }
-
-    if(m_infoWorker == NULL) {
-        m_infoWorker = new infoWorker();
-        m_infoWorker->setNetworkAccessManager(page->networkAccessManager());
-        connect(m_infoWorker, SIGNAL(enemysList(QString)), this, SLOT(enemysListJson(QString)));
     }
 
     if(m_fightWorker == NULL) {
@@ -551,9 +550,13 @@ void chAccount::loadFinished(WebPage* page)
         connect(m_fightWorker, SIGNAL(fightsDone()), this, SLOT(chooseOpponent()));
     }
 
-    QWebFrame* mainFrame = page->mainFrame();
-    QUrl url = mainFrame->url();
-    QStringList paths = url.path().split("/",QString::SkipEmptyParts);
+    if(m_infoWorker == NULL) {
+        m_infoWorker = new infoWorker();
+        m_infoWorker->setNetworkAccessManager(page->networkAccessManager());
+        connect(m_infoWorker, SIGNAL(enemysList(QString)), this, SLOT(enemysListJson(QString)));
+        connect(m_infoWorker, SIGNAL(cooldownEnd()), m_fightWorker, SLOT(startFight()));
+    }
+
     QWebElement pluginDiv = mainFrame->findFirstElement("#accountPlugin");
 
     injectHtml(mainFrame);

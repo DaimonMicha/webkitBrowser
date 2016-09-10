@@ -140,7 +140,7 @@ void fightWorker::workFinished(bool ok)
 
                     qDebug() << "fightWorker::workFinished (results): " << pageTitle();
 
-                    QTimer::singleShot(randInt(66,23500), this, SLOT(waitFight()));
+                    //QTimer::singleShot(randInt(66,23500), this, SLOT(waitFight()));
                     m_currentFightCounter = 0;
                 }
 
@@ -155,10 +155,13 @@ void fightWorker::workFinished(bool ok)
 
             } else if(QString("start") == paths.at(1)) {
 
-                if(++m_currentFightCounter > 2) {
-                    emit(fightsDone());
+                if(paths.count() == 2) {
+                    if(++m_currentFightCounter > 2) {
+                        emit(fightsDone());
+                        m_currentFightCounter = 0;
+                    }
+                    if(m_isActive) QTimer::singleShot(randInt(23,5867), this, SLOT(startFight()));
                 }
-                if(m_isActive) QTimer::singleShot(randInt(23,5867), this, SLOT(startFight()));
 
             } else if(QString("fight") == paths.at(1)) {
                 //TrefferZonen

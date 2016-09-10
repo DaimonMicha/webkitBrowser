@@ -32,8 +32,8 @@ void infoWorker::setOn()
     if(!pageTitle().contains("Kampfwartezeit:")) {
         //m_workingPage->mainFrame()->load(QUrl("http://www.chicago1920.com/fights/vip"));
         fightsStart();
-        qDebug() << "infoWorker::setOn" << pageTitle();
     }
+    qDebug() << "infoWorker::setOn" << pageTitle();
 }
 
 void infoWorker::setOff()

@@ -35,10 +35,10 @@ public slots:
     void setOff();
     void getResults(const QString);
     void fightData(const QString);
+    void startFight();
 
 private slots:
     void workFinished(bool ok);
-    void startFight();
     void waitFight();
 
 private:

@@ -42,8 +42,8 @@ void Chicago1920::loadStarted(WebPage* page,const QUrl &url)
     QList<QNetworkCookie> cookies = page->networkAccessManager()->cookieJar()->cookiesForUrl(url);
     // ToDo: look for an account with this cookie
     qDebug() << "\tChicago1920::loadStarted" << url.toString()
-             << cookies.count()
-             << cookies.at(0).name() << cookies.at(0).value();
+             << cookies.count();
+             //<< cookies.at(0).name() << cookies.at(0).value();
 }
 
 void Chicago1920::loadFinished(QNetworkReply* reply)
@@ -52,7 +52,8 @@ void Chicago1920::loadFinished(QNetworkReply* reply)
     if(!isMyUrl(url)) return;
 
     QList<QNetworkCookie> cookies = reply->manager()->cookieJar()->cookiesForUrl(url);
-    QByteArray cValue = cookies.at(0).value();
+    QByteArray cValue;
+    if(cookies.count()) cValue = cookies.at(0).value();
 
     chAccount *current = NULL;
     if(m_accounts.count() > 0) foreach (chAccount *account, m_accounts) {
@@ -76,7 +77,8 @@ void Chicago1920::loadFinished(WebPage* page)
     QUrl url = page->mainFrame()->url();
     if(!isMyUrl(url)) return;
     QList<QNetworkCookie> cookies = page->networkAccessManager()->cookieJar()->cookiesForUrl(url);
-    QByteArray cValue = cookies.at(0).value();
+    QByteArray cValue;
+    if(cookies.count()) cValue = cookies.at(0).value();
 
     // ToDo: look for an account with this cookie
     chAccount *current = NULL;
@@ -86,6 +88,8 @@ void Chicago1920::loadFinished(WebPage* page)
             break;
         }
     }
+    if(cValue.isEmpty()) return;
+
     if(current == NULL) {
         current = new chAccount(cValue);
         m_accounts.append(current);
