@@ -3,6 +3,11 @@
         jQuery("#heistChecker").prop("checked",true);
     }
 
+
+    function checkGangster() {
+    }
+
+
     var opponent = {
         id: 0,
         name: '',
@@ -14,40 +19,63 @@
         coolDown: ''
     }
 
+    function checkOpponent() {
+
+        if(opponent.id !== parseInt(account.opponent("id"))) {
+            opponent.id = parseInt(account.opponent("id"));
+        } else {
+            return;
+        }
+
+        var value;
+
+        value = parseInt(account.opponent("fightsMax")) || 10;
+        if(parseInt(jQuery("#opponentsProgress").attr("max")) !== value) {
+            jQuery("#opponentsProgress").attr("max", value);
+        }
+
+        value = parseInt(account.opponent("fightsDone")) || 0;
+        if(parseInt(jQuery("#opponentsProgress").val()) !== value) {
+            jQuery("#opponentsProgress").hide(0);
+            jQuery("#opponentsProgress").val(value);
+            jQuery("#opponentsProgress").show(0);
+        }
+
+        value = 'Angriffe: ' + account.opponent("fightsDone") + ' - ' + account.opponent("fightsMax");
+        if(jQuery("#opponentsProgress").attr("title") !== value) {
+            jQuery("#opponentsProgress").attr("title", value);
+        }
+
+        value = account.opponent("name");
+        if(jQuery("#opponentsName").text() !== value) {
+            jQuery("#opponentsName").text(value);
+        }
+
+        value = account.opponent("coded_id");
+        jQuery("#opponentsProfile").attr("href", '/characters/profile/' + value)
+
+        value = '(' + account.opponent("level") + ')';
+        if($j("#opponentsLevel").text() !== value) {
+            $j("#opponentsLevel").text(value);
+        }
+
+    }
+
     function checkProgress() {
         if(account.isActive()) {
-            var value;
 
-            if(account.mustReload()) window.location.reload();
-            if(opponent.id !== parseInt(account.opponent("id"))) {
-                opponent.id = parseInt(account.opponent("id"));
+            if(account.mustReload()) {
+
+                window.location.reload();
+                return;
+
             }
 
-            var text = '0 - 10';
-            value = parseInt(account.opponent("fightsMax")) || 10;
-            //if(value === 0) value = 10;
-            if(parseInt(jQuery("#opponentsFights").attr("max")) !== value) {
-                jQuery("#opponentsFights").attr("max", value);
-            }
+            checkOpponent();
 
-            value = parseInt(account.opponent("fightsDone")) || 0;
-            if(jQuery("#opponentsFights").val() !== value) {
-                jQuery("#opponentsFights").val(value);
-                text = value + ' - ';
-            }
-            jQuery("#opponentsRace").text(text);
 
-            value = '(' + account.opponent("coded_id") + ') ' + account.opponent("name");
-            if(jQuery("#opponentsName").text() !== value) {
-                jQuery("#opponentsName").text(value);
-            }
-            value = account.opponent("level");
-            if($j("#opponentsLevel").text() !== value) {
-                $j("#opponentsLevel").text(value);
-            }
-
-            //$j("#opponentsFights").prop("max", parseInt(account.opponent("fightsMax")));
-            //$j("#opponentsFights").prop("value", parseInt(account.opponent("fightsDone")));
+            //$j("#opponentsProgress").prop("max", parseInt(account.opponent("fightsMax")));
+            //$j("#opponentsProgress").prop("value", parseInt(account.opponent("fightsDone")));
             //$j("#opponentsName").text(account.opponent("name"));
             //$j("#opponentsLevel").text(account.opponent("level"));
 
@@ -60,7 +88,7 @@
                 //document.title = pageTitle;
             }
         } else {
-            $j("#opponentsName").text(" ");
+            // $j("#opponentsName").text(" ");
         }
     }
 

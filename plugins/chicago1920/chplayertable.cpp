@@ -45,6 +45,7 @@ chPlayerTable::chPlayerTable(QObject *parent) :
             << "name"
             << "level"
             << "race_id"
+            << "clan_id"
             << "fightlimit"
             << "fightsDone"
             << "fightsMax"
@@ -59,6 +60,7 @@ chPlayerTable::chPlayerTable(QObject *parent) :
             << "magicDamage";
     m_gangstersModel->setHorizontalHeaderLabels(head);
     m_filterModel->setSourceModel(m_gangstersModel);
+    m_filterModel->setDynamicSortFilter(true);
 }
 
 int chPlayerTable::randInt(int low, int high)
@@ -119,6 +121,7 @@ QString chPlayerTable::randomPlayer(QString race)
     fightlimitModel->setSourceModel(m_gangstersModel);
     fightlimitModel->setFilterKeyColumn(columnByName("fightlimit"));
     fightlimitModel->setFilterFixedString("false");
+    fightlimitModel->setDynamicSortFilter(true);
 
     m_filterModel->setSourceModel(fightlimitModel);
 

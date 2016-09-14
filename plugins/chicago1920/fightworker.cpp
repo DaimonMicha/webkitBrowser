@@ -7,6 +7,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QTimer>
+#include <QDateTime>
 
 #include <QDebug>
 
@@ -23,10 +24,10 @@ fightWorker::fightWorker(QObject *parent) :
 void fightWorker::setOn()
 {
     m_isActive = true;
-    if(!pageTitle().contains("Kampfwartezeit:")) {
+    if(m_workingPage->mainFrame()->url().path() != "/fights/waitFight") {
         m_workingPage->mainFrame()->load(QUrl("http://www.chicago1920.com/fights"));
-        qDebug() << "fightWorker::setOn" << pageTitle();
     }
+    //qDebug() << "fightWorker::setOn" << m_workingPage->mainFrame()->url().path() << pageTitle();
 }
 
 void fightWorker::setOff()
@@ -34,7 +35,7 @@ void fightWorker::setOff()
     if(!m_isActive) return;
     m_isActive = false;
     //m_workingPage->mainFrame()->load(QUrl("http://www.chicago1920.com/fights"));
-    qDebug() << "fightWorker::setOff" << pageTitle();
+    //qDebug() << "fightWorker::setOff" << pageTitle();
 }
 
 void fightWorker::setOpponent(const QString opponent)
@@ -48,17 +49,16 @@ void fightWorker::setOpponent(const QString opponent)
     if(m_isActive) {
         if(!pageTitle().contains("Kampfwartezeit:")) m_workingPage->mainFrame()->load(QUrl("http://www.chicago1920.com/fights"));
     }
-    qDebug() << "fightWorker::setOpponent:" << m_currentOpponent;
+    //qDebug() << "fightWorker::setOpponent:" << m_currentOpponent;
 }
 
 void fightWorker::startFight()
 {
-    // http://www.chicago1920.com/fights/start/135335
     if(!m_isActive) return;
     if(m_currentOpponent == "") return;
     QUrl url("http://www.chicago1920.com/fights/start/" + m_currentOpponent);
+    // /fights/start_police/
     m_workingPage->mainFrame()->load(url);
-
     //qDebug() << "fightWorker::startFight" << url;
 }
 
@@ -66,7 +66,7 @@ void fightWorker::waitFight()
 {
     if(!m_isActive) return;
     if(m_currentOpponent == "") return;
-    m_workingPage->mainFrame()->load(QUrl("http://www.chicago1920.com/fights/start"));
+    m_workingPage->mainFrame()->load(QUrl("http://www.chicago1920.com/fights"));
 }
 
 void fightWorker::fightData(const QString result)
@@ -82,20 +82,20 @@ void fightWorker::fightData(const QString result)
 
 void fightWorker::getResults(const QString result)
 {
+    emit(fightResults(result));
+
     QByteArray data;
     data.append(result);
     QJsonDocument json = QJsonDocument::fromJson(data);
 
     QJsonObject fights = json.object().value("fights").toObject();
 
-    int done = fights.value("doneFights").toInt();
+    int done = fights.value("doneFights").toInt() + 1;
     int max = fights.value("maxFights").toInt();
-
-    emit(fightResults(result));
 
     if(done >= max) {
         //m_currentOpponent.clear();
-        emit(fightsDone());
+        //emit(fightsDone());
     }
     //emit(fightReady(done, max));
 
@@ -133,14 +133,16 @@ void fightWorker::workFinished(bool ok)
             if(QString("results") == paths.at(1)) {
 
                 if(paths.count() > 2) {
+                    // ToDo:
+                    // evaluate the cooldown-time and send a signal.
+                    qDebug() << "fightWorker::workFinished (results): " << pageTitle();
                     QString question = "new Ajax.Request('/fights/getResults/";
                     question.append(paths.at(2));
-                    question.append("',{asynchronous: false,method: 'POST',dataType: 'json',onSuccess: function(result){fighter.getResults(result.responseText);}});");
+                    question.append("',{asynchronous: false,method: 'GET',dataType: 'json',onSuccess: function(result){fighter.getResults(result.responseText);}});");
                     result = mainFrame->evaluateJavaScript(question);
 
-                    qDebug() << "fightWorker::workFinished (results): " << pageTitle();
 
-                    //QTimer::singleShot(randInt(66,23500), this, SLOT(waitFight()));
+                    QTimer::singleShot(randInt(266,23500), this, SLOT(waitFight()));
                     m_currentFightCounter = 0;
                 }
 
@@ -150,30 +152,36 @@ void fightWorker::workFinished(bool ok)
 
             } else if(QString("waitLp") == paths.at(1)) {
 
-                if(m_isActive) QTimer::singleShot(randInt(1234,9876), this, SLOT(waitFight()));
+                //if(m_isActive) QTimer::singleShot(randInt(1234,9876), this, SLOT(waitFight()));
                 //qDebug() << "fightWorker::workFinished (waitLp): " << pageTitle();
 
             } else if(QString("start") == paths.at(1)) {
 
                 if(paths.count() == 2) {
-                    if(++m_currentFightCounter > 2) {
+                    if(++m_currentFightCounter > 1) {
                         emit(fightsDone());
                         m_currentFightCounter = 0;
                     }
-                    if(m_isActive) QTimer::singleShot(randInt(23,5867), this, SLOT(startFight()));
+                    if(m_isActive) QTimer::singleShot(randInt(123,2857), this, SLOT(startFight()));
                 }
 
             } else if(QString("fight") == paths.at(1)) {
                 //TrefferZonen
                 QString question = "new Ajax.Request('/fights/fightData";
-                question.append("',{asynchronous: false,method: 'POST',dataType: 'json',onSuccess: function(result){fighter.fightData(result.responseText);}});");
+                question.append("',{asynchronous: false,method: 'GET',dataType: 'json',onSuccess: function(result){fighter.fightData(result.responseText);}});");
                 result = mainFrame->evaluateJavaScript(question);
-                qDebug() << "fightWorker::workFinished (fight): " << pageTitle();
+                //qDebug() << "fightWorker::workFinished (fight): " << pageTitle();
             }
 
         }
 
     }
 
-    qDebug() << "\tfightWorker::loadFinished" << paths;
+    QString logString;
+    QDateTime now = QDateTime::currentDateTimeUtc();
+    logString.append(now.toString("[yyyy-MM-dd HH:mm:ss]"));
+    logString.append("  fightWorker::loadFinished " + url.path());
+    logString.append(" '" + mainFrame->title() + "'");
+    qDebug() << logString;
+    //qDebug() << pageTitle() << "\t[fightWorker::loadFinished]" << paths << mainFrame->requestedUrl().path();
 }

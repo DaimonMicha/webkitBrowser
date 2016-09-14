@@ -1,20 +1,60 @@
 
 
 <!-- accountPlugin -->
-<div id="accountPlugin" style="position: absolute; float: left; width: 151px; height: 95%; top: 15px; padding-left: 5px; text-align: left;">
-    <div id="opponents" style="font-size: 10pt; position: absolute; bottom: 10px; width: 143px; height: 70%; background-color:rgba(0, 0, 0, 0.55); border: 3px solid black;">
+<style type="text/css">
+<!--
+#accountPlugin {
+    position: absolute;
+    float: left;
+    width: 151px;
+    height: 95%;
+    top: 3%;
+    padding-left: 5px;
+    text-align: left;
+    font-family: Arial, sans-serif;
+    font-size: 1.2em;
+}
+#opponents {
+    position: absolute;
+    width: 143px;
+    top: 29%;
+    background-color:rgba(0, 0, 0, 0.45);
+    border: 3px solid black;
+}
+#accountPlugin progress {
+    font-size: 0.85em;
+}
+.klickMeisterLogo {
+    text-align: center;
+    font-size: 1.4em;
+    font-weight: bold;
+}
+-->
+</style>
+
+<div id="accountPlugin">
+    <div id="gangster">
+        <table id="gangsterTable" width="100%">
+            <tbody>
+                <tr>
+                    <td colspan="2" class="klickMeisterLogo">Klick Meister</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="opponents">
         <table id="fighterTable" width="100%">
             <tbody>
                 <tr>
-                    <td colspan="2" style="font-size: 14pt; font-weight: bold; text-align: center;">Klick Meister</td>
+                    <td colspan="2" class="klickMeisterLogo">&Uuml;berfall</td>
                 </tr>
                 <tr>
-                    <td><input id="clickChecker" type="checkbox" onClick="account.toggle(jQuery('#clickChecker').prop('checked'));"></input></td>
+                    <td><input id="clickChecker" type="checkbox" onClick="account.toggle('account', jQuery('#clickChecker').prop('checked'));"></input></td>
                     <td><label for="clickChecker">KlickVertretung</label></td>
                 </tr>
                 <tr>
                     <td colspan="2" align="center">
-                    <select id="raceSelect" onChange="account.raceChanged(jQuery('#raceSelect').val());" style="font-family:Arial;">
+                    <select id="raceSelect" onChange="account.raceChanged(jQuery('#raceSelect').val());">
                         <option value="0">alle Gebiete</option>
                         <option value="1">Dunning</option>
                         <option value="2">Uptown</option>
@@ -29,26 +69,48 @@
                 </tr>
             </tbody>
         </table>
-        </br>
+        <br />
         <table id="opponentsTable" width="100%">
             <tbody>
-                <tr><td colspan="2" align="center"><span id="opponentsName">&nbsp;</span></td></tr>
-                <tr><td id="opponentsRace">&nbsp;</td><td id="opponentsLevel" align="right"></td></tr>
-                <tr><td colspan="2" align="center"><progress id="opponentsFights" value="0" max="10">1 - 10</progress></td></tr>
+                <tr><td colspan="2" align="center"><a id="opponentsProfile"><span id="opponentsName">&nbsp;</span></a> <span id="opponentsLevel"></span></td></tr>
+                <tr><td colspan="2" align="center"><progress id="opponentsProgress" value="0" max="10">1 - 10</progress></td></tr>
+                <tr><td colspan="2" id="opponentsRace" align="center"></td></tr>
             </tbody>
         </table>
-        </br><hr noshade /></br>
+<!--
+        <br />
+        <table id="optionsTable" width="100%">
+            <tbody>
+                <tr>
+                    <td colspan="2" style="font-size: 12pt; font-weight: bold; text-align: left; padding-left: 10px;">Rivalen</td>
+                </tr>
+                <tr>
+                    <td><input id="rivalsChecker" type="checkbox" onClick="account.toggle('rivals', jQuery('#rivalsChecker').prop('checked'));"></input></td>
+                    <td><label for="rivalsChecker">angreifen</label></td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="font-size: 12pt; font-weight: bold; text-align: left; padding-left: 10px;">Tagebuch</td>
+                </tr>
+                <tr>
+                    <td><input id="diaryChecker" type="checkbox" onClick="account.toggle('diary', jQuery('#diaryChecker').prop('checked'));"></input></td>
+                    <td><label for="diaryChecker">beachten</label></td>
+                </tr>
+            </tbody>
+        </table>
+        <br /><hr noshade /><br />
         <table id="specialsTable" width="100%">
             <tbody>
                 <tr>
-                    <td colspan="2" style="font-size: 12pt; font-weight: bold; text-align: center;">Heist</td>
+                    <td colspan="2" style="font-size: 12pt; font-weight: bold; text-align: left; padding-left: 10px;">Heist</td>
                 </tr>
                 <tr>
-                    <td><input disabled="true" id="heistChecker" type="checkbox" onClick="account.heistToggle(jQuery('#heistChecker').prop('checked'));"></input></td>
+                    <td><input id="heistChecker" type="checkbox" onClick="account.toggle('heist', jQuery('#heistChecker').prop('checked'));"></input></td>
                     <td><label for="heistChecker">GeldTransporter</label></td>
                 </tr>
             </tbody>
         </table>
-    </div>
-</div>
+-->
+    </div> <!-- opponents -->
+</div> <!-- #accountPlugin -->
+<!-- /accountPlugin -->
 

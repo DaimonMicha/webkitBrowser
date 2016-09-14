@@ -10,6 +10,7 @@
 #include <QJsonArray>
 #include <QTimer>
 #include <QDate>
+#include <QDateTime>
 #include <QFile>
 
 #include <QDebug>
@@ -23,7 +24,6 @@ chAccount::chAccount(const QString cookie, QObject *parent) :
     m_mustReload(false),
     m_cookieValue(cookie),
     m_currentDay(0),
-    m_opponentsModel(new QStandardItemModel),
     m_gangstersTable(new chPlayerTable)
 {
     //m_cookieValue = cookie;
@@ -40,10 +40,6 @@ chAccount::chAccount(const QString cookie, QObject *parent) :
     m_cityMap["6"]="Woodlawn";
     m_cityMap["7"]="Ashburn";
     m_cityMap["8"]="Southdeering";
-
-    QStringList head;
-    head << "id" << "Name" << "life" << "level" << "race" << "enemytype" << "won" << "lost";
-    m_opponentsModel->setHorizontalHeaderLabels(head);
 
 }
 
@@ -73,6 +69,10 @@ void chAccount::enemysListJson(const QString enemys)
         m_gangstersTable->setPlayerData(pid, "coded_id", player.value("profil").toString().split("/",QString::SkipEmptyParts).last());
         //qDebug() << "\n" << player.value("profil").toString().split("/",QString::SkipEmptyParts).last();
         //qDebug() << "\n" << player.toVariantMap().keys();
+    }
+
+    if(m_fightWorker && isActive() && m_fightWorker->opponent() == "") {
+        chooseOpponent();
     }
 
     //qDebug() << "chAccount::enemysListJson\n" << json.toJson();
@@ -105,18 +105,24 @@ void chAccount::chooseOpponent()
     //qDebug() << "chAccount::chooseOpponent" << m_opponentsModel->rowCount() << "Gangster in der Liste..." << m_currentRace;
 }
 
-void chAccount::toggle()
+void chAccount::toggle(const QString option, const bool on)
 {
-    if(m_isActive) {
-        m_isActive = false;
-        if(m_infoWorker) m_infoWorker->setOff();
-        if(m_fightWorker) m_fightWorker->setOff();
-    } else {
-        m_isActive = true;
-        //chooseOpponent();
-        if(m_infoWorker) m_infoWorker->setOn();
-        if(m_fightWorker) m_fightWorker->setOn();
+    if(option == "account") {
+
+        if(m_isActive) {
+            m_isActive = false;
+            if(m_infoWorker) m_infoWorker->setOff();
+            if(m_fightWorker) m_fightWorker->setOff();
+        } else {
+            m_isActive = true;
+            chooseOpponent();
+            if(m_infoWorker) m_infoWorker->setOn();
+            if(m_fightWorker) m_fightWorker->setOn();
+        }
+
+    } else if(option == "diary") {
     }
+    qDebug() << "" << option << on;
     //qDebug() << "chAccount::toggle:" << m_isActive;
 }
 
@@ -226,98 +232,6 @@ void chAccount::getResults(const QString result)
     QByteArray data;
     data.append(result);
     QJsonDocument json = QJsonDocument::fromJson(data);
-    /*
-chAccount::replyFinished "/fights/getResults/6c31d28a09a7867bd11d21f1343d6c47"
-    chAccount::getResults "{
-    "fightId": "67582157b0f6789071f9ebb7bfd3d1bc",
-    "fights": {
-        "doneFights": 1,
-        "maxFights": 10
-    },
-    "is_cp": 0,
-    "myhofadd": "DU BIST<br>UM 2 PLÄTZE<br>GESTIEGEN!",
-    "myid": "326106",
-    "mylevel": "5",
-    "myname": "DaimonMicha",
-    "myraceid": "5",
-    "narrFight": 0,
-    "noFight": 1,
-    "opponent": {
-        "allAttrs": {
-            "maxLifeEnergy": 140
-        },
-        "codedId": "AIFGJM",
-        "id": "184468",
-        "level": "7",
-        "name": "shht",
-        "race_id": "2"
-    },
-    "postWinToSb": "200",
-    "results": {
-        "fightWasWon": true,
-        "log": null,
-        "p1": {
-            "PlaceOfHonour": {
-                "after": 7076,
-                "before": 7078
-            },
-            "_weaponDamage": {
-                "from": "3",
-                "to": "5"
-            },
-            "artefakte": 0,
-            "blocked": 0,
-            "criticalHits": 0,
-            "dealer_bonus": "",
-            "dealer_category": "",
-            "dealer_id": 0,
-            "dealer_name": "",
-            "dealer_stage": 0,
-            "fightDamage": {
-                "from": 30,
-                "to": 49
-            },
-            "gold": 5,
-            "hits": 0,
-            "hp": 4,
-            "isFounder": 0,
-            "lp": 530,
-            "magicDamage": 304,
-            "maxLp": 561,
-            "pfadfinder_id": 0,
-            "pfadfinder_spruch": "",
-            "platting": 77,
-            "series_current": 1525,
-            "series_max": "1891",
-            "timeToFullLP": 0
-        },
-        "p2": {
-            "PlaceOfHonour": {
-                "after": 15798,
-                "before": 15798
-            },
-            "artefakte": 0,
-            "blocked": 0,
-            "criticalHits": 0,
-            "fightDamage": {
-                "from": 8,
-                "to": 12
-            },
-            "gold": -4,
-            "hits": 0,
-            "hp": 0,
-            "isFounder": 0,
-            "lp": 0,
-            "magicDamage": 31,
-            "maxLp": 140,
-            "platting": 12,
-            "series_current": null,
-            "series_max": null
-        }
-    }
-}
-"
-    */
     QJsonObject opponent = json.object().value("opponent").toObject();
     QString pid;
     pid = opponent.value("id").toString();
@@ -326,29 +240,41 @@ chAccount::replyFinished "/fights/getResults/6c31d28a09a7867bd11d21f1343d6c47"
     QDateTime happens = QDateTime::fromTime_t(fightTime.value("0").toDouble());
 
     QJsonObject fights = json.object().value("fights").toObject();
-    QJsonObject results = json.object().value("results").toObject();
 
-    int done = fights.value("doneFights").toInt();
+    int done = fights.value("doneFights").toInt() + 1;
     int max = fights.value("maxFights").toInt();
 
     m_gangstersTable->setPlayerData(pid, "fightsDone", QString("%1").arg(done));
     m_gangstersTable->setPlayerData(pid, "fightsMax",  QString("%1").arg(max));
     m_gangstersTable->setPlayerData(pid, "coded_id", opponent.value("codedId").toString());
 
+    if((done + 1) == max) {
+        if(m_infoWorker) m_infoWorker->fightsVip();
+    }
+
     if(done >= max) {
         m_gangstersTable->setPlayerData(pid, "fightlimit", "true");
+        if(m_infoWorker) m_infoWorker->fightsVip();
         chooseOpponent();
     }
 
+    QJsonObject results = json.object().value("results").toObject();
+    bool ok = results.value("fightWasWon").toBool(false);
+/*
+    "results": {
+        "fightWasWon": true,
+*/
     // for debugging only:
     //if(done >= 1) m_isActive = false;
-    qDebug() << "\t[chAccount::getResults]" << happens << happens.date().dayOfYear() << done;
+    qDebug() << happens.date().dayOfYear() << "[chAccount::getResults]" << m_gangstersTable->getPlayerData(pid, "name")
+             << m_gangstersTable->getPlayerData(pid, "fightsDone")
+             << m_gangstersTable->getPlayerData(pid, "fightsMax") << ok;
     //qDebug() << "\t[chAccount::getResults]" << opponent.toVariantMap();
     //qDebug() << "\t[chAccount::getResults]" << fights.toVariantMap();
     //qDebug() << "\t[chAccount::getResults]" << results.toVariantMap();
     //qDebug() << "\t[chAccount::getResults]\n" << json.toJson();
     m_mustReload = true;
-    m_infoWorker->fightsStart();
+    //m_infoWorker->fightsStart();
 }
 
 // Tages-Aufgaben
@@ -370,6 +296,14 @@ void chAccount::diaryData(const QString enemys)
     //qDebug() << "\tchAccount::diaryData\n\r" << debug.toJson();
 }
 
+void chAccount::patenvillaData(const QString villa)
+{
+    QByteArray data;
+    data.append(villa);
+    QJsonDocument json = QJsonDocument::fromJson(data);
+    //qDebug() << "\tchAccount::patenvillaData\n" << json.toJson() << "\n";
+}
+
 void chAccount::loadFinished(QNetworkReply* reply)
 {
     QUrl url = reply->url();
@@ -383,12 +317,16 @@ void chAccount::loadFinished(QNetworkReply* reply)
     if(path.endsWith(".css")) return;
     if(path.endsWith(".js")) return;
     QStringList paths = url.path().split("/",QString::SkipEmptyParts);
-    if(QString("fights") == paths.at(0)) {
+    if(QString("fights") == paths.at(0) || QString("rivalNpc") == paths.at(0)) {
         if(paths.count() == 3) {
             if(QString("start") == paths.at(1)) {
-                m_currentOpponent = paths.at(2);
+                //m_currentOpponent = paths.at(2);
                 //qDebug() << "current Opponent:" << paths.at(2);
+            } else if(QString("getResults") == paths.at(1)) {
+                //if(m_infoWorker) m_infoWorker->fightsStart();
             }
+        } else if(path == "/fights/busy") {
+            //if(m_infoWorker) m_infoWorker->fightsStart();
         }
     }
     qDebug() << "\tchAccount::replyFinished" << path;
@@ -400,8 +338,8 @@ void chAccount::parseCharacters(WebPage* page,const QStringList paths)
 
     if(paths.count() == 1) {
 
-        m_nameValue = mainFrame->findFirstElement(".char-mydata").toPlainText();
-        m_levelValue = mainFrame->findFirstElement(".char-mydatal").toPlainText();
+        m_nameValue = mainFrame->findFirstElement(".char-mydata").toPlainText().trimmed();
+        m_levelValue = mainFrame->findFirstElement(".char-mydatal").toPlainText().trimmed();
 
     }
 }
@@ -421,7 +359,7 @@ void chAccount::parseChallenge(WebPage* page,const QStringList paths)
 
 void chAccount::parseCbi(WebPage* page,const QStringList paths)
 {
-    QWebFrame* mainFrame = page->mainFrame();
+    //QWebFrame* mainFrame = page->mainFrame();
 
     if(paths.count() > 1) {
 
@@ -462,6 +400,7 @@ void chAccount::parseFights(WebPage* page,const QStringList paths)
             //result = mainFrame->evaluateJavaScript(question);
             //QWebElement title = mainFrame->findFirstElement("title");
             //qDebug() << "chAccount::parseFights (results): " << workingTitle();
+            //if(m_infoWorker) m_infoWorker->fightsStart();
         }
         //result = mainFrame->evaluateJavaScript("new Ajax.Request('/fights/opponentsListJson',{asynchronous: true,onSuccess: function(result){window.alert(result.responseText);}});");
 
@@ -477,28 +416,39 @@ void chAccount::parseFights(WebPage* page,const QStringList paths)
 
 }
 
+int chAccount::readDataFile(const QString file, QString& data)
+{
+    QString path;
+    // path = "/home/micha/.local/share/DaimonNetworks/webkitBrowser";
+    path = "/home/micha/Projekte/webkitBrowser/plugins/chicago1920/htmls/";
+    QFile inject;
+    inject.setFileName(path + file);
+    if(!inject.open(QIODevice::ReadOnly)) {
+        inject.setFileName(":/chicago/" + file);
+        if(!inject.open(QIODevice::ReadOnly)) {
+            return(-1);
+        }
+    }
+    if(inject.isOpen()) {
+        QByteArray bytes = inject.readAll();
+        //qDebug() << "[chAccount::readDataFile]:" << inject.fileName();
+        inject.close();
+        data.append(bytes);
+        return(data.length());
+    }
+
+    return(-1);
+}
+
 void chAccount::injectHtml(QWebFrame* mainFrame)
 {
     QWebElement pluginDiv = mainFrame->findFirstElement("#accountPlugin");
     if(!pluginDiv.isNull()) return;
 
-    QString path = "/home/micha/.local/share/DaimonNetworks/daimonBrowser";
-    QString file = "/chicago/inject.html";
-    QFile inject;
-    inject.setFileName(path + file);
-    if(!inject.open(QIODevice::ReadOnly)) {
-        inject.setFileName(":" + file);
-        if(!inject.open(QIODevice::ReadOnly)) {
-        }
-    }
-    if(!inject.isOpen()) return;
+    QString di;
+    if(readDataFile("inject.html", di) <= 0) return;
 
     QWebElement body = mainFrame->findFirstElement("body");
-    QByteArray data = inject.readAll();
-    inject.close();
-
-    QString di;
-    di.append(data);
     body.appendInside(di);
 
     if(m_isActive) {
@@ -554,12 +504,11 @@ void chAccount::loadFinished(WebPage* page)
         m_infoWorker = new infoWorker();
         m_infoWorker->setNetworkAccessManager(page->networkAccessManager());
         connect(m_infoWorker, SIGNAL(enemysList(QString)), this, SLOT(enemysListJson(QString)));
-        connect(m_infoWorker, SIGNAL(cooldownEnd()), m_fightWorker, SLOT(startFight()));
+        connect(m_infoWorker, SIGNAL(patenvilla(QString)), this, SLOT(patenvillaData(QString)));
+        //connect(m_infoWorker, SIGNAL(cooldownEnd()), m_fightWorker, SLOT(startFight()));
+        m_infoWorker->setOn();
     }
 
-    QWebElement pluginDiv = mainFrame->findFirstElement("#accountPlugin");
-
-    injectHtml(mainFrame);
 
     if(QString("characters") == paths.at(0)) {
 
@@ -587,7 +536,7 @@ void chAccount::loadFinished(WebPage* page)
             //qDebug() << "results:" << question;
             //result = mainFrame->evaluateJavaScript(question);
             //QWebElement title = mainFrame->findFirstElement("title");
-            qDebug() << "chAccount::loadFinished (patenvilla): " << workingTitle() << question;
+            //qDebug() << "chAccount::loadFinished (patenvilla): " << workingTitle() << question;
         }
         //result = mainFrame->evaluateJavaScript("new Ajax.Request('/fights/opponentsListJson',{asynchronous: true,onSuccess: function(result){window.alert(result.responseText);}});");
 
@@ -651,20 +600,26 @@ void chAccount::loadFinished(WebPage* page)
     }
 */
 
-    qDebug() << "\tchAccount::loadFinished" << paths
-             //<< result
-             << m_cookieValue;
+    QString logString;
+    QDateTime now = QDateTime::currentDateTimeUtc();
+    logString.append(now.toString("[yyyy-MM-dd HH:mm:ss]"));
+    logString.append("  chAccount::loadFinished " + url.path());
+    logString.append(" '" + mainFrame->title() + "'");
+    qDebug() << logString;
 
-    QFile checker(":/chicago/checkscript.js");
-    if(checker.open(QIODevice::ReadOnly)) {
-        //QWebElement head = mainFrame->findFirstElement("head");
-        //QWebElementCollection scripts = head.findAll("script");
-        QByteArray data = checker.readAll();
+    //qDebug() << now.toString("[yyyy-MM-dd HH:mm:ss]") << "\t[chAccount::loadFinished]" << mainFrame->title() << paths
+             //<< result
+             //<< m_cookieValue;
+
+    QWebElement pluginDiv = mainFrame->findFirstElement("#accountPlugin");
+    if(pluginDiv.isNull()) {
+
+        injectHtml(mainFrame);
         QString di;
-        di.append(data);
-        //scripts.last().prependInside(di);
-        checker.close();
-        mainFrame->evaluateJavaScript(di);
+        if(readDataFile("checkscript.js", di) > 0) {
+            mainFrame->evaluateJavaScript(di);
+        }
+
     }
 
 }
@@ -710,7 +665,7 @@ void chAccount::workFinished(bool ok)
                     question.append("',{asynchronous: false,method: 'POST',dataType: 'json',onSuccess: function(result){account.heistGetResults(result.responseText);}});");
                     result = mainFrame->evaluateJavaScript(question);
                     // ToDo: 5Minuten-Timer stellen
-                    QTimer::singleShot(301500, this, SLOT(heistWork()));
+                    //QTimer::singleShot(301500, this, SLOT(heistWork()));
                     qDebug() << "results:" << question;
 
                 }

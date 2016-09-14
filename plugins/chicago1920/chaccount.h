@@ -42,17 +42,19 @@ private:
     void parseFights(WebPage*,const QStringList paths);
 
     void injectHtml(QWebFrame*);
+    int readDataFile(const QString file, QString& data);
 
 signals:
 
 public slots:
-    void toggle();
+    void toggle(const QString option = "account", const bool on = false);
     void opponentsListJson(const QString);
     void fightData(const QString);
     void getResults(const QString);
     void enemysListJson(const QString);
     void diaryData(const QString);
     void getBattleEventData(const QString);
+    void patenvillaData(const QString);
 
     void raceChanged(const QString);
 
@@ -78,7 +80,6 @@ private:
     QString                 m_currentRace;
     qint32                  m_currentDay;
 
-    QStandardItemModel*     m_opponentsModel;
     QWebPage*               m_workingPage;
     chPlayerTable*          m_gangstersTable;
 
