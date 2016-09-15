@@ -24,7 +24,7 @@
         if(opponent.id !== parseInt(account.opponent("id"))) {
             opponent.id = parseInt(account.opponent("id"));
         } else {
-            return;
+            //return;
         }
 
         var value;
@@ -65,28 +65,17 @@
         if(account.isActive()) {
 
             if(account.mustReload()) {
-
-                window.location.reload();
-                return;
-
+                if(document.title.lastIndexOf("Kampfwartezeit:") < 0) {
+                    countdownRest( account.kwz() ,"Kampfwartezeit:");
+                } else {
+                    window.location.reload();
+                    return;
+                }
             }
 
             checkOpponent();
 
 
-            //$j("#opponentsProgress").prop("max", parseInt(account.opponent("fightsMax")));
-            //$j("#opponentsProgress").prop("value", parseInt(account.opponent("fightsDone")));
-            //$j("#opponentsName").text(account.opponent("name"));
-            //$j("#opponentsLevel").text(account.opponent("level"));
-
-            //$j("#opponentsName").text("aktiv");
-            var pageTitle = account.workingTitle();
-            // 'http://www.chicago1920.com/npc'
-            if(pageTitle !== document.title) {
-                // bitte nur einmal:
-                //if(document.title === 'Chicago1920.com') window.location.reload();
-                //document.title = pageTitle;
-            }
         } else {
             // $j("#opponentsName").text(" ");
         }

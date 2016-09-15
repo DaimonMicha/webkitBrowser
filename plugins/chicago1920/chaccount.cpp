@@ -100,9 +100,7 @@ void chAccount::chooseOpponent()
     m_fightWorker->setOpponent(pid);
     m_currentOpponent = pid; // rausnehmen?
 
-    qDebug() << "chAccount::chooseOpponent:" << pid << m_gangstersTable->getPlayerData(pid,"name") << m_gangstersTable->getPlayerData(pid,"fightsDone");
-
-    //qDebug() << "chAccount::chooseOpponent" << m_opponentsModel->rowCount() << "Gangster in der Liste..." << m_currentRace;
+    //qDebug() << "chAccount::chooseOpponent:" << pid << m_gangstersTable->getPlayerData(pid,"name") << m_gangstersTable->getPlayerData(pid,"fightsDone");
 }
 
 void chAccount::toggle(const QString option, const bool on)
@@ -115,15 +113,28 @@ void chAccount::toggle(const QString option, const bool on)
             if(m_fightWorker) m_fightWorker->setOff();
         } else {
             m_isActive = true;
-            chooseOpponent();
             if(m_infoWorker) m_infoWorker->setOn();
-            if(m_fightWorker) m_fightWorker->setOn();
+            if(m_fightWorker) {
+                m_fightWorker->setOn();
+                if(m_fightWorker->opponent() == "") chooseOpponent();
+            }
         }
 
     } else if(option == "diary") {
+        if(on) {
+        } else {
+        }
     }
-    qDebug() << "" << option << on;
+    //qDebug() << "" << option << on;
     //qDebug() << "chAccount::toggle:" << m_isActive;
+}
+
+void chAccount::click(const QString button)
+{
+    if(button == "opponent") {
+        chooseOpponent();
+    }
+    //qDebug() << "chAccount::click" << button;
 }
 
 void chAccount::raceChanged(const QString race)
@@ -131,7 +142,7 @@ void chAccount::raceChanged(const QString race)
     if(m_currentRace == race) return;
     m_currentRace = race;
     chooseOpponent();
-    qDebug() << "chAccount::raceChanged: " << race + ": " + m_cityMap.value(race);
+    //qDebug() << "chAccount::raceChanged: " << race + ": " + m_cityMap.value(race);
 }
 
 QString chAccount::workingTitle() const
@@ -219,21 +230,14 @@ void chAccount::fightData(const QString fight)
              << "\n" << m_currentOpponent << player << json.toJson();
 }
 
-void chAccount::fighterReady(int done, int max)
-{
-    //fighter ready, calculate next...
-    //if there stand a policemen, kill him
-    qDebug() << "chAccount::fighterReady" << done << max;
-}
-
 // fight-result
 void chAccount::getResults(const QString result)
 {
     QByteArray data;
     data.append(result);
+    QString pid;
     QJsonDocument json = QJsonDocument::fromJson(data);
     QJsonObject opponent = json.object().value("opponent").toObject();
-    QString pid;
     pid = opponent.value("id").toString();
 
     QJsonObject fightTime = json.object().value("aTime").toObject();
@@ -247,11 +251,14 @@ void chAccount::getResults(const QString result)
     m_gangstersTable->setPlayerData(pid, "fightsDone", QString("%1").arg(done));
     m_gangstersTable->setPlayerData(pid, "fightsMax",  QString("%1").arg(max));
     m_gangstersTable->setPlayerData(pid, "coded_id", opponent.value("codedId").toString());
-
+    m_gangstersTable->setPlayerData(pid, "level", opponent.value("level").toString());
+    m_gangstersTable->setPlayerData(pid, "name", opponent.value("name").toString());
+    m_gangstersTable->setPlayerData(pid, "race_id", opponent.value("race_id").toString());
+/*
     if((done + 1) == max) {
         if(m_infoWorker) m_infoWorker->fightsVip();
     }
-
+*/
     if(done >= max) {
         m_gangstersTable->setPlayerData(pid, "fightlimit", "true");
         if(m_infoWorker) m_infoWorker->fightsVip();
@@ -260,28 +267,50 @@ void chAccount::getResults(const QString result)
 
     QJsonObject results = json.object().value("results").toObject();
     bool ok = results.value("fightWasWon").toBool(false);
-/*
-    "results": {
-        "fightWasWon": true,
-*/
-    // for debugging only:
-    //if(done >= 1) m_isActive = false;
-    qDebug() << happens.date().dayOfYear() << "[chAccount::getResults]" << m_gangstersTable->getPlayerData(pid, "name")
+    if(!ok) {
+        // ToDo:
+        // diesen Gegner aus der Liste streichen
+        // und neuen wählen
+    }
+
+    QJsonObject player1(results.value("p1").toObject());
+    QJsonObject player2(results.value("p2").toObject());
+
+    m_gangstersTable->setPlayerData(pid, "maxLP", player2.value("maxLp").toString());
+    m_gangstersTable->setPlayerData(pid, "platting", player2.value("platting").toString());
+    m_gangstersTable->setPlayerData(pid, "minDamage", player2.value("fightDamage").toObject().value("from").toString());
+    m_gangstersTable->setPlayerData(pid, "maxDamage", player2.value("fightDamage").toObject().value("to").toString());
+    m_gangstersTable->setPlayerData(pid, "magicDamage", player2.value("magicDamage").toString());
+
+    //QJsonDocument debug(player2);
+
+    //qDebug() << "[chAccount::getResults]\nall" << json.toJson();
+    qDebug() << "[chAccount::getResults] day:" << happens.date().dayOfYear() << m_gangstersTable->getPlayerData(pid, "name")
              << m_gangstersTable->getPlayerData(pid, "fightsDone")
-             << m_gangstersTable->getPlayerData(pid, "fightsMax") << ok;
+             << m_gangstersTable->getPlayerData(pid, "fightsMax") << ok << m_fightWorker->currentKWZ();
+
     //qDebug() << "\t[chAccount::getResults]" << opponent.toVariantMap();
     //qDebug() << "\t[chAccount::getResults]" << fights.toVariantMap();
-    //qDebug() << "\t[chAccount::getResults]" << results.toVariantMap();
     //qDebug() << "\t[chAccount::getResults]\n" << json.toJson();
     m_mustReload = true;
     //m_infoWorker->fightsStart();
+
+    // for debugging only:
+    //if(done >= 1) m_isActive = false;
+}
+
+int chAccount::kwz()
+{
+    int ret = -1;
+    if(m_fightWorker) ret = m_fightWorker->currentKWZ();
+    return(ret);
 }
 
 // Tages-Aufgaben
-void chAccount::diaryData(const QString enemys)
+void chAccount::diaryData(const QString diary)
 {
     QByteArray data;
-    data.append(enemys);
+    data.append(diary);
     QJsonDocument json = QJsonDocument::fromJson(data);
     //qDebug() << "\tchAccount::diaryData" << json.toJson();
     // aufgaben
@@ -289,13 +318,17 @@ void chAccount::diaryData(const QString enemys)
     for(QJsonArray::const_iterator i = aufgaben.constBegin(); i != aufgaben.end(); ++i) {
         QJsonObject aufgabe = (*i).toObject();
         if(aufgabe.value("active").toString() == QString("1")) {
-            QJsonDocument debug(aufgabe);
-            //qDebug() << "\tchAccount::diaryData\n\r" << debug.toJson();
+            if(aufgabe.value("type").toString() == QString("fights_race")) {
+                QJsonDocument debug(aufgabe);
+                //qDebug() << "chAccount::diaryData\n" << debug.toJson();
+            }
         }
     }
-    //qDebug() << "\tchAccount::diaryData\n\r" << debug.toJson();
+    QJsonDocument debug(aufgaben);
+    //qDebug() << "\tchAccount::diaryData\n" << debug.toJson();
 }
 
+// Patenvilla Daten
 void chAccount::patenvillaData(const QString villa)
 {
     QByteArray data;
@@ -317,11 +350,16 @@ void chAccount::loadFinished(QNetworkReply* reply)
     if(path.endsWith(".css")) return;
     if(path.endsWith(".js")) return;
     QStringList paths = url.path().split("/",QString::SkipEmptyParts);
-    if(QString("fights") == paths.at(0) || QString("rivalNpc") == paths.at(0)) {
+    if(QString("fights") == paths.at(0)) { //  || QString("rivalNpc") == paths.at(0)
         if(paths.count() == 3) {
             if(QString("start") == paths.at(1)) {
                 //m_currentOpponent = paths.at(2);
-                //qDebug() << "current Opponent:" << paths.at(2);
+                if(m_fightWorker) {
+                    if(paths.at(2) != m_fightWorker->opponent()) {
+                        //qDebug() << "new current Opponent:" << paths.at(2) << m_fightWorker->opponent();
+                        m_fightWorker->setOpponent(paths.at(2));
+                    }
+                }
             } else if(QString("getResults") == paths.at(1)) {
                 //if(m_infoWorker) m_infoWorker->fightsStart();
             }
@@ -329,7 +367,7 @@ void chAccount::loadFinished(QNetworkReply* reply)
             //if(m_infoWorker) m_infoWorker->fightsStart();
         }
     }
-    qDebug() << "\tchAccount::replyFinished" << path;
+    //qDebug() << "\tchAccount::replyFinished" << path;
 }
 
 void chAccount::parseCharacters(WebPage* page,const QStringList paths)
@@ -503,6 +541,7 @@ void chAccount::loadFinished(WebPage* page)
     if(m_infoWorker == NULL) {
         m_infoWorker = new infoWorker();
         m_infoWorker->setNetworkAccessManager(page->networkAccessManager());
+        connect(m_infoWorker, SIGNAL(diarydata(QString)), this, SLOT(diaryData(QString)));
         connect(m_infoWorker, SIGNAL(enemysList(QString)), this, SLOT(enemysListJson(QString)));
         connect(m_infoWorker, SIGNAL(patenvilla(QString)), this, SLOT(patenvillaData(QString)));
         //connect(m_infoWorker, SIGNAL(cooldownEnd()), m_fightWorker, SLOT(startFight()));
@@ -603,8 +642,8 @@ void chAccount::loadFinished(WebPage* page)
     QString logString;
     QDateTime now = QDateTime::currentDateTimeUtc();
     logString.append(now.toString("[yyyy-MM-dd HH:mm:ss]"));
-    logString.append("  chAccount::loadFinished " + url.path());
-    logString.append(" '" + mainFrame->title() + "'");
+    logString.append("  chAccount::loadFinished (" + url.path());
+    logString.append(") '" + mainFrame->title() + "'");
     qDebug() << logString;
 
     //qDebug() << now.toString("[yyyy-MM-dd HH:mm:ss]") << "\t[chAccount::loadFinished]" << mainFrame->title() << paths

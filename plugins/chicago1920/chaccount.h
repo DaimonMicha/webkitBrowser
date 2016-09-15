@@ -11,6 +11,10 @@
 #include "infoworker.h"
 #include "fightworker.h"
 
+
+
+
+
 class chAccount : public QObject
 {
     Q_OBJECT
@@ -48,6 +52,9 @@ signals:
 
 public slots:
     void toggle(const QString option = "account", const bool on = false);
+    void click(const QString button = "nothing");
+    void raceChanged(const QString);
+
     void opponentsListJson(const QString);
     void fightData(const QString);
     void getResults(const QString);
@@ -56,16 +63,14 @@ public slots:
     void getBattleEventData(const QString);
     void patenvillaData(const QString);
 
-    void raceChanged(const QString);
-
     void heistToggle(const bool);
     void heistWork();
     void heistGetResults(const QString);
 
+    int kwz();
+
 private slots:
     void workFinished(bool ok);
-    void fighterReady(int done, int max);
-
     void chooseOpponent();
 
 private:

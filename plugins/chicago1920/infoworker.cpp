@@ -17,7 +17,7 @@ infoWorker::infoWorker(QObject *parent) :
     m_isLoading(false)
 {
     m_patenvillaSecret = "ghdh67TZGHb56fgsdfkk0";
-    m_workList << "fights/vip" << "placeOfHonour" << "patenvilla";
+    m_workList << "fights/vip" << "placeOfHonour" << "challenge/diary";// << "patenvilla";
 
     m_minCooldown = 403;
     m_maxCooldown = 5267;
@@ -77,14 +77,20 @@ void infoWorker::setOn()
 
     m_isActive = true;
     QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
-    qDebug() << "infoWorker::setOn" << pageTitle();
+    //qDebug() << "infoWorker::setOn" << pageTitle();
 }
 
 void infoWorker::setOff()
 {
     if(!m_isActive) return;
     m_isActive = false;
-    qDebug() << "infoWorker::setOff" << pageTitle();
+    //qDebug() << "infoWorker::setOff" << pageTitle();
+}
+
+// diary data
+void infoWorker::diaryData(const QString result)
+{
+    emit(diarydata(result));
 }
 
 // Vip-List
@@ -220,6 +226,10 @@ void infoWorker::workFinished(bool ok)
             }
         }
 
+    } else if(paths.at(0) == QString("challenge")) {
+        if(paths.count() == 2 && paths.at(1) == "diary") {
+            mainFrame->evaluateJavaScript("new Ajax.Request('/challenge/diary_data',{asynchronous: false,method: 'GET',dataType: 'json',onSuccess: function(result){worker.diaryData(result.responseText);}});");
+        }
     } else if(paths.at(0) == QString("characters")) {
 
         if(paths.count() == 1) {
@@ -261,8 +271,8 @@ void infoWorker::workFinished(bool ok)
     QString logString;
     QDateTime now = QDateTime::currentDateTimeUtc();
     logString.append(now.toString("[yyyy-MM-dd HH:mm:ss]"));
-    logString.append("  infoWorker::loadFinished " + url.path());
-    logString.append(" '" + mainFrame->title() + "'");
+    logString.append("  infoWorker::loadFinished (" + url.path());
+    logString.append(") '" + mainFrame->title() + "'");
     qDebug() << logString;
     //qDebug() << pageTitle() << "\t[infoWorker::workFinished]" << paths;
 }

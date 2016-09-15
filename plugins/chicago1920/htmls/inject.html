@@ -8,26 +8,43 @@
     float: left;
     width: 151px;
     height: 95%;
-    top: 3%;
+    top: 10px;
     padding-left: 5px;
     text-align: left;
-    font-family: Arial, sans-serif;
+    font-family: "Ubuntu Condensed", Arial, sans-serif;
     font-size: 1.2em;
 }
 #opponents {
     position: absolute;
-    width: 143px;
-    top: 29%;
+    width: 140px;
+    top: 300px;
     background-color:rgba(0, 0, 0, 0.45);
     border: 3px solid black;
 }
 #accountPlugin progress {
-    font-size: 0.85em;
+    width: 135px;
+    height: 14px;
+}
+#accountPlugin button {
+    background-color: #EE7443;
+    color: black;
+}
+#accountPlugin td {
+    height: 25px;
 }
 .klickMeisterLogo {
     text-align: center;
     font-size: 1.4em;
     font-weight: bold;
+}
+.kmHeader {
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: left;
+    padding-left: 10px;
+}
+#opponentsName {
+    font-size: 1.2em;
 }
 -->
 </style>
@@ -46,14 +63,14 @@
         <table id="fighterTable" width="100%">
             <tbody>
                 <tr>
-                    <td colspan="2" class="klickMeisterLogo">&Uuml;berfall</td>
+                    <td colspan="2" class="kmHeader">&Uuml;berfall</td>
                 </tr>
                 <tr>
                     <td><input id="clickChecker" type="checkbox" onClick="account.toggle('account', jQuery('#clickChecker').prop('checked'));"></input></td>
                     <td><label for="clickChecker">KlickVertretung</label></td>
                 </tr>
                 <tr>
-                    <td colspan="2" align="center">
+                    <td colspan="2" align="right">
                     <select id="raceSelect" onChange="account.raceChanged(jQuery('#raceSelect').val());">
                         <option value="0">alle Gebiete</option>
                         <option value="1">Dunning</option>
@@ -69,12 +86,11 @@
                 </tr>
             </tbody>
         </table>
-        <br />
         <table id="opponentsTable" width="100%">
             <tbody>
-                <tr><td colspan="2" align="center"><a id="opponentsProfile"><span id="opponentsName">&nbsp;</span></a> <span id="opponentsLevel"></span></td></tr>
+                <tr><td colspan="2" id="opponentsRace" align="right"><button type="button" title="einen anderen Gangster (zuf&auml;llig) auswählen" onClick="account.click('opponent');">wechseln</button></td></tr>
+                <tr><td align="center"><a id="opponentsProfile" title="das Profil dieses Gangsters aufrufen."><span id="opponentsName">&nbsp;</span></a></td><td><span id="opponentsLevel" title="das Level dieses Gangsters"></span></td></tr>
                 <tr><td colspan="2" align="center"><progress id="opponentsProgress" value="0" max="10">1 - 10</progress></td></tr>
-                <tr><td colspan="2" id="opponentsRace" align="center"></td></tr>
             </tbody>
         </table>
 <!--
@@ -82,14 +98,14 @@
         <table id="optionsTable" width="100%">
             <tbody>
                 <tr>
-                    <td colspan="2" style="font-size: 12pt; font-weight: bold; text-align: left; padding-left: 10px;">Rivalen</td>
+                    <td colspan="2" class="kmHeader">Rivalen</td>
                 </tr>
                 <tr>
                     <td><input id="rivalsChecker" type="checkbox" onClick="account.toggle('rivals', jQuery('#rivalsChecker').prop('checked'));"></input></td>
                     <td><label for="rivalsChecker">angreifen</label></td>
                 </tr>
                 <tr>
-                    <td colspan="2" style="font-size: 12pt; font-weight: bold; text-align: left; padding-left: 10px;">Tagebuch</td>
+                    <td colspan="2" class="kmHeader">Tagebuch</td>
                 </tr>
                 <tr>
                     <td><input id="diaryChecker" type="checkbox" onClick="account.toggle('diary', jQuery('#diaryChecker').prop('checked'));"></input></td>
@@ -101,7 +117,7 @@
         <table id="specialsTable" width="100%">
             <tbody>
                 <tr>
-                    <td colspan="2" style="font-size: 12pt; font-weight: bold; text-align: left; padding-left: 10px;">Heist</td>
+                    <td colspan="2" class="kmHeader">Heist</td>
                 </tr>
                 <tr>
                     <td><input id="heistChecker" type="checkbox" onClick="account.toggle('heist', jQuery('#heistChecker').prop('checked'));"></input></td>

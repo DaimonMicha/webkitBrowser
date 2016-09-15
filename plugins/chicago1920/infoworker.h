@@ -36,6 +36,7 @@ public:
     }
 
 signals:
+    void diarydata(const QString);
     void enemysList(const QString);
     void patenvilla(const QString);
     void cooldownEnd();
@@ -48,6 +49,7 @@ public slots:
     void placeOfHonour();
     void characters();
 
+    void diaryData(const QString);
     void enemysListJson(const QString);
     void patenvillaData(const QString);
 

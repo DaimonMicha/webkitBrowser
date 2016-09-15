@@ -19,6 +19,7 @@ public:
     }
 
     void setOpponent(const QString);
+    int currentKWZ() const { return(m_currentKWZ); }
     QString pageTitle();
 
 private:
@@ -29,6 +30,7 @@ signals:
     void fightDataReady(const QString);
     void fightResults(const QString);
     void fightsDone();
+    void fightCooldown(int seconds);
 
 public slots:
     void setOn();
@@ -38,6 +40,7 @@ public slots:
     void startFight();
 
 private slots:
+    void addJavaScriptObject();
     void workFinished(bool ok);
     void waitFight();
 
@@ -47,6 +50,7 @@ private:
 
     QString             m_currentOpponent;
     int                 m_currentFightCounter;
+    int                 m_currentKWZ;
 };
 
 #endif // FIGHTWORKER_H

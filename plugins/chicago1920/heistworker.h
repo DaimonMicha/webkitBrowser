@@ -13,6 +13,8 @@ signals:
 
 public slots:
 
+private slots:
+    void addJavaScriptObject();
 };
 
 #endif // HEISTWORKER_H
