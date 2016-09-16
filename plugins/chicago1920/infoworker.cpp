@@ -17,7 +17,7 @@ infoWorker::infoWorker(QObject *parent) :
     m_isLoading(false)
 {
     m_patenvillaSecret = "ghdh67TZGHb56fgsdfkk0";
-    m_workList << "fights/vip" << "placeOfHonour" << "challenge/diary";// << "patenvilla";
+    m_workList << "fights/vip" << "placeOfHonour" << "patenvilla" << "challenge/diary";// << "patenvilla";
 
     m_minCooldown = 403;
     m_maxCooldown = 5267;
@@ -77,7 +77,7 @@ void infoWorker::setOn()
 
     m_isActive = true;
     QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
-    //qDebug() << "infoWorker::setOn" << pageTitle();
+    qDebug() << "infoWorker::setOn" << pageTitle() << m_workList;
 }
 
 void infoWorker::setOff()
@@ -229,6 +229,7 @@ void infoWorker::workFinished(bool ok)
     } else if(paths.at(0) == QString("challenge")) {
         if(paths.count() == 2 && paths.at(1) == "diary") {
             mainFrame->evaluateJavaScript("new Ajax.Request('/challenge/diary_data',{asynchronous: false,method: 'GET',dataType: 'json',onSuccess: function(result){worker.diaryData(result.responseText);}});");
+            QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
         }
     } else if(paths.at(0) == QString("characters")) {
 
@@ -264,6 +265,7 @@ void infoWorker::workFinished(bool ok)
             //qDebug() << "infoWorker::workFinished (patenvilla): " << pageTitle();
         }
         //result = mainFrame->evaluateJavaScript("new Ajax.Request('/fights/opponentsListJson',{asynchronous: true,onSuccess: function(result){window.alert(result.responseText);}});");
+        QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
     } else {
 
     }
@@ -273,6 +275,6 @@ void infoWorker::workFinished(bool ok)
     logString.append(now.toString("[yyyy-MM-dd HH:mm:ss]"));
     logString.append("  infoWorker::loadFinished (" + url.path());
     logString.append(") '" + mainFrame->title() + "'");
-    qDebug() << logString;
+    qDebug() << logString << m_workList;
     //qDebug() << pageTitle() << "\t[infoWorker::workFinished]" << paths;
 }

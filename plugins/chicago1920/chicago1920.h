@@ -22,6 +22,10 @@ public:
     void loadFinished(QNetworkReply*);
 
 private:
+    int readDataFile(const QString file, QString& data);
+    void injectHtml(QWebFrame*, chAccount*);
+
+private:
     QList<chAccount *>      m_accounts;
 };
 

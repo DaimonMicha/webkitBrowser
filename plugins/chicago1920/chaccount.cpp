@@ -19,7 +19,6 @@
 
 chAccount::chAccount(const QString cookie, QObject *parent) :
     QObject(parent),
-    m_isActive(false),
     m_heistActive(false),
     m_mustReload(false),
     m_cookieValue(cookie),
@@ -27,10 +26,11 @@ chAccount::chAccount(const QString cookie, QObject *parent) :
     m_gangstersTable(new chPlayerTable)
 {
     //m_cookieValue = cookie;
-    m_workingPage = NULL;
+    m_config.bot = false;
+
     m_infoWorker = NULL;
     m_fightWorker = NULL;
-    m_currentRace = "";
+    m_currentRace = "0";
 
     m_cityMap["1"]="Dunning";
     m_cityMap["2"]="Uptown";
@@ -107,12 +107,12 @@ void chAccount::toggle(const QString option, const bool on)
 {
     if(option == "account") {
 
-        if(m_isActive) {
-            m_isActive = false;
+        if(isActive()) {
+            m_config.bot = false;
             if(m_infoWorker) m_infoWorker->setOff();
             if(m_fightWorker) m_fightWorker->setOff();
         } else {
-            m_isActive = true;
+            m_config.bot = true;
             if(m_infoWorker) m_infoWorker->setOn();
             if(m_fightWorker) {
                 m_fightWorker->setOn();
@@ -120,13 +120,19 @@ void chAccount::toggle(const QString option, const bool on)
             }
         }
 
+    } else if(option == "rivals") {
+        m_config.rivals = on;
+        if(on) {
+        } else {
+        }
+
     } else if(option == "diary") {
+        m_config.diary = on;
         if(on) {
         } else {
         }
     }
-    //qDebug() << "" << option << on;
-    //qDebug() << "chAccount::toggle:" << m_isActive;
+    qDebug() << "chAccount::toggle:" << option << on;
 }
 
 void chAccount::click(const QString button)
@@ -148,13 +154,6 @@ void chAccount::raceChanged(const QString race)
 QString chAccount::workingTitle() const
 {
     return(m_fightWorker->pageTitle());
-}
-
-void chAccount::heistToggle(const bool toggle)
-{
-    m_heistActive = toggle;
-    heistWork();
-    qDebug() << "chAccount::heistToggle:" << m_heistActive;
 }
 
 void chAccount::heistWork()
@@ -287,7 +286,8 @@ void chAccount::getResults(const QString result)
     //qDebug() << "[chAccount::getResults]\nall" << json.toJson();
     qDebug() << "[chAccount::getResults] day:" << happens.date().dayOfYear() << m_gangstersTable->getPlayerData(pid, "name")
              << m_gangstersTable->getPlayerData(pid, "fightsDone")
-             << m_gangstersTable->getPlayerData(pid, "fightsMax") << ok << m_fightWorker->currentKWZ();
+             << m_gangstersTable->getPlayerData(pid, "fightsMax")
+             << ok << m_fightWorker->currentKWZ();
 
     //qDebug() << "\t[chAccount::getResults]" << opponent.toVariantMap();
     //qDebug() << "\t[chAccount::getResults]" << fights.toVariantMap();
@@ -334,7 +334,16 @@ void chAccount::patenvillaData(const QString villa)
     QByteArray data;
     data.append(villa);
     QJsonDocument json = QJsonDocument::fromJson(data);
-    //qDebug() << "\tchAccount::patenvillaData\n" << json.toJson() << "\n";
+    QJsonArray liste = json.object().value("list").toArray();
+    for(QJsonArray::const_iterator i = liste.constBegin(); i != liste.end(); ++i) {
+        QJsonObject feature = (*i).toObject();
+        if(!feature.isEmpty() && feature.value("is_activate").toBool()) {
+            QJsonDocument debug(feature);
+            qDebug() << "\tchAccount::patenvillaData\n" << debug.toJson() << "\n";
+        }
+    }
+    //QJsonDocument debug(liste);
+    //qDebug() << "\tchAccount::patenvillaData\n" << debug.toJson() << "\n";
 }
 
 void chAccount::loadFinished(QNetworkReply* reply)
@@ -454,68 +463,6 @@ void chAccount::parseFights(WebPage* page,const QStringList paths)
 
 }
 
-int chAccount::readDataFile(const QString file, QString& data)
-{
-    QString path;
-    // path = "/home/micha/.local/share/DaimonNetworks/webkitBrowser";
-    path = "/home/micha/Projekte/webkitBrowser/plugins/chicago1920/htmls/";
-    QFile inject;
-    inject.setFileName(path + file);
-    if(!inject.open(QIODevice::ReadOnly)) {
-        inject.setFileName(":/chicago/" + file);
-        if(!inject.open(QIODevice::ReadOnly)) {
-            return(-1);
-        }
-    }
-    if(inject.isOpen()) {
-        QByteArray bytes = inject.readAll();
-        //qDebug() << "[chAccount::readDataFile]:" << inject.fileName();
-        inject.close();
-        data.append(bytes);
-        return(data.length());
-    }
-
-    return(-1);
-}
-
-void chAccount::injectHtml(QWebFrame* mainFrame)
-{
-    QWebElement pluginDiv = mainFrame->findFirstElement("#accountPlugin");
-    if(!pluginDiv.isNull()) return;
-
-    QString di;
-    if(readDataFile("inject.html", di) <= 0) return;
-
-    QWebElement body = mainFrame->findFirstElement("body");
-    body.appendInside(di);
-
-    if(m_isActive) {
-        QWebElement checker = body.findFirst("#clickChecker");
-        checker.setAttribute("checked", "checked");
-    }
-
-    if(!m_currentRace.isEmpty()) {
-        QWebElement sel = body.findFirst("#raceSelect");
-        QWebElementCollection options = sel.findAll("option");
-        foreach(QWebElement option, options) {
-            if(option.attribute("value") == m_currentRace) {
-                option.setAttribute("selected", "selected");
-            }
-        }
-        QWebElement cell = sel.parent();
-        if(!cell.isNull()) {
-            sel = sel.takeFromDocument();
-            cell.appendInside(sel);
-        }
-    }
-
-    if(m_heistActive) {
-        QWebElement checker = body.findFirst("#heistChecker");
-        checker.setAttribute("checked", "checked");
-    }
-
-}
-
 void chAccount::loadFinished(WebPage* page)
 {
     QWebFrame* mainFrame = page->mainFrame();
@@ -523,12 +470,6 @@ void chAccount::loadFinished(WebPage* page)
     QStringList paths = url.path().split("/",QString::SkipEmptyParts);
 
     if(!paths.count()) return; // nothing to do, login evtl?
-
-    if(m_workingPage == NULL) {
-        m_workingPage = new QWebPage();
-        m_workingPage->setNetworkAccessManager(page->networkAccessManager());
-        connect(m_workingPage, SIGNAL(loadFinished(bool)), this, SLOT(workFinished(bool)));
-    }
 
     if(m_fightWorker == NULL) {
         m_fightWorker = new fightWorker();
@@ -564,6 +505,10 @@ void chAccount::loadFinished(WebPage* page)
     } else if(QString("fights") == paths.at(0)) {
 
         parseFights(page, paths);
+
+    } else if(QString("rival") == paths.at(0)) {
+
+        parseRivals(mainFrame, paths);
 
     } else if(QString("patenvilla") == paths.at(0)) {
 
@@ -645,77 +590,31 @@ void chAccount::loadFinished(WebPage* page)
     logString.append("  chAccount::loadFinished (" + url.path());
     logString.append(") '" + mainFrame->title() + "'");
     qDebug() << logString;
-
-    //qDebug() << now.toString("[yyyy-MM-dd HH:mm:ss]") << "\t[chAccount::loadFinished]" << mainFrame->title() << paths
-             //<< result
-             //<< m_cookieValue;
-
-    QWebElement pluginDiv = mainFrame->findFirstElement("#accountPlugin");
-    if(pluginDiv.isNull()) {
-
-        injectHtml(mainFrame);
-        QString di;
-        if(readDataFile("checkscript.js", di) > 0) {
-            mainFrame->evaluateJavaScript(di);
-        }
-
-    }
-
 }
 
-void chAccount::workFinished(bool ok)
+void chAccount::rivalsData(const QString data)
 {
-    if(!ok) return;
+    QByteArray cdata;
+    cdata.append(data);
+    QJsonDocument json = QJsonDocument::fromJson(cdata);
+    QJsonArray rivals = json.array();
+    for(QJsonArray::const_iterator i = rivals.constBegin(); i != rivals.end(); ++i) {
+        QJsonObject rival = (*i).toObject();
+        if(!rival.isEmpty() && rival.value("countdown").toBool()) {
 
-    QWebFrame* mainFrame = m_workingPage->mainFrame();
-    QUrl url = mainFrame->url();
-    QStringList paths = url.path().split("/",QString::SkipEmptyParts);
-    QVariant result;
-
-    mainFrame->addToJavaScriptWindowObject("account", this);
-
-    if(QString("fights") == paths.at(0)) {
-
-        // parseFights(m_workingPage, paths);
-
-    } else if(QString("special") == paths.at(0)) {
-
-        if(paths.count() > 1) {
-
-            if(QString("heist") == paths.at(1)) {
-
-                // PageTitle auslesen wegen Kampfwartezeit
-
-            }
-
+            QJsonDocument debug(rival);
+            qDebug() << "chAccount::rivalsData" << rival.value("timer").toInt() << "sek.\n"
+                     << debug.toJson();
         }
-
-    } else if(QString("battleNpc") == paths.at(0)) {
-
-        // "/battleNpc/start/333/1"
-        if(paths.count() > 1) {
-
-            if(QString("results") == paths.at(1)) {
-
-                if(paths.count() > 2) {
-
-                    QString question = "new Ajax.Request('/battleNpc/getResults/";
-                    question.append(paths.at(2));
-                    question.append("',{asynchronous: false,method: 'POST',dataType: 'json',onSuccess: function(result){account.heistGetResults(result.responseText);}});");
-                    result = mainFrame->evaluateJavaScript(question);
-                    // ToDo: 5Minuten-Timer stellen
-                    //QTimer::singleShot(301500, this, SLOT(heistWork()));
-                    qDebug() << "results:" << question;
-
-                }
-
-            }
-
-        }
-
     }
+    //qDebug() << "chAccount::rivalsData" << json.toJson();
+}
 
-    qDebug() << "\tchAccount::workFinished" << paths;
-             //<< result;
+void chAccount::parseRivals(QWebFrame* mainFrame,const QStringList paths)
+{
+    if(!paths.count()) return;
+    if(paths.at(1) != "index") return;
 
+    QString question = "account.rivalsData(JSON.stringify(slavelist));";
+    mainFrame->evaluateJavaScript(question);
 }

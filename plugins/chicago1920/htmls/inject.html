@@ -18,8 +18,8 @@
     position: absolute;
     width: 140px;
     top: 300px;
-    background-color:rgba(0, 0, 0, 0.45);
-    border: 3px solid black;
+    background-color: rgba(0, 0, 0, 0.45);
+    border: 3px solid grey;
 }
 #accountPlugin progress {
     width: 135px;
@@ -37,10 +37,11 @@
     font-size: 1.4em;
     font-weight: bold;
 }
-.kmHeader {
+.kmHeader, .kmHeader a {
     font-size: 1.2em;
     font-weight: bold;
     text-align: left;
+    text-decoration: none;
     padding-left: 10px;
 }
 #opponentsName {
@@ -63,7 +64,7 @@
         <table id="fighterTable" width="100%">
             <tbody>
                 <tr>
-                    <td colspan="2" class="kmHeader">&Uuml;berfall</td>
+                    <td colspan="2" class="kmHeader"><a href="/cq">&Uuml;berfall</a></td>
                 </tr>
                 <tr>
                     <td><input id="clickChecker" type="checkbox" onClick="account.toggle('account', jQuery('#clickChecker').prop('checked'));"></input></td>
@@ -91,21 +92,22 @@
                 <tr><td colspan="2" id="opponentsRace" align="right"><button type="button" title="einen anderen Gangster (zuf&auml;llig) auswählen" onClick="account.click('opponent');">wechseln</button></td></tr>
                 <tr><td align="center"><a id="opponentsProfile" title="das Profil dieses Gangsters aufrufen."><span id="opponentsName">&nbsp;</span></a></td><td><span id="opponentsLevel" title="das Level dieses Gangsters"></span></td></tr>
                 <tr><td colspan="2" align="center"><progress id="opponentsProgress" value="0" max="10">1 - 10</progress></td></tr>
+                <tr><td colspan="2" align="center"><a href="http://www.chicago1920.com/safe/maxeinzahlen">maxSafe</a></td></tr>
             </tbody>
         </table>
-<!--
         <br />
         <table id="optionsTable" width="100%">
             <tbody>
                 <tr>
-                    <td colspan="2" class="kmHeader">Rivalen</td>
+                    <td colspan="2" class="kmHeader"><a href="/rival/index">Rivalen</a></td>
                 </tr>
                 <tr>
                     <td><input id="rivalsChecker" type="checkbox" onClick="account.toggle('rivals', jQuery('#rivalsChecker').prop('checked'));"></input></td>
                     <td><label for="rivalsChecker">angreifen</label></td>
                 </tr>
+                <tr><td id="rivalsTimer" colspan="2" align="right"></td></tr>
                 <tr>
-                    <td colspan="2" class="kmHeader">Tagebuch</td>
+                    <td colspan="2" class="kmHeader"><a href="/challenge/diary">Tagebuch</a></td>
                 </tr>
                 <tr>
                     <td><input id="diaryChecker" type="checkbox" onClick="account.toggle('diary', jQuery('#diaryChecker').prop('checked'));"></input></td>
@@ -113,6 +115,7 @@
                 </tr>
             </tbody>
         </table>
+<!--
         <br /><hr noshade /><br />
         <table id="specialsTable" width="100%">
             <tbody>

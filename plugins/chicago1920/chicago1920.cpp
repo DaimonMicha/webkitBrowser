@@ -5,8 +5,10 @@
 #include <QNetworkAccessManager>
 #include <QNetworkCookieJar>
 #include <QNetworkCookie>
+#include <QWebElement>
 #include <QWebFrame>
 #include <QTime>
+#include <QFile>
 
 #include <QDebug>
 
@@ -95,7 +97,7 @@ void Chicago1920::loadFinished(WebPage* page)
         m_accounts.append(current);
     }
 
-    QString path = url.path();
+    //QString path = url.path();
 
     page->mainFrame()->addToJavaScriptWindowObject("account", current);
     //qDebug() << "\tChicago1920::loadFinished" << path;
@@ -104,4 +106,82 @@ void Chicago1920::loadFinished(WebPage* page)
              //<< m_cookieValue;
     //return;
     current->loadFinished(page);
+
+    QWebElement pluginDiv = page->mainFrame()->findFirstElement("#accountPlugin");
+    if(!pluginDiv.isNull()) return;
+
+    injectHtml(page->mainFrame(), current);
+    QString di;
+    if(readDataFile("checkscript.js", di) > 0) {
+        page->mainFrame()->evaluateJavaScript(di);
+    }
+}
+
+int Chicago1920::readDataFile(const QString file, QString& data)
+{
+    QString path;
+    // path = "/home/micha/.local/share/DaimonNetworks/webkitBrowser";
+    path = "/home/micha/Projekte/webkitBrowser/plugins/chicago1920/htmls/";
+    QFile inject;
+    inject.setFileName(path + file);
+    if(!inject.open(QIODevice::ReadOnly)) {
+        inject.setFileName(":/chicago/" + file);
+        if(!inject.open(QIODevice::ReadOnly)) {
+            return(-1);
+        }
+    }
+    if(inject.isOpen()) {
+        QByteArray bytes = inject.readAll();
+        //qDebug() << "[chAccount::readDataFile]:" << inject.fileName();
+        inject.close();
+        data.append(bytes);
+        return(data.length());
+    }
+
+    return(-1);
+}
+
+void Chicago1920::injectHtml(QWebFrame* mainFrame, chAccount* account)
+{
+    QWebElement pluginDiv = mainFrame->findFirstElement("#accountPlugin");
+    if(!pluginDiv.isNull()) return;
+
+    QString di;
+    if(readDataFile("inject.html", di) <= 0) return;
+
+    QWebElement body = mainFrame->findFirstElement("body");
+    body.appendInside(di);
+
+    if(account->isActive("account")) {
+        QWebElement checker = body.findFirst("#clickChecker");
+        if(!checker.isNull()) checker.setAttribute("checked", "checked");
+    }
+
+    if(!account->currentRace().isEmpty()) {
+
+        QWebElement sel = body.findFirst("#raceSelect");
+        QWebElementCollection options = sel.findAll("option");
+        foreach(QWebElement option, options) {
+            if(option.attribute("value") == account->currentRace()) {
+                option.setAttribute("selected", "selected");
+            }
+        }
+        QWebElement cell = sel.parent();
+        if(!cell.isNull()) {
+            sel = sel.takeFromDocument();
+            cell.appendInside(sel);
+        }
+
+    }
+
+    if(account->isActive("rivals")) {
+        QWebElement checker = body.findFirst("#rivalsChecker");
+        if(!checker.isNull()) checker.setAttribute("checked", "checked");
+    }
+
+    if(account->isActive("diary")) {
+        QWebElement checker = body.findFirst("#diaryChecker");
+        if(!checker.isNull()) checker.setAttribute("checked", "checked");
+    }
+
 }

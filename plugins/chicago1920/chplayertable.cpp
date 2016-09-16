@@ -27,18 +27,6 @@ chPlayerTable::chPlayerTable(QObject *parent) :
     "platting": 73,           // KB (Rüstung)
     "minDamage": 7,           // KB
     "maxDaqmage": 13          // KB
-
-    "attack": "/fights/waitFight/buy/272925",
-    "enemytype": "reputation",
-    "guild_hp": "555",
-    "guild_name": "Red Liverbirds",
-    "hp": "185",
-    "info": "",
-    "pn": "/pns/index/BHDLFJ",
-    "profil": "/characters/profile/BHDLFJ",
-    "signup_id": "272925",
-    "tid": "201135",
-    "waitFight": "true",
 */
     head    << "id"
             << "coded_id"

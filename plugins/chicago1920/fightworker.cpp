@@ -152,7 +152,7 @@ void fightWorker::workFinished(bool ok)
             } else if(QString("start") == paths.at(1)) {
 
                 if(paths.count() == 2) {
-                    if(++m_currentFightCounter > 1) {
+                    if(++m_currentFightCounter > 2) {
                         emit(fightsDone());
                         m_currentFightCounter = 0;
                     }
