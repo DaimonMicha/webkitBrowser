@@ -15,8 +15,17 @@ DESTDIR       = ../
 TARGET        = battleknight
 
 SOURCES      += \
-        battleknight.cpp
+        battleknight.cpp \
+    bkaccount.cpp
 
 HEADERS      += \
-        battleknight.h
+        battleknight.h \
+    bkaccount.h
+
+OTHER_FILES += \
+    htmls/inject.html \
+    htmls/checkscript.js
+
+RESOURCES += \
+    htmls/data.qrc
 

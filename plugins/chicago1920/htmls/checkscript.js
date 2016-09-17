@@ -1,7 +1,4 @@
 
-    if(account.isHeistActive()) {
-        jQuery("#heistChecker").prop("checked",true);
-    }
 
 
     function checkGangster() {

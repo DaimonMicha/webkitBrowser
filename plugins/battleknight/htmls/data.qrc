@@ -1,1 +1,6 @@
-<RCC/>
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource prefix="/battleknight">
+        <file>inject.html</file>
+        <file>checkscript.js</file>
+    </qresource>
+</RCC>

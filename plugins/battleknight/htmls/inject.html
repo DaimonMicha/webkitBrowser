@@ -1,0 +1,69 @@
+
+
+<!-- BattleKnight account plugin -->
+
+<style type="text/css">
+
+#accountPlugin {
+    position: absolute;
+    float: left;
+    width: 150px;
+    height: 95%;
+    top: 13px;
+    padding-left: 2px;
+    text-align: left;
+    font-family: "Ubuntu Condensed", Arial, sans-serif;
+    font-size: 1.2em;
+    color: white;
+}
+#opponents {
+    position: absolute;
+    width: 140px;
+    top: 300px;
+    background-color: rgba(0, 0, 0, 0.45);
+    border: 3px solid grey;
+}
+#accountPlugin td {
+    height: 25px;
+}
+.klickMeisterLogo {
+    text-align: center;
+    font-size: 1.4em;
+    font-weight: bold;
+}
+.kmHeader, .kmHeader a {
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: left;
+    text-decoration: none;
+    padding-left: 10px;
+    color: white;
+}
+
+</style>
+
+<div id="accountPlugin">
+    <div id="knight">
+        <table id="knightTable" width="100%">
+            <tbody>
+                <tr>
+                    <td colspan="2" class="klickMeisterLogo">Klick Meister</td>
+                </tr>
+                <tr>
+                    <td><input id="clickChecker" type="checkbox" onClick="account.toggle('account', this.checked);"></input></td>
+                    <td><label for="clickChecker">KlickVertretung</label></td>
+                </tr>
+            </tbody>
+        </table> <!-- #knightTable -->
+    </div> <!-- #knight -->
+    <div id="opponents">
+        <table id="fighterTable" width="100%">
+            <tbody>
+                <tr>
+                    <td colspan="2" class="kmHeader"><a href="/duel">Gegner</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div> <!-- #opponents -->
+</div> <!-- #accountPlugin -->
+

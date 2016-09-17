@@ -2,6 +2,8 @@
 #define BATTLEKNIGHT_H
 
 #include "extension.h"
+#include "bkaccount.h"
+
 
 class BattleKnight : public QObject, public ExtensionInterface
 {
@@ -16,8 +18,16 @@ public:
 
     void loadSettings(QSettings &);
     void loadStarted(WebPage*,const QUrl &);
-    void loadFinished(WebPage*);
     void loadFinished(QNetworkReply*);
+    void loadFinished(WebPage*);
+
+private:
+    bkAccount *accFromCookie(const QString);
+    int readDataFile(const QString file, QString& data);
+    void injectHtml(QWebFrame*, bkAccount*);
+
+private:
+    QList<bkAccount *>      m_accounts;
 };
 
 #endif // BATTLEKNIGHT_H
