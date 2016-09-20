@@ -14,6 +14,8 @@ class BattleKnight : public QObject, public ExtensionInterface
 public:
     ~BattleKnight();
 
+    QString name() const { return(QLatin1String("BattleKnight")); }
+    QWidget* settingsWidget() const { return(new QWidget()); }
     bool isMyUrl(const QUrl &) const;
 
     void loadSettings(QSettings &);

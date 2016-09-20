@@ -46,6 +46,7 @@
 #include "cookiejar.h"
 #include "history.h"
 #include "networkaccessmanager.h"
+#include "extensionmanager.h"
 #include "webview.h"
 
 #include <QtCore/QSettings>
@@ -64,6 +65,11 @@ SettingsDialog::SettingsDialog(QWidget *parent)
 
     loadDefaults();
     loadFromSettings();
+
+    connect(enableBots, SIGNAL(toggled(bool)), this, SLOT(botsToggled(bool)));
+    clickbotTreeView->setModel(BrowserApplication::extensionManager()->settingsModel());
+    QItemSelectionModel *selModel = clickbotTreeView->selectionModel();
+    connect(selModel, SIGNAL(currentChanged(QModelIndex,QModelIndex)), this, SLOT(extConfigActivated(QModelIndex,QModelIndex)));
 }
 
 void SettingsDialog::loadDefaults()
@@ -83,6 +89,7 @@ void SettingsDialog::loadDefaults()
 
     enableJavascript->setChecked(defaultSettings->testAttribute(QWebSettings::JavascriptEnabled));
     enablePlugins->setChecked(defaultSettings->testAttribute(QWebSettings::PluginsEnabled));
+    enableBots->setChecked(false);
 }
 
 void SettingsDialog::loadFromSettings()
@@ -116,7 +123,11 @@ void SettingsDialog::loadFromSettings()
 
     settings.beginGroup(QLatin1String("general"));
     openLinksIn->setCurrentIndex(settings.value(QLatin1String("openLinksIn"), openLinksIn->currentIndex()).toInt());
+    settings.endGroup();
 
+    settings.beginGroup(QLatin1String("extensions"));
+    enableBots->setChecked(settings.value(QLatin1String("enableClickBots"), false).toBool());
+    botsToggled(settings.value(QLatin1String("enableClickBots"), false).toBool());
     settings.endGroup();
 
     // Appearance
@@ -193,6 +204,11 @@ void SettingsDialog::saveToSettings()
     settings.setValue(QLatin1String("openLinksIn"), openLinksIn->currentIndex());
     settings.endGroup();
 
+    settings.beginGroup(QLatin1String("extensions"));
+    settings.setValue(QLatin1String("enableClickBots"), enableBots->isChecked());
+    settings.endGroup();
+    BrowserApplication::extensionManager()->saveToSettings();
+
     settings.beginGroup(QLatin1String("history"));
     int historyExpire = expireHistory->currentIndex();
     int idx = -1;
@@ -268,6 +284,7 @@ void SettingsDialog::saveToSettings()
     settings.setValue(QLatin1String("password"), proxyPassword->text());
     settings.endGroup();
 
+    BrowserApplication::extensionManager()->loadSettings();
     BrowserApplication::instance()->loadSettings();
     BrowserApplication::networkAccessManager()->loadSettings();
     BrowserApplication::cookieJar()->loadSettings();
@@ -316,7 +333,34 @@ void SettingsDialog::setHomeToCurrentPage()
 {
     BrowserMainWindow *mw = static_cast<BrowserMainWindow*>(parent());
     WebView *webView = mw->currentTab();
-    if (webView)
+    if(webView)
         homeLineEdit->setText(webView->url().toString());
 }
 
+void SettingsDialog::botsToggled(bool on)
+{
+    clickbotTab->setEnabled(on);
+}
+
+void SettingsDialog::extConfigActivated(const QModelIndex &index,const QModelIndex &)
+{
+    QWidget* options = NULL;
+    QList<QWidget *> childs = optionFrame->findChildren<QWidget *>(QString(),Qt::FindDirectChildrenOnly);
+
+    //qDebug() << childs;
+
+    for(int i = 0; i < childs.size(); ++i) {
+        if(childs.at(i)->objectName() == index.data().toString()) {
+            options = childs.at(i);
+        } else {
+            childs.at(i)->hide();
+        }
+    }
+
+    if(!options) {
+        options = BrowserApplication::extensionManager()->settingsWidget(index);
+        if(!options) return;
+        optionFrameLayout->addWidget(options,0,0);
+    }
+    options->show();
+}

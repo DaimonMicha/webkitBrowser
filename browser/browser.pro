@@ -1,6 +1,6 @@
 TEMPLATE = app
 TARGET = ../webkitBrowser
-QT += webkitwidgets network widgets printsupport
+QT += webkitwidgets network widgets printsupport sql
 
 qtHaveModule(uitools):!embedded: QT += uitools
 else: DEFINES += QT_NO_UITOOLS
@@ -22,7 +22,10 @@ FORMS += \
     history.ui \
     passworddialog.ui \
     proxy.ui \
-    settings.ui
+    settings.ui \
+    ext_database.ui \
+    ext_debug.ui \
+    ext_clickbots.ui
 
 HEADERS += \
     autosaver.h \

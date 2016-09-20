@@ -613,6 +613,7 @@ void chAccount::rivalsData(const QString data)
 void chAccount::parseRivals(QWebFrame* mainFrame,const QStringList paths)
 {
     if(!paths.count()) return;
+    if(paths.count() == 1) return;
     if(paths.at(1) != "index") return;
 
     QString question = "account.rivalsData(JSON.stringify(slavelist));";

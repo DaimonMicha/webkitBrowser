@@ -5,6 +5,7 @@
 #include <QSettings>
 #include <QUrl>
 #include <QNetworkReply>
+#include <QWidget>
 #include "webview.h"
 
 class ExtensionInterface
@@ -12,6 +13,8 @@ class ExtensionInterface
 public:
     virtual ~ExtensionInterface() {}
 
+    virtual QString name() const { return(QLatin1String("ExtensionInterface")); }
+    QWidget* settingsWidget() const { return(new QWidget()); }
     virtual bool isMyUrl(const QUrl &) const { return(false); }
 
     virtual void loadSettings(QSettings &) {}

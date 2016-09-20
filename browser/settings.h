@@ -65,6 +65,9 @@ private slots:
     void chooseFont();
     void chooseFixedFont();
 
+    void botsToggled(bool);
+    void extConfigActivated(const QModelIndex &index,const QModelIndex &);
+
 private:
     QFont standardFont;
     QFont fixedFont;
