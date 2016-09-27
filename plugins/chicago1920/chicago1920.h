@@ -5,10 +5,10 @@
 //#include "webview.h"
 #include "chaccount.h"
 
-class Chicago1920 : public QObject, public ExtensionInterface
+class Chicago1920  : public QObject, public ExtensionInterface
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "de.daimon-net.gamebrowser.ExtensionInterface" FILE "chicago1920.json")
+    Q_PLUGIN_METADATA(IID "de.daimon-net.webkitBrowser.ExtensionInterface" FILE "chicago1920.json")
     Q_INTERFACES(ExtensionInterface)
 
 public:

@@ -27,45 +27,22 @@ ExtensionManager::ExtensionManager(QObject *parent) :
     m_botsItem = new QStandardItem(QLatin1String("ClickBots"));
     m_extensionsModel->appendRow(m_botsItem);
 
+    //connect(BrowserApplication::networkAccessManager(), SIGNAL(started()
     connect(BrowserApplication::networkAccessManager(), SIGNAL(finished(QNetworkReply*)), this, SLOT(loadFinished(QNetworkReply*)));
 
-    foreach (QObject *plugin, QPluginLoader::staticInstances()) {
+    foreach(QObject *plugin, QPluginLoader::staticInstances()) {
         ExtensionInterface *e = qobject_cast<ExtensionInterface *>(plugin);
         if(e) {
             qDebug() << "found static Extension:";// << fileName;
             m_extensionList.insert(e,"");
         }
     }
-
-    return;
-
-    m_pluginsDir = QDir(qApp->applicationDirPath());
-
-#if defined(Q_OS_WIN)
-    if (m_pluginsDir.dirName().toLower() == "debug" || m_pluginsDir.dirName().toLower() == "release")
-        m_pluginsDir.cdUp();
-#elif defined(Q_OS_MAC)
-    if (pluginsDir.dirName() == "MacOS") {
-        m_pluginsDir.cdUp();
-        m_pluginsDir.cdUp();
-        m_pluginsDir.cdUp();
-    }
-#endif
-    m_pluginsDir.cd("plugins");
-
-    //qDebug() << "pluginsDir:" << pluginsDir.path();
-
-    foreach (QString fileName, m_pluginsDir.entryList(QDir::Files)) {
-        if(loadPlugin(m_pluginsDir.absoluteFilePath(fileName))) {
-            //qDebug() << "\tload Extension:" << fileName;
-        }
-    }
 }
 
 void ExtensionManager::loadPlugins()
 {
-    foreach (QString fileName, m_pluginsDir.entryList(QDir::Files)) {
-        if(loadPlugin(m_pluginsDir.absoluteFilePath(fileName))) {
+    foreach (QString fileName, m_config.m_pluginsDir.entryList(QDir::Files)) {
+        if(loadPlugin(m_config.m_pluginsDir.absoluteFilePath(fileName))) {
             //qDebug() << "\tload Extension:" << fileName;
         }
     }
@@ -81,11 +58,14 @@ bool ExtensionManager::loadPlugin(const QString filePath)
     QPluginLoader loader(filePath);
     QObject *plugin = loader.instance();
     if(plugin) {
-        ExtensionInterface *e = qobject_cast<ExtensionInterface *>(plugin);
+        ExtensionInterface* e = qobject_cast<ExtensionInterface *>(plugin);
         if(e) {
             m_extensionList.insert(e, filePath);
             ret = true;
-            m_botsItem->appendRow(new QStandardItem(e->name()));
+            QStandardItem* item = new QStandardItem(e->name());
+            item->setData(filePath,Qt::ToolTipRole);
+            m_botsItem->appendRow(item);
+            //connect(e, SIGNAL(logMessage(QString)), this, SLOT(log(QString)));
         } else {
             qDebug() << "\t" << filePath << "is not an ExtensionInterface!";
         }
@@ -102,18 +82,37 @@ void ExtensionManager::loadSettings()
     QSettings settings;
     settings.beginGroup(QLatin1String("extensions"));
 
+    m_config.m_dbConfig.m_driver = settings.value(QLatin1String("dbDriver"), "QMYSQL").toString();
+    m_config.m_dbConfig.m_host = settings.value(QLatin1String("dbHost"), "localhost").toString();
+    m_config.m_dbConfig.m_port = settings.value(QLatin1String("dbPort"), 3306).toInt();
+    m_config.m_dbConfig.m_database = settings.value(QLatin1String("dbDatabase"), "ClickMaster").toString();
+    m_config.m_dbConfig.m_user = settings.value(QLatin1String("dbUser"), "clickmaster").toString();
+    m_config.m_dbConfig.m_password = settings.value(QLatin1String("dbPassword"), "retsamkcilc").toString();
+
     QStringList sqlDrivers = QSqlDatabase::drivers();
-    qDebug() << "ExtensionManager::loadSettings" << sqlDrivers;
+    if(sqlDrivers.contains(m_config.m_dbConfig.m_driver)) {
+        QSqlDatabase db = QSqlDatabase::addDatabase(m_config.m_dbConfig.m_driver,QLatin1String("clickmasterConnection"));
+        db.setHostName(m_config.m_dbConfig.m_host);
+        db.setPort(m_config.m_dbConfig.m_port);
+        db.setDatabaseName(m_config.m_dbConfig.m_database);
+        db.setUserName(m_config.m_dbConfig.m_user);
+        db.setPassword(m_config.m_dbConfig.m_password);
+        bool ok = db.open();
+    }
 
-    m_pluginsDir.setPath(settings.value(QLatin1String("pluginsDir"), qApp->applicationDirPath() + "/plugins").toString());
+    m_config.m_pluginsDir.setPath(settings.value(QLatin1String("pluginsDir"), qApp->applicationDirPath() + "/plugins").toString());
+
+    if(m_config.m_logFile.isOpen()) m_config.m_logFile.close();
+    m_config.m_logFile.setFileName(settings.value(QLatin1String("logFile"), QStandardPaths::writableLocation(QStandardPaths::DataLocation)).toString());
+    m_config.m_requestEnabled = settings.value(QLatin1String("requestEnabled"), false).toBool();
+    m_config.m_responseEnabled = settings.value(QLatin1String("responseEnabled"), false).toBool();
+    if(!m_config.m_logFile.open(QIODevice::Append | QIODevice::Text)) {
+        qDebug() << "...error while open the logfile" << m_config.m_logFile.fileName();
+    }
+
     if(m_extensionList.count() == 0) loadPlugins();
-
-    m_logFile.setFileName(settings.value(QLatin1String("logFile"), QStandardPaths::writableLocation(QStandardPaths::DataLocation)).toString()+"/webkitBrowser.log");
-    m_requestEnabled = settings.value(QLatin1String("requestEnabled"), false).toBool();
-    m_responseEnabled = settings.value(QLatin1String("responseEnabled"), false).toBool();
-
     QMapIterator<ExtensionInterface *, QString> i(m_extensionList);
-    while (i.hasNext()) {
+    while(i.hasNext()) {
         i.next();
         i.key()->loadSettings(settings);
     }
@@ -125,6 +124,16 @@ void ExtensionManager::saveToSettings()
 {
     QSettings settings;
     settings.beginGroup(QLatin1String("extensions"));
+
+    DatabaseDialog *database = qobject_cast<DatabaseDialog *>(settingsWidget("Database"));
+    if(database) {
+        settings.setValue(QLatin1String("dbDriver"), database->driversBox->currentText());
+        settings.setValue(QLatin1String("dbHost"), database->hostEdit->text());
+        settings.setValue(QLatin1String("dbPort"), database->portEdit->text());
+        settings.setValue(QLatin1String("dbDatabase"), database->databaseEdit->text());
+        settings.setValue(QLatin1String("dbUser"), database->userEdit->text());
+        settings.setValue(QLatin1String("dbPassword"), database->passwordEdit->text());
+    }
 
     DebugDialog *debug = qobject_cast<DebugDialog *>(settingsWidget("Debug"));
     if(debug) {
@@ -161,16 +170,28 @@ QWidget* ExtensionManager::settingsWidget(const QModelIndex &index)
 
     if(index.data().toString() == "Debug") {
         DebugDialog *dialog = new DebugDialog();
-        dialog->logFileEdit->setText(m_logFile.fileName());
-        dialog->checkRequests->setChecked(m_requestEnabled);
-        dialog->checkResponses->setChecked(m_responseEnabled);
+        dialog->logFileEdit->setText(m_config.m_logFile.fileName());
+        dialog->checkRequests->setChecked(m_config.m_requestEnabled);
+        dialog->checkResponses->setChecked(m_config.m_responseEnabled);
         ret = dialog;
     } else if(index.data().toString() == "Database") {
         DatabaseDialog *dialog = new DatabaseDialog();
+        QStringList sqlDrivers = QSqlDatabase::drivers();
+        if(sqlDrivers.contains(m_config.m_dbConfig.m_driver)) {
+            dialog->driversBox->setCurrentText(m_config.m_dbConfig.m_driver);
+        }
+        dialog->hostEdit->setText(m_config.m_dbConfig.m_host);
+        dialog->portEdit->setText(QString("%1").arg(m_config.m_dbConfig.m_port));
+        dialog->databaseEdit->setText((m_config.m_dbConfig.m_database));
+        dialog->userEdit->setText(m_config.m_dbConfig.m_user);
+        dialog->passwordEdit->setText(m_config.m_dbConfig.m_password);
+        //qDebug() << "ExtensionManager::settingsWidget" << sqlDrivers;
         ret = dialog;
     } else if(index.data().toString() == "ClickBots") {
         ClickBotsDialog *dialog = new ClickBotsDialog();
-        dialog->pluginsDirEdit->setText(m_pluginsDir.path());
+        dialog->pluginsDirEdit->setText(m_config.m_pluginsDir.path());
+        dialog->clickbotsTree->setModel(m_extensionsModel);
+        dialog->clickbotsTree->setRootIndex(m_extensionsModel->indexFromItem(m_botsItem));
         ret = dialog;
     } else if(index.parent().isValid()) {
         QStandardItem* test = m_extensionsModel->itemFromIndex(index.parent());
@@ -188,30 +209,76 @@ void ExtensionManager::loadStarted(WebPage *page,const QUrl &url)
 {
     //qDebug() << "ExtensionManager::loadStarted" << url.toString();
     QMapIterator<ExtensionInterface *, QString> i(m_extensionList);
-    while (i.hasNext()) {
+    while(i.hasNext()) {
         i.next();
-        i.key()->loadStarted(page,url);
+        if(i.key()->isMyUrl(url)) {
+            if(m_config.m_requestEnabled) {
+                log(QString("%1::loadStarted (%2)").arg(i.key()->name()).arg(url.toString()));
+            }
+            i.key()->loadStarted(page,url);
+        }
     }
 }
 
 void ExtensionManager::loadFinished(QNetworkReply* reply)
 {
+    QUrl url = reply->url();
     QMapIterator<ExtensionInterface *, QString> i(m_extensionList);
-    while (i.hasNext()) {
+    while(i.hasNext()) {
         i.next();
-        i.key()->loadFinished(reply);
+        if(i.key()->isMyUrl(url)) {
+            if(m_config.m_responseEnabled) {
+                log(QString("%1::replyFinished (%2)")
+                    .arg(i.key()->name())
+                    .arg(url.toString())
+                    );
+            }
+            i.key()->loadFinished(reply);
+        }
     }
 }
 
 void ExtensionManager::loadFinished(WebPage *page)
 {
-    //qDebug() << "ExtensionManager::loadFinished" << page->mainFrame()->url().toString();
+    QUrl url = page->mainFrame()->url();
     QMapIterator<ExtensionInterface *, QString> i(m_extensionList);
-    while (i.hasNext()) {
+    while(i.hasNext()) {
         i.next();
-        i.key()->loadFinished(page);
+        if(i.key()->isMyUrl(url)) {
+            if(m_config.m_responseEnabled) {
+                log(QString("%1::loadFinished (%2), %3 Bytes")
+                    .arg(i.key()->name())
+                    .arg(url.toString())
+                    .arg(page->bytesReceived())
+                    );
+            }
+            i.key()->loadFinished(page);
+        }
     }
 }
+
+void ExtensionManager::log(const QString msg)
+{
+    if(m_config.m_logFile.isOpen()) {
+        QDateTime now = QDateTime::currentDateTime();
+        //logString.append(now.toString("[yyyy-MM-dd HH:mm:ss]"));
+        QTextStream outStream(&m_config.m_logFile);
+        outStream << now.toString("[yyyy-MM-dd HH:mm:ss] ");
+
+        ExtensionInterface *iface = qobject_cast<ExtensionInterface*>(sender());
+        if(iface != NULL) {
+            outStream << iface->name() + " ";
+        }
+
+        outStream << msg << "\n";
+        m_config.m_logFile.flush();
+    }
+}
+
+void ExtensionManager::debug(const QString)
+{
+}
+
 
 
 
@@ -237,15 +304,23 @@ void DebugDialog::logFileChooser()
                                tr("Log-Files (*.log *.txt)"));
 
     if(!fileName.isEmpty()) logFileEdit->setText(fileName);
-    qDebug() << "DebugDialog::logFileChooser" << fileName;
 }
 
 
 
-DatabaseDialog::DatabaseDialog(QWidget *parent)
-    : QWidget(parent)
+DatabaseDialog::DatabaseDialog(QScrollArea *parent)
+    : QScrollArea(parent)
 {
     setupUi(this);
+    foreach(QString driver, QSqlDatabase::drivers()) {
+        driversBox->addItem(driver);
+    }
+    connect(driversBox, SIGNAL(activated(QString)), this, SLOT(driverActivated(QString)));
+}
+
+void DatabaseDialog::driverActivated(const QString driver)
+{
+    qDebug() << "DatabaseDialog::driverActivated" << driver;
 }
 
 
@@ -265,5 +340,4 @@ void ClickBotsDialog::pluginsDirChooser()
                                                     | QFileDialog::DontResolveSymlinks);
 
     if(!dir.isEmpty()) pluginsDirEdit->setText(dir);
-    qDebug() << "ClickBotsDialog::pluginsDirChooser" << dir;
 }

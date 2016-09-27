@@ -589,7 +589,7 @@ void chAccount::loadFinished(WebPage* page)
     logString.append(now.toString("[yyyy-MM-dd HH:mm:ss]"));
     logString.append("  chAccount::loadFinished (" + url.path());
     logString.append(") '" + mainFrame->title() + "'");
-    qDebug() << logString;
+    //qDebug() << logString;
 }
 
 void chAccount::rivalsData(const QString data)

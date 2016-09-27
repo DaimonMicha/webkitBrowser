@@ -132,5 +132,5 @@ void BattleKnight::loadFinished(WebPage* page)
     logString.append(now.toString("[yyyy-MM-dd HH:mm:ss]"));
     logString.append("  BattleKnight::loadFinished (" + url.path());
     logString.append(") '" + page->mainFrame()->title() + "'");
-    qDebug() << logString;
+    //qDebug() << logString;
 }

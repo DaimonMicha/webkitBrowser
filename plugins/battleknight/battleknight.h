@@ -5,10 +5,10 @@
 #include "bkaccount.h"
 
 
-class BattleKnight : public QObject, public ExtensionInterface
+class BattleKnight  : public QObject, public ExtensionInterface
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "de.daimon-net.gamebrowser.ExtensionInterface" FILE "battleknight.json")
+    Q_PLUGIN_METADATA(IID "de.daimon-net.webkitBrowser.ExtensionInterface" FILE "battleknight.json")
     Q_INTERFACES(ExtensionInterface)
 
 public:

@@ -69,6 +69,7 @@ SettingsDialog::SettingsDialog(QWidget *parent)
     connect(enableBots, SIGNAL(toggled(bool)), this, SLOT(botsToggled(bool)));
     clickbotTreeView->setModel(BrowserApplication::extensionManager()->settingsModel());
     QItemSelectionModel *selModel = clickbotTreeView->selectionModel();
+    selModel->select(BrowserApplication::extensionManager()->settingsModel()->index(0,0),QItemSelectionModel::ClearAndSelect);
     connect(selModel, SIGNAL(currentChanged(QModelIndex,QModelIndex)), this, SLOT(extConfigActivated(QModelIndex,QModelIndex)));
 }
 

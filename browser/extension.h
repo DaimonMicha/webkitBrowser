@@ -21,10 +21,9 @@ public:
     virtual void loadStarted(WebPage*,const QUrl &) {}
     virtual void loadFinished(QNetworkReply*) {}
     virtual void loadFinished(WebPage*) {}
-
 };
 
-#define ExtensionInterface_iid "de.daimon-net.gamebrowser.ExtensionInterface"
+#define ExtensionInterface_iid "de.daimon-net.webkitBrowser.ExtensionInterface"
 Q_DECLARE_INTERFACE(ExtensionInterface, ExtensionInterface_iid)
 
 #endif // EXTENSION_H

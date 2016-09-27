@@ -8,6 +8,27 @@
 
 class WebPage;
 
+
+class dbConfig {
+public:
+    QString         m_driver;
+    QString         m_host;
+    int             m_port;
+    QString         m_database;
+    QString         m_user;
+    QString         m_password;
+};
+
+class emConfig {
+public:
+    bool            m_enabled;
+    QDir            m_pluginsDir;
+    QFile           m_logFile;
+    bool            m_requestEnabled;
+    bool            m_responseEnabled;
+    dbConfig        m_dbConfig;
+};
+
 class ExtensionManager : public QObject
 {
     Q_OBJECT
@@ -31,14 +52,12 @@ public slots:
     void loadFinished(WebPage*);
     void loadFinished(QNetworkReply*);
 
-private:
-    QDir                                pluginsDir;
+private slots:
+    void log(const QString);
+    void debug(const QString);
 
-    bool                                m_enabled;
-    QDir                                m_pluginsDir;
-    QFile                               m_logFile;
-    bool                                m_requestEnabled;
-    bool                                m_responseEnabled;
+private:
+    emConfig                            m_config;
 
     QMap<ExtensionInterface *, QString> m_extensionList;
 
@@ -65,11 +84,14 @@ private slots:
 
 #include "ui_ext_database.h"
 
-class DatabaseDialog : public QWidget, public Ui_Database
+class DatabaseDialog : public QScrollArea, public Ui_Database
 {
     Q_OBJECT
 public:
-    DatabaseDialog(QWidget *parent = 0);
+    DatabaseDialog(QScrollArea *parent = 0);
+
+private slots:
+    void driverActivated(const QString);
 };
 
 
