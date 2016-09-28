@@ -43,6 +43,7 @@ public:
 private:
     void loadPlugins();
     bool loadPlugin(const QString);
+    bool unloadPlugin(const QString);
     QWidget* settingsWidget(const QString);
 
 signals:
@@ -55,6 +56,7 @@ public slots:
 private slots:
     void log(const QString);
     void debug(const QString);
+    void reloadPlugins();
 
 private:
     emConfig                            m_config;

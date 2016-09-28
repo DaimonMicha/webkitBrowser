@@ -39,6 +39,19 @@ ExtensionManager::ExtensionManager(QObject *parent) :
     }
 }
 
+void ExtensionManager::reloadPlugins()
+{
+    for(int i=0;i<m_botsItem->rowCount();++i) {
+        QStandardItem* plugin = m_botsItem->child(i);
+        QString path = plugin->data(Qt::ToolTipRole).toString();
+        if(unloadPlugin(path)) {
+            m_botsItem->removeRow(i);
+            qDebug() << "ExtensionManager::reloadPlugins" << path;
+            loadPlugin(path);
+        }
+    }
+}
+
 void ExtensionManager::loadPlugins()
 {
     foreach (QString fileName, m_config.m_pluginsDir.entryList(QDir::Files)) {
@@ -46,6 +59,20 @@ void ExtensionManager::loadPlugins()
             //qDebug() << "\tload Extension:" << fileName;
         }
     }
+}
+
+bool ExtensionManager::unloadPlugin(const QString filePath)
+{
+    bool ret = false;
+
+    if(!QLibrary::isLibrary(filePath)) return(ret);
+    QPluginLoader loader(filePath);
+    if(loader.isLoaded()) {
+        ret = loader.unload();
+    }
+    if(!ret) qDebug() << loader.errorString();
+
+    return(ret);
 }
 
 bool ExtensionManager::loadPlugin(const QString filePath)
@@ -90,6 +117,10 @@ void ExtensionManager::loadSettings()
     m_config.m_dbConfig.m_password = settings.value(QLatin1String("dbPassword"), "retsamkcilc").toString();
 
     QStringList sqlDrivers = QSqlDatabase::drivers();
+    QSqlDatabase db = QSqlDatabase::database(QLatin1String("clickmasterConnection"),false);
+    if(db.isOpen()) {
+        db.close();
+    }
     if(sqlDrivers.contains(m_config.m_dbConfig.m_driver)) {
         QSqlDatabase db = QSqlDatabase::addDatabase(m_config.m_dbConfig.m_driver,QLatin1String("clickmasterConnection"));
         db.setHostName(m_config.m_dbConfig.m_host);
@@ -103,7 +134,7 @@ void ExtensionManager::loadSettings()
     m_config.m_pluginsDir.setPath(settings.value(QLatin1String("pluginsDir"), qApp->applicationDirPath() + "/plugins").toString());
 
     if(m_config.m_logFile.isOpen()) m_config.m_logFile.close();
-    m_config.m_logFile.setFileName(settings.value(QLatin1String("logFile"), QStandardPaths::writableLocation(QStandardPaths::DataLocation)).toString());
+    m_config.m_logFile.setFileName(settings.value(QLatin1String("logFile"), QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/webkitBrowser.log").toString());
     m_config.m_requestEnabled = settings.value(QLatin1String("requestEnabled"), false).toBool();
     m_config.m_responseEnabled = settings.value(QLatin1String("responseEnabled"), false).toBool();
     if(!m_config.m_logFile.open(QIODevice::Append | QIODevice::Text)) {
@@ -173,6 +204,7 @@ QWidget* ExtensionManager::settingsWidget(const QModelIndex &index)
         dialog->logFileEdit->setText(m_config.m_logFile.fileName());
         dialog->checkRequests->setChecked(m_config.m_requestEnabled);
         dialog->checkResponses->setChecked(m_config.m_responseEnabled);
+        connect(dialog->reloadPluginsButton, SIGNAL(clicked()), this, SLOT(reloadPlugins()));
         ret = dialog;
     } else if(index.data().toString() == "Database") {
         DatabaseDialog *dialog = new DatabaseDialog();
