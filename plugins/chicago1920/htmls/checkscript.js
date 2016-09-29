@@ -52,8 +52,25 @@
         jQuery("#opponentsProfile").attr("href", '/characters/profile/' + value)
 
         value = '(' + account.opponent("level") + ')';
-        if($j("#opponentsLevel").text() !== value) {
-            $j("#opponentsLevel").text(value);
+        if(jQuery("#opponentsLevel").text() !== value) {
+            jQuery("#opponentsLevel").text(value);
+        }
+
+    }
+
+    function checkRival() {
+        var value;
+
+        value = parseInt(account.rival("allTime"));
+        if(parseInt(jQuery("#rivalsProgress").attr("max")) !== value) {
+            jQuery("#rivalsProgress").attr("max", value);
+        }
+
+        value = parseInt(account.rival("currentTime")) || 0;
+        if(parseInt(jQuery("#rivalsProgress").val()) !== value) {
+            jQuery("#rivalsProgress").hide(0);
+            jQuery("#rivalsProgress").val(value);
+            jQuery("#rivalsProgress").show(0);
         }
 
     }
@@ -71,6 +88,7 @@
             }
 
             checkOpponent();
+            checkRival();
 
 
         } else {

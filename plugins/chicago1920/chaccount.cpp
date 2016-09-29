@@ -284,6 +284,7 @@ void chAccount::getResults(const QString result)
     //QJsonDocument debug(player2);
 
     //qDebug() << "[chAccount::getResults]\nall" << json.toJson();
+    setDayOfYear(happens.date().dayOfYear());
     qDebug() << "[chAccount::getResults] day:" << happens.date().dayOfYear() << m_gangstersTable->getPlayerData(pid, "name")
              << m_gangstersTable->getPlayerData(pid, "fightsDone")
              << m_gangstersTable->getPlayerData(pid, "fightsMax")
@@ -592,6 +593,41 @@ void chAccount::loadFinished(WebPage* page)
     //qDebug() << logString;
 }
 
+void chAccount::setDayOfYear(int day)
+{
+    if(m_currentDay == day) return;
+    m_currentDay = day;
+    // ToDo:
+    // Tages-Variablen zurücksetzen
+}
+
+QString chAccount::rival(const QString field) const
+{
+    QString ret;
+
+    if(field == "allTime") {
+        ret = QString("%1").arg(m_rival.r_searchTime);
+    } else if(field == "currentTime") {
+        QDateTime now = QDateTime::currentDateTime();
+        if(now < m_rival.r_end) {
+            ret = QString("%1").arg(m_rival.r_searchTime - now.secsTo(m_rival.r_end));
+        } else {
+            ret = QString("%1").arg(m_rival.r_searchTime);
+        }
+    }
+
+    return(ret);
+}
+
+void chAccount::fightRival()
+{
+    if(m_rival.r_id.isEmpty()) return;
+    if(!m_fightWorker) return;
+    if(!m_config.rivals) return;
+    m_fightWorker->setRival(m_rival.r_id);
+    qDebug() << "chAccount::fightRival" << m_rival.r_id;
+}
+
 void chAccount::rivalsData(const QString data)
 {
     QByteArray cdata;
@@ -602,9 +638,23 @@ void chAccount::rivalsData(const QString data)
         QJsonObject rival = (*i).toObject();
         if(!rival.isEmpty() && rival.value("countdown").toBool()) {
 
+            QString rivalId = QString("%1").arg(rival.value("search_id").toInt());
+            if(rivalId != m_rival.r_id) {
+                m_rival.r_id = rivalId;
+                int timeTo = rival.value("timer").toInt(); // countdown secs
+                m_rival.r_end = QDateTime::currentDateTime().addSecs(timeTo);
+                int timeAll = (rival.value("bonus").toObject().value("minutes").toInt() * 60);
+                m_rival.r_searchTime = timeAll;
+                QTimer::singleShot(((timeTo+1)*1000), this, SLOT(fightRival()));
+            }
+
             QJsonDocument debug(rival);
-            qDebug() << "chAccount::rivalsData" << rival.value("timer").toInt() << "sek.\n"
-                     << debug.toJson();
+            qDebug() << debug.toJson()
+                     << "chAccount::rivalsData" << m_rival.r_end << "sek.\n"
+                     << m_rival.r_searchTime << "sek. gesamt\n";
+        } else if(!rival.isEmpty()) {
+            QJsonDocument debug(rival);
+            qDebug() << debug.toJson();
         }
     }
     //qDebug() << "chAccount::rivalsData" << json.toJson();

@@ -19,6 +19,7 @@ public:
     }
 
     void setOpponent(const QString);
+    void setRival(const QString);
     int currentKWZ() const { return(m_currentKWZ); }
     QString pageTitle();
 
@@ -48,7 +49,8 @@ private:
     bool                m_isActive;
     QWebPage*           m_workingPage;
 
-    QString             m_currentOpponent;
+    QString             m_currentOpponent; // id-string
+    QString             m_currentRival; // id-string
     int                 m_currentFightCounter;
     int                 m_currentKWZ;
 };

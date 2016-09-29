@@ -22,6 +22,13 @@ public:
     bool villa;
 };
 
+class rivalData
+{
+public:
+    QString     r_id;
+    int         r_searchTime;
+    QDateTime   r_end;
+};
 
 class chAccount : public QObject
 {
@@ -49,6 +56,7 @@ public:
     Q_INVOKABLE QString workingTitle() const;
     Q_INVOKABLE QString currentRace() const { return(m_currentRace); }
     Q_INVOKABLE QString opponent(const QString) const;
+    Q_INVOKABLE QString rival(const QString) const;
 
     void loadFinished(QNetworkReply*);
     void loadFinished(WebPage*);
@@ -59,6 +67,8 @@ private:
     void parseCbi(WebPage*,const QStringList paths);
     void parseFights(WebPage*,const QStringList paths);
     void parseRivals(QWebFrame*,const QStringList paths);
+
+    void setDayOfYear(int);
 
 signals:
 
@@ -84,6 +94,7 @@ public slots:
 
 private slots:
     void chooseOpponent();
+    void fightRival();
 
 private:
     bool                    m_heistActive;
@@ -104,6 +115,7 @@ private:
 
     QMap<QString, QString>  m_cityMap;
     botConfig               m_config;
+    rivalData               m_rival;
 };
 
 #endif // CHACCOUNT_H

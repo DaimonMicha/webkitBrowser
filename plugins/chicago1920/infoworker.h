@@ -1,8 +1,6 @@
 #ifndef INFOWORKER_H
 #define INFOWORKER_H
-/*
-erste Änderung
-*/
+
 #include <QObject>
 #include <QWebPage>
 

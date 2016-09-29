@@ -17,7 +17,10 @@ infoWorker::infoWorker(QObject *parent) :
     m_isLoading(false)
 {
     m_patenvillaSecret = "ghdh67TZGHb56fgsdfkk0";
-    m_workList << "fights/vip" << "placeOfHonour" << "patenvilla" << "challenge/diary";// << "patenvilla";
+    m_workList << "fights/vip"
+               << "placeOfHonour"
+               //<< "patenvilla"
+               << "challenge/diary";
 
     m_minCooldown = 403;
     m_maxCooldown = 5267;
@@ -62,7 +65,6 @@ int infoWorker::randInt(int low, int high)
 QString infoWorker::pageTitle()
 {
     QWebElement title = m_workingPage->mainFrame()->findFirstElement("title");
-    //if(title.isNull()) return(QString());
     return(title.toPlainText().trimmed());
 }
 
@@ -213,13 +215,11 @@ void infoWorker::workFinished(bool ok)
                 if(paths.at(2) == QString("mwown")) {
                     if(paths.at(3) == QString("top")) {
                         if(paths.at(4) == QString("ruf")) {
-                            //qDebug() << mainFrame->findFirstElement("a.link_me").toPlainText().trimmed();
                             m_gangsterData.gd_name = mainFrame->findFirstElement("a.link_me").toPlainText().trimmed();
                             QString link = mainFrame->findFirstElement("a.link_me").attribute("href");
                             m_gangsterData.gd_coded_id = link.split("/",QString::SkipEmptyParts).last();
-                            m_workList.prepend("characters/profile/" + m_gangsterData.gd_coded_id);
-                            //qDebug() << m_gangsterData.gd_coded_id;
-                            QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
+                            if(!m_gangsterData.gd_coded_id.isEmpty()) m_workList.prepend("characters/profile/" + m_gangsterData.gd_coded_id);
+                            //QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
                         }
                     }
                 }
@@ -229,15 +229,12 @@ void infoWorker::workFinished(bool ok)
     } else if(paths.at(0) == QString("challenge")) {
         if(paths.count() == 2 && paths.at(1) == "diary") {
             mainFrame->evaluateJavaScript("new Ajax.Request('/challenge/diary_data',{asynchronous: false,method: 'GET',dataType: 'json',onSuccess: function(result){worker.diaryData(result.responseText);}});");
-            QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
+            //QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
         }
     } else if(paths.at(0) == QString("characters")) {
-
         if(paths.count() == 1) {
-
             m_gangsterData.gd_name = mainFrame->findFirstElement("div.char-mydata").toPlainText().trimmed();
             m_gangsterData.gd_level = mainFrame->findFirstElement("div.char-mydatal").toPlainText().trimmed();
-
         } else if(paths.count() == 3) {
             // is it this gangster?
             if(m_gangsterData.gd_coded_id == paths.at(2)) {
@@ -251,30 +248,25 @@ void infoWorker::workFinished(bool ok)
                 }
             }
         }
-
-        QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
-
+        //QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
     } else if(paths.at(0) == QString("patenvilla")) {
         if(paths.count() == 1) {
             QString question = "new Ajax.Request('/patenvilla/getData/";
             question.append(QCryptographicHash::hash(m_patenvillaSecret.toLatin1(), QCryptographicHash::Md5).toHex());
             question.append("/" + m_gangsterData.gd_clan);
             question.append("',{asynchronous: false,method: 'POST',dataType: 'json',onSuccess: function(result){worker.patenvillaData(result.responseText);}});");
-            //qDebug() << "results:" << question;
             if(!m_gangsterData.gd_clan.isEmpty()) result = mainFrame->evaluateJavaScript(question);
-            //qDebug() << "infoWorker::workFinished (patenvilla): " << pageTitle();
         }
-        //result = mainFrame->evaluateJavaScript("new Ajax.Request('/fights/opponentsListJson',{asynchronous: true,onSuccess: function(result){window.alert(result.responseText);}});");
-        QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
+        //QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
     } else {
 
     }
 
     QString logString;
-    QDateTime now = QDateTime::currentDateTimeUtc();
+    QDateTime now = QDateTime::currentDateTime();
     logString.append(now.toString("[yyyy-MM-dd HH:mm:ss]"));
     logString.append("  infoWorker::loadFinished (" + url.path());
     logString.append(") '" + mainFrame->title() + "'");
     qDebug() << logString << m_workList;
-    //qDebug() << pageTitle() << "\t[infoWorker::workFinished]" << paths;
+    QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
 }
