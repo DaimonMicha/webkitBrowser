@@ -15,7 +15,7 @@ public:
     ~Chicago1920();
 
     QString name() const { return(QLatin1String("Chicago1920")); }
-    QWidget* settingsWidget() const { return(new QWidget()); }
+    QWidget* settingsWidget() const;
     bool isMyUrl(const QUrl &) const;
 
     void loadSettings(QSettings &);

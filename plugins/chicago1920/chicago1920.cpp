@@ -1,6 +1,7 @@
 #include "chicago1920.h"
 #include "browserapplication.h"
 #include "networkaccessmanager.h"
+#include "settings.h"
 
 #include <QNetworkAccessManager>
 #include <QNetworkCookieJar>
@@ -16,6 +17,12 @@
 Chicago1920::~Chicago1920()
 {
     Q_CLEANUP_RESOURCE(data);
+}
+
+QWidget* Chicago1920::settingsWidget() const
+{
+    qDebug() << "\tget the Chicago1920::settingsWidget";
+    return(new Settings());
 }
 
 bool Chicago1920::isMyUrl(const QUrl &url) const
@@ -40,6 +47,8 @@ void Chicago1920::loadSettings(QSettings &settings)
 
 void Chicago1920::loadStarted(WebPage* page,const QUrl &url)
 {
+    // diese Funktion wird aber nur einmal aufgerufen,
+    // wenn die page das erste Mal geladen wird.
     if(!isMyUrl(url)) return;
     QList<QNetworkCookie> cookies = page->networkAccessManager()->cookieJar()->cookiesForUrl(url);
     // ToDo: look for an account with this cookie
@@ -111,10 +120,6 @@ void Chicago1920::loadFinished(WebPage* page)
     if(!pluginDiv.isNull()) return;
 
     injectHtml(page->mainFrame(), current);
-    QString di;
-    if(readDataFile("checkscript.js", di) > 0) {
-        page->mainFrame()->evaluateJavaScript(di);
-    }
 }
 
 int Chicago1920::readDataFile(const QString file, QString& data)
@@ -184,4 +189,8 @@ void Chicago1920::injectHtml(QWebFrame* mainFrame, chAccount* account)
         if(!checker.isNull()) checker.setAttribute("checked", "checked");
     }
 
+    di = "";
+    if(readDataFile("checkscript.js", di) > 0) {
+        mainFrame->evaluateJavaScript(di);
+    }
 }

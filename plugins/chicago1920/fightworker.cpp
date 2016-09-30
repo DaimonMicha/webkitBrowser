@@ -1,7 +1,5 @@
 #include "fightworker.h"
 
-#include <QWebFrame>
-#include <QWebElement>
 #include <QVariant>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -19,51 +17,11 @@ fightWorker::fightWorker(QObject *parent) :
     m_currentFightCounter(0)
 {
     m_currentOpponent = "";
+    m_currentRival = "";
     connect(m_workingPage->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()),
             this, SLOT(addJavaScriptObject()));
     connect(m_workingPage, SIGNAL(loadFinished(bool)),
             this, SLOT(workFinished(bool)));
-}
-
-void fightWorker::setOn()
-{
-    m_isActive = true;
-    waitFight();
-    //qDebug() << "fightWorker::setOn" << m_workingPage->mainFrame()->url().path() << pageTitle();
-}
-
-void fightWorker::setOff()
-{
-    if(!m_isActive) return;
-    m_isActive = false;
-    //qDebug() << "fightWorker::setOff" << pageTitle();
-}
-
-void fightWorker::setOpponent(const QString opponent)
-{
-    if(m_currentOpponent != opponent) {
-        m_currentOpponent = opponent;
-    }
-    if(m_currentOpponent == "") {
-        m_isActive = false;
-    }
-    waitFight();
-    //qDebug() << "fightWorker::setOpponent:" << m_currentOpponent;
-}
-
-void fightWorker::setRival(const QString rival)
-{
-    if(m_currentRival != rival) {
-        m_currentRival = rival;
-    }
-}
-
-void fightWorker::waitFight()
-{
-    if(!m_isActive) return;
-    if(m_currentOpponent == "") return;
-    if(m_workingPage->mainFrame()->url().path() == "/fights/waitFight") return;
-    m_workingPage->mainFrame()->load(QUrl("http://www.chicago1920.com/fights"));
 }
 
 void fightWorker::startFight()
@@ -76,43 +34,7 @@ void fightWorker::startFight()
         m_currentRival = "";
     }
     m_workingPage->mainFrame()->load(url);
-    //qDebug() << "fightWorker::startFight" << url;
-    // http://www.chicago1920.com/rivalNpc/start/484781
-    // http://www.chicago1920.com/rivalNpc/fight
-    // http://www.chicago1920.com/rivalNpc/results/6205f39177b65b9d12cd93a16c06390f
-    // http://www.chicago1920.com/rivalNpc/getResults/6205f39177b65b9d12cd93a16c06390f
-}
-
-void fightWorker::fightData(const QString result)
-{
-    /*
-    QByteArray data;
-    data.append(result);
-    QJsonDocument json = QJsonDocument::fromJson(data);
-*/
-    //qDebug() << "fightWorker::fightData\n" << json.toJson();
-    emit(fightDataReady(result));
-}
-
-void fightWorker::getResults(const QString result)
-{
-    emit(fightResults(result));
-}
-
-void fightWorker::addJavaScriptObject()
-{
-    m_workingPage->mainFrame()->addToJavaScriptWindowObject("fighter", this);
-}
-
-int fightWorker::randInt(int low, int high)
-{
-    return qrand() % ((high + 1) - low) + low;
-}
-
-QString fightWorker::pageTitle()
-{
-    QWebElement title = m_workingPage->mainFrame()->findFirstElement("title");
-    return(title.toPlainText().trimmed());
+    //qDebug() << "fightWorker::startFight" << url.toString();
 }
 
 void fightWorker::workFinished(bool ok)
@@ -186,6 +108,6 @@ void fightWorker::workFinished(bool ok)
     QDateTime now = QDateTime::currentDateTime();
     logString.append(now.toString("[yyyy-MM-dd HH:mm:ss]"));
     logString.append("  fightWorker::loadFinished (" + url.path());
-    logString.append(") '" + mainFrame->title() + "'");
-    qDebug() << logString;
+    logString.append(") <" + mainFrame->title() + ">");
+    qDebug() << logString.toLocal8Bit().data();
 }

@@ -121,6 +121,7 @@ void ExtensionManager::loadSettings()
     if(db.isOpen()) {
         db.close();
     }
+    QSqlDatabase::removeDatabase(QLatin1String("clickmasterConnection"));
     if(sqlDrivers.contains(m_config.m_dbConfig.m_driver)) {
         QSqlDatabase db = QSqlDatabase::addDatabase(m_config.m_dbConfig.m_driver,QLatin1String("clickmasterConnection"));
         db.setHostName(m_config.m_dbConfig.m_host);
@@ -228,7 +229,14 @@ QWidget* ExtensionManager::settingsWidget(const QModelIndex &index)
     } else if(index.parent().isValid()) {
         QStandardItem* test = m_extensionsModel->itemFromIndex(index.parent());
         if(test == m_botsItem) {
-            qDebug() << "settingsWidget:" << index.data().toString() << ", parent:" << index.parent().data().toString();
+            QMapIterator<ExtensionInterface *, QString> i(m_extensionList);
+            while(i.hasNext()) {
+                i.next();
+                if(i.key()->name() == index.data().toString()) {
+                    ret = i.key()->settingsWidget();
+                    qDebug() << "settingsWidget:" << index.data().toString() << ", parent:" << index.parent().data().toString();
+                }
+            }
         }
     }
 

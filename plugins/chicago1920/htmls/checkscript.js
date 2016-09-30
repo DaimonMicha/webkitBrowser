@@ -1,81 +1,72 @@
 
 
+var opponent = {
+    id: 0,
+    race: '',
+    active: false
+}
 
-    function checkGangster() {
+
+function checkRival() {
+
+    var allTime = parseInt(account.rival("allTime"));
+    if(parseInt(jQuery("#rivalsProgress").attr("max")) !== allTime) {
+        jQuery("#rivalsProgress").attr("max", allTime);
     }
 
-
-    var opponent = {
-        id: 0,
-        name: '',
-        race: '',
-        level: 0,
-        fightsDone: 0,
-        fightsMax: 10,
-        active: false,
-        coolDown: ''
+    var currentTime = parseInt(account.rival("currentTime")) || 0;
+    if(parseInt(jQuery("#rivalsProgress").val()) !== currentTime) {
+        jQuery("#rivalsProgress").hide(0);
+        jQuery("#rivalsProgress").val(currentTime);
+        if(currentTime < allTime) jQuery("#rivalsProgress").show(0);
     }
 
-    function checkOpponent() {
-
-        if(opponent.id !== parseInt(account.opponent("id"))) {
-            opponent.id = parseInt(account.opponent("id"));
-        } else {
-            //return;
-        }
-
-        var value;
-
-        value = parseInt(account.opponent("fightsMax")) || 10;
-        if(parseInt(jQuery("#opponentsProgress").attr("max")) !== value) {
-            jQuery("#opponentsProgress").attr("max", value);
-        }
-
-        value = parseInt(account.opponent("fightsDone")) || 0;
-        if(parseInt(jQuery("#opponentsProgress").val()) !== value) {
-            jQuery("#opponentsProgress").hide(0);
-            jQuery("#opponentsProgress").val(value);
-            jQuery("#opponentsProgress").show(0);
-        }
-
-        value = 'Angriffe: ' + account.opponent("fightsDone") + ' - ' + account.opponent("fightsMax");
-        if(jQuery("#opponentsProgress").attr("title") !== value) {
-            jQuery("#opponentsProgress").attr("title", value);
-        }
-
-        value = account.opponent("name");
-        if(jQuery("#opponentsName").text() !== value) {
-            jQuery("#opponentsName").text(value);
-        }
-
-        value = account.opponent("coded_id");
-        jQuery("#opponentsProfile").attr("href", '/characters/profile/' + value)
-
-        value = '(' + account.opponent("level") + ')';
-        if(jQuery("#opponentsLevel").text() !== value) {
-            jQuery("#opponentsLevel").text(value);
-        }
-
+    var timeString = account.rival("timeString");
+    if(jQuery("#rivalTimer").text() !== timeString) {
+        jQuery("#rivalTimer").text(timeString);
     }
 
-    function checkRival() {
-        var value;
+}
 
-        value = parseInt(account.rival("allTime"));
-        if(parseInt(jQuery("#rivalsProgress").attr("max")) !== value) {
-            jQuery("#rivalsProgress").attr("max", value);
-        }
 
-        value = parseInt(account.rival("currentTime")) || 0;
-        if(parseInt(jQuery("#rivalsProgress").val()) !== value) {
-            jQuery("#rivalsProgress").hide(0);
-            jQuery("#rivalsProgress").val(value);
-            jQuery("#rivalsProgress").show(0);
-        }
+function checkOpponent() {
 
+    if(opponent.id !== parseInt(account.opponent("id"))) {
+        opponent.id = parseInt(account.opponent("id"));
+    } else {
+        //return;
     }
 
-    function checkProgress() {
+    var value;
+
+    value = account.opponent("name");
+    if(jQuery("#opponentsName").text() !== value) {
+        jQuery("#opponentsName").text(value);
+    }
+
+    value = account.opponent("coded_id");
+    jQuery("#opponentsProfile").attr("href", '/characters/profile/' + value)
+
+    value = '(' + account.opponent("level") + ')';
+    if(jQuery("#opponentsLevel").text() !== value) {
+        jQuery("#opponentsLevel").text(value);
+    }
+
+    var fightsMax = account.opponent("fightsMax") || 10;
+    var fightsDone = account.opponent("fightsDone") || 0;
+    value = fightsDone + ' - ' + fightsMax;
+    if(jQuery("#opponentsProgress").text() !== value) {
+        jQuery("#opponentsProgress").text(value);
+    }
+
+}
+
+
+function checkGangster() {
+}
+
+
+function checkProgress() {
         if(account.isActive()) {
 
             if(account.mustReload()) {
@@ -87,6 +78,7 @@
                 }
             }
 
+            checkGangster();
             checkOpponent();
             checkRival();
 
@@ -97,4 +89,7 @@
     }
 
     window.setInterval("checkProgress()",250);
+
+    //var pos = jQuery("table:first").offset();
+    //if(pos.left < 152) jQuery("table:first").offset({top:pos.top,left:152});
 

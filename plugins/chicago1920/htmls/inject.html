@@ -36,6 +36,9 @@
 #accountPlugin td {
     height: 25px;
 }
+.hoverTable:hover {
+    background-color: rgba(241, 236, 215, 0.25);
+}
 .klickMeisterLogo {
     text-align: center;
     font-size: 1.4em;
@@ -48,11 +51,16 @@
     text-decoration: none;
     padding-left: 10px;
 }
-.kmHeader a:hover {
+.kmHeader a:hover, #accountPlugin label:hover {
     color: red;
 }
-#opponentsName {
-    font-size: 1.2em;
+.topic {
+    text-align: right;
+    font-size: 1em;
+    font-weight: bold;
+}
+#opponentsProfile {
+    font-size: 1.1em;
 }
 -->
 </style>
@@ -67,6 +75,7 @@
                 </tr>
                 <tr><td colspan="2" class="kmHeader"></td></tr>
                 <tr><td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/fights/vip">Vip Liste</a></td></tr>
+                <tr><td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/secretfiles/index">Secret Files</a></td></tr>
                 <tr><td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/loot">Loot Area</a></td></tr>
                 <tr><td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/razzia/dock">Docks</a></td></tr>
                 <tr><td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/safe/maxeinzahlen">maxSafe</a></td></tr>
@@ -74,13 +83,13 @@
         </table>
     </div>
     <div id="opponents">
-        <table id="fighterTable" width="100%">
+        <table id="fighterTable" class="hoverTable" width="100%">
             <tbody>
                 <tr>
                     <td colspan="2" class="kmHeader"><a href="/conquest">&Uuml;berfall</a></td>
                 </tr>
                 <tr>
-                    <td colspan="2" align="right">
+                    <td colspan="2" align="center">
                     <select id="raceSelect" onChange="account.raceChanged(jQuery('#raceSelect').val());">
                         <option value="0">alle Gebiete</option>
                         <option value="1">Dunning</option>
@@ -96,29 +105,37 @@
                 </tr>
             </tbody>
         </table>
-        <table id="opponentsTable" width="100%">
+        <table id="opponentsTable" class="hoverTable" width="100%">
             <tbody>
                 <tr>
-                    <td align="center"><b>Gegner:</b></td>
-                    <td align="right"><button type="button" title="einen anderen Gangster (zuf&auml;llig) auswählen" onClick="account.click('opponent');">wechseln</button></td>
+                    <td class="topic"><b>Gegner:</b></td>
+                    <td align="center"><button type="button" title="einen anderen Gangster (zuf&auml;llig) auswählen" onClick="account.click('opponent');">wechseln</button></td>
                 </tr>
                 <tr>
-                    <td colspan="2" align="center"><a id="opponentsProfile" title="das Profil dieses Gangsters aufrufen."><span id="opponentsName">&nbsp;</span></a>&nbsp;<span id="opponentsLevel" title="das Level dieses Gangsters"></span></td>
+                    <td colspan="2" align="center"><a id="opponentsProfile" title="das Profil dieses Gangsters aufrufen."><span id="opponentsName">&nbsp;</span></a>&nbsp;&nbsp;<span id="opponentsLevel" title="das Level dieses Gangsters"></span></td>
                 </tr>
-                <tr><td colspan="2" align="center"><progress id="opponentsProgress" value="0" max="10">1 - 10</progress></td></tr>
+                <tr>
+                    <td class="topic"><b>Angriffe:</b></td>
+                    <td align="center" id="opponentsProgress">0 - 10</td>
+                </tr>
             </tbody>
         </table>
         <br />
-        <table id="optionsTable" width="100%">
+        <table id="rivalsTable" class="hoverTable" width="100%">
             <tbody>
                 <tr>
-                    <td colspan="2" class="kmHeader"><a href="/rival/index">Rivalen</a></td>
+                    <td colspan="2" class="kmHeader"><a href="/rival/index">Rivalen</a>&nbsp;<div style="display: inline; font-size: 0.8em; font-weight: normal; text-align: right; padding-top: 5px; padding-right: 2px; float: right;" id="rivalTimer">00:00:00</div></td>
                 </tr>
+                <tr><td id="rivalsTimer" colspan="2" align="center"><progress id="rivalsProgress" value="0" max="10">1 - 10</progress></td></tr>
                 <tr>
                     <td><input id="rivalsChecker" type="checkbox" onClick="account.toggle('rivals', this.checked);"></input></td>
                     <td><label for="rivalsChecker">angreifen</label></td>
                 </tr>
-                <tr><td id="rivalsTimer" colspan="2" align="center"><progress id="rivalsProgress" value="0" max="10">1 - 10</progress></td></tr>
+            </tbody>
+        </table>
+        <br />
+        <table id="diaryTable" class="hoverTable" width="100%">
+            <tbody>
                 <tr>
                     <td colspan="2" class="kmHeader"><a href="/challenge/diary">Tagebuch</a></td>
                 </tr>
@@ -136,7 +153,7 @@
                     <td colspan="2" class="kmHeader">Heist</td>
                 </tr>
                 <tr>
-                    <td><input id="heistChecker" type="checkbox" onClick="account.toggle('heist', jQuery('#heistChecker').prop('checked'));"></input></td>
+                    <td><input id="heistChecker" type="checkbox" onClick="account.toggle('heist', this.checked);"></input></td>
                     <td><label for="heistChecker">GeldTransporter</label></td>
                 </tr>
             </tbody>

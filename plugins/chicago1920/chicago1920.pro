@@ -20,7 +20,8 @@ SOURCES      += \
     heistworker.cpp \
     fightworker.cpp \
     chplayertable.cpp \
-    infoworker.cpp
+    infoworker.cpp \
+    settings.cpp
 
 HEADERS      += \
         chicago1920.h \
@@ -28,7 +29,8 @@ HEADERS      += \
     heistworker.h \
     fightworker.h \
     chplayertable.h \
-    infoworker.h
+    infoworker.h \
+    settings.h
 
 OTHER_FILES += \
     htmls/inject.html \
@@ -36,4 +38,7 @@ OTHER_FILES += \
 
 RESOURCES += \
     htmls/data.qrc
+
+FORMS += \
+    settings.ui
 

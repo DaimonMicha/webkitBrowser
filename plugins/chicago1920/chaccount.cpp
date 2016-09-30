@@ -553,38 +553,6 @@ void chAccount::loadFinished(WebPage* page)
 
     }
 
-/*
-    if(pluginDiv.isNull()) {
-
-        QWebElement body = mainFrame->findFirstElement("body");
-        body.appendInside("<div style=\"position: absolute; float: left; width: 155px; height: 95%; top: 15px; padding-left: 5px; text-align: left; border: 1px solid yellow;\" id=\"accountPlugin\">&nbsp;</div>");
-        pluginDiv = mainFrame->findFirstElement("#accountPlugin");
-        if(!m_nameValue.isEmpty()) pluginDiv.appendInside("<h1 id='playerName' style='cursor: pointer;'>"+m_nameValue+"</h1>");
-        if(m_levelValue != 0) pluginDiv.appendInside("<h2>&nbsp;&nbsp;&nbsp;Level:&nbsp;"+m_levelValue+"</h2>");
-        // insert last opponents
-        pluginDiv.appendInside("<div style=\"font-size: 10pt; position: absolute; bottom: 10px; width: 143px; height: 70%; background-color:rgba(0, 0, 0, 0.65);\" id=\"lastOpponents\"></div>");
-        QWebElement opponents = mainFrame->findFirstElement("#lastOpponents");
-        opponents.appendInside("<table width=\"100%\"><tbody id=\"playersTable\"></tbody></table>");
-        QWebElement pTable = mainFrame->findFirstElement("#playersTable");
-        int start = 0;
-        if(m_opponentsModel->rowCount() > 30) start = m_opponentsModel->rowCount()-30;
-        for(int row = start;row < m_opponentsModel->rowCount();++row) {
-            QStandardItem* item = m_opponentsModel->item(row, 1);
-            QString out = "<tr><td>";
-            out.append(item->text());
-            out.append("</td><td align=\"right\">");
-            item = m_opponentsModel->item(row, 2);
-            out.append(item->text());
-            out.append("</td></tr>");
-            pTable.appendInside(out);
-        }
-        mainFrame->evaluateJavaScript("jQuery('#playerName').click(function(){account.toggle();if(account.isActive()){jQuery(this).css({color:'red'});}else{jQuery(this).css({color:'rgb(253,255,225)'});}});");
-        mainFrame->evaluateJavaScript("if(account.isActive()){jQuery('#playerName').css({color:'red'});}else{jQuery('#playerName').css({color:'rgb(253,255,225)'});}");
-        //qDebug() << mainFrame->evaluateJavaScript("typeof(account);");
-
-    }
-*/
-
     QString logString;
     QDateTime now = QDateTime::currentDateTimeUtc();
     logString.append(now.toString("[yyyy-MM-dd HH:mm:ss]"));
@@ -607,12 +575,23 @@ QString chAccount::rival(const QString field) const
 
     if(field == "allTime") {
         ret = QString("%1").arg(m_rival.r_searchTime);
+
     } else if(field == "currentTime") {
         QDateTime now = QDateTime::currentDateTime();
         if(now < m_rival.r_end) {
             ret = QString("%1").arg(m_rival.r_searchTime - now.secsTo(m_rival.r_end));
         } else {
             ret = QString("%1").arg(m_rival.r_searchTime);
+        }
+
+    } else if(field == "timeString") {
+        QDateTime now = QDateTime::currentDateTime();
+        if(now < m_rival.r_end) {
+            QTime mid = QTime(0,0,0,0);
+            mid = mid.addSecs(m_rival.r_searchTime - (m_rival.r_searchTime - now.secsTo(m_rival.r_end)));
+            ret = mid.toString("HH:mm:ss");
+        } else {
+            ret = "00:00:00";
         }
     }
 
@@ -636,7 +615,8 @@ void chAccount::rivalsData(const QString data)
     QJsonArray rivals = json.array();
     for(QJsonArray::const_iterator i = rivals.constBegin(); i != rivals.end(); ++i) {
         QJsonObject rival = (*i).toObject();
-        if(!rival.isEmpty() && rival.value("countdown").toBool()) {
+        if(rival.isEmpty()) continue;
+        if(rival.value("countdown").toBool()) {
 
             QString rivalId = QString("%1").arg(rival.value("search_id").toInt());
             if(rivalId != m_rival.r_id) {
@@ -652,9 +632,16 @@ void chAccount::rivalsData(const QString data)
             qDebug() << debug.toJson()
                      << "chAccount::rivalsData" << m_rival.r_end << "sek.\n"
                      << m_rival.r_searchTime << "sek. gesamt\n";
-        } else if(!rival.isEmpty()) {
+        } else if(rival.value("attack").toBool()) {
+            int timeAll = (rival.value("bonus").toObject().value("minutes").toInt() * 60);
+            m_rival.r_searchTime = timeAll;
             QJsonDocument debug(rival);
-            qDebug() << debug.toJson();
+            qDebug() << debug.toJson()
+                     << "chAccount::rivalsAttack:"
+                     << m_rival.r_searchTime << "sek. gesamt\n";
+        } else {
+            QJsonDocument debug(rival);
+            //qDebug() << "sonstiger Rivale:\n" << debug.toJson();
         }
     }
     //qDebug() << "chAccount::rivalsData" << json.toJson();
