@@ -6,53 +6,57 @@
 #include <QWebFrame>
 #include <QWebElement>
 
+
+
+class gangster
+{
+public:
+    int         m_maxLife; // maximale Lebenspunkte
+    int         m_dollar; // Spiel-Geld
+    int         m_whisky; // die "harte" Währung
+    int         m_gp; // gangsterPoints
+};
+
+
 class fightWorker : public QObject
 {
     Q_OBJECT
 public:
     fightWorker(QObject *parent = 0);
 
-    Q_INVOKABLE bool isActive() const
-    {
+    Q_INVOKABLE bool isActive() const {
         return(m_isActive);
     }
 
-    Q_INVOKABLE QString opponent() const
-    {
+    Q_INVOKABLE QString opponent() const {
         return(m_currentOpponent);
     }
 
-    void setNetworkAccessManager(QNetworkAccessManager* manager)
-    {
+    void setNetworkAccessManager(QNetworkAccessManager* manager) {
         m_workingPage->setNetworkAccessManager(manager);
     }
 
-    void setOpponent(const QString opponent)
-    {
+    void setOpponent(const QString opponent) {
         if(m_currentOpponent != opponent) m_currentOpponent = opponent;
         if(m_currentOpponent == "") m_isActive = false;
         waitFight();
     }
 
-    void setRival(const QString rival)
-    {
+    void setRival(const QString rival) {
         if(m_currentRival != rival) m_currentRival = rival;
     }
 
-    int currentKWZ() const
-    {
+    int currentKWZ() const {
         return(m_currentKWZ);
     }
 
-    QString pageTitle()
-    {
+    QString pageTitle() {
         QWebElement title = m_workingPage->mainFrame()->findFirstElement("title");
         return(title.toPlainText().trimmed());
     }
 
 private:
-    int randInt(int low, int high)
-    {
+    int randInt(int low, int high) {
         return qrand() % ((high + 1) - low) + low;
     }
 
@@ -64,37 +68,32 @@ signals:
     void fightCooldown(int seconds);
 
 public slots:
-    void setOn()
-    {
+    void setOn() {
         m_isActive = true;
         waitFight();
     }
 
-    void setOff()
-    {
+    void setOff() {
         m_isActive = false;
     }
 
-    void getResults(const QString result)
-    {
+    void getResults(const QString result) {
         emit(fightResults(result));
     }
 
-    void fightData(const QString result)
-    {
+    void fightData(const QString result) {
         emit(fightDataReady(result));
     }
 
     void startFight();
+    void gangsterStatus(const QString, const QString);
 
 private slots:
-    void addJavaScriptObject()
-    {
+    void addJavaScriptObject() {
         m_workingPage->mainFrame()->addToJavaScriptWindowObject("fighter", this);
     }
 
-    void waitFight()
-    {
+    void waitFight() {
         if(!m_isActive) return;
         if(m_currentOpponent == "") return;
         if(m_workingPage->mainFrame()->url().path() == "/fights/waitFight") return;
@@ -111,6 +110,7 @@ private:
     QString             m_currentRival; // id-string
     int                 m_currentFightCounter;
     int                 m_currentKWZ;
+    gangster            m_accPlayer;
 };
 
 #endif // FIGHTWORKER_H

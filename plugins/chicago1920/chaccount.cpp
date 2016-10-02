@@ -630,15 +630,24 @@ void chAccount::rivalsData(const QString data)
 
             QJsonDocument debug(rival);
             qDebug() << debug.toJson()
-                     << "chAccount::rivalsData" << m_rival.r_end << "sek.\n"
+                     << "chAccount::rivalsData" << m_rival.r_end.toString() << "sek.\n"
                      << m_rival.r_searchTime << "sek. gesamt\n";
+
         } else if(rival.value("attack").toBool()) {
-            int timeAll = (rival.value("bonus").toObject().value("minutes").toInt() * 60);
-            m_rival.r_searchTime = timeAll;
+
+            QString rivalId = QString("%1").arg(rival.value("search_id").toInt());
+            if(rivalId != m_rival.r_id) {
+                m_rival.r_id = rivalId;
+                int timeAll = (rival.value("bonus").toObject().value("minutes").toInt() * 60);
+                m_rival.r_searchTime = timeAll;
+                QTimer::singleShot(50, this, SLOT(fightRival()));
+            }
+
             QJsonDocument debug(rival);
             qDebug() << debug.toJson()
                      << "chAccount::rivalsAttack:"
                      << m_rival.r_searchTime << "sek. gesamt\n";
+
         } else {
             QJsonDocument debug(rival);
             //qDebug() << "sonstiger Rivale:\n" << debug.toJson();

@@ -36,13 +36,13 @@
 #accountPlugin td {
     height: 25px;
 }
-.hoverTable:hover {
-    background-color: rgba(241, 236, 215, 0.25);
-}
 .klickMeisterLogo {
     text-align: center;
     font-size: 1.4em;
     font-weight: bold;
+}
+.hoverTable:hover {
+    background-color: rgba(241, 236, 215, 0.125);
 }
 .kmHeader, .kmHeader a {
     font-size: 1.2em;
@@ -77,6 +77,7 @@
                 <tr><td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/fights/vip">Vip Liste</a></td></tr>
                 <tr><td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/secretfiles/index">Secret Files</a></td></tr>
                 <tr><td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/loot">Loot Area</a></td></tr>
+                <tr><td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/guildvitrine">Erfolge</a></td></tr>
                 <tr><td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/razzia/dock">Docks</a></td></tr>
                 <tr><td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/safe/maxeinzahlen">maxSafe</a></td></tr>
             </tbody>
@@ -126,8 +127,8 @@
                 <tr>
                     <td colspan="2" class="kmHeader"><a href="/rival/index">Rivalen</a>&nbsp;<div style="display: inline; font-size: 0.8em; font-weight: normal; text-align: right; padding-top: 5px; padding-right: 2px; float: right;" id="rivalTimer">00:00:00</div></td>
                 </tr>
-                <tr><td id="rivalsTimer" colspan="2" align="center"><progress id="rivalsProgress" value="0" max="10">1 - 10</progress></td></tr>
-                <tr>
+                <tr id="rivalsTimer"><td colspan="2" align="center"><progress id="rivalsProgress" value="0" max="10">1 - 10</progress></td></tr>
+                <tr id="rivalsCheckerRow">
                     <td><input id="rivalsChecker" type="checkbox" onClick="account.toggle('rivals', this.checked);"></input></td>
                     <td><label for="rivalsChecker">angreifen</label></td>
                 </tr>

@@ -18,7 +18,14 @@ function checkRival() {
     if(parseInt(jQuery("#rivalsProgress").val()) !== currentTime) {
         jQuery("#rivalsProgress").hide(0);
         jQuery("#rivalsProgress").val(currentTime);
-        if(currentTime < allTime) jQuery("#rivalsProgress").show(0);
+        if(currentTime < allTime) {
+            jQuery("#rivalsProgress").show(0);
+            jQuery("#rivalsTimer").show(0);
+            jQuery("#rivalsCheckerRow").show(0);
+        } else {
+            jQuery("#rivalsTimer").hide(0);
+            jQuery("#rivalsCheckerRow").hide(0);
+        }
     }
 
     var timeString = account.rival("timeString");
