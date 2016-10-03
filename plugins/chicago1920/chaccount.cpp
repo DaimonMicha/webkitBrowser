@@ -569,6 +569,19 @@ void chAccount::setDayOfYear(int day)
     // Tages-Variablen zurücksetzen
 }
 
+QString chAccount::gangster(const QString field) const
+{
+    QString ret;
+
+    if(!m_infoWorker) return(ret);
+
+    if(field == "name") {
+        ret = m_infoWorker->gangster("name");
+    }
+
+    return(ret);
+}
+
 QString chAccount::rival(const QString field) const
 {
     QString ret;

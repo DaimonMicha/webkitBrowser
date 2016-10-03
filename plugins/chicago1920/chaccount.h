@@ -55,6 +55,7 @@ public:
     Q_INVOKABLE QString cookieValue() const { return(m_cookieValue); }
     Q_INVOKABLE QString workingTitle() const;
     Q_INVOKABLE QString currentRace() const { return(m_currentRace); }
+    Q_INVOKABLE QString gangster(const QString) const;
     Q_INVOKABLE QString opponent(const QString) const;
     Q_INVOKABLE QString rival(const QString) const;
 

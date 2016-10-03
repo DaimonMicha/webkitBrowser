@@ -70,6 +70,13 @@ function checkOpponent() {
 
 
 function checkGangster() {
+    var value;
+
+    value = account.gangster("name");
+    if(jQuery("#gangsterName").text() !== value) {
+        jQuery("#gangsterName").text(value);
+    }
+
 }
 
 

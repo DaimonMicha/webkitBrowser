@@ -43,6 +43,8 @@ QString infoWorker::gangster(const QString& field)
         return(m_gangsterData.gd_coded_id);
     } else if(field == "clan_coded") {
         return(m_gangsterData.gd_clan);
+    } else if(field == "name") {
+        return(m_gangsterData.gd_name);
     }
     return(QString());
 }
@@ -142,6 +144,10 @@ void infoWorker::fightsVip()
     if(!m_isActive) return;
 
     m_workList.prepend("fights/vip");
+    if(m_gangsterData.gd_name.isEmpty()) {
+        m_workList.append("placeOfHonour");
+        m_workList.append("characters");
+    }
     QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
 }
 

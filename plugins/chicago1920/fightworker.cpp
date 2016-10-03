@@ -43,6 +43,12 @@ void fightWorker::gangsterStatus(const QString topic, const QString value)
     } else if(topic == "lifeMax") {
         m_accPlayer.m_maxLife = value.toInt();
     } else if(topic == "fullLifeAfter") {
+        int minWait = 1234;
+        if(value.toInt() > 0) {
+            minWait += value.toInt();
+        }
+        int maxWait = minWait + 3654;
+        QTimer::singleShot(randInt(minWait,maxWait), this, SLOT(startFight()));
     } else if(topic == "currentCrystals") { // whisky
         m_accPlayer.m_whisky = value.toInt();
     } else if(topic == "currentGold") { // dollar
@@ -113,8 +119,6 @@ void fightWorker::workFinished(bool ok)
                     question.append("fighter.gangsterStatus('lifeCurrent', lifeCurrent);\n");
                     question.append("fighter.gangsterStatus('fullLifeAfter', fullLifeAfter);\n");
                     result = mainFrame->evaluateJavaScript(question);
-
-                    QTimer::singleShot(randInt(1234,3857), this, SLOT(startFight()));
                 }
 
             } else if(QString("fight") == paths.at(1)) {
