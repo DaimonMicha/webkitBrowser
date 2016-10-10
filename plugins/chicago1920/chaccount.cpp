@@ -27,9 +27,14 @@ chAccount::chAccount(const QString cookie, QObject *parent) :
 {
     //m_cookieValue = cookie;
     m_config.bot = false;
+    m_config.opponents = false;
+    m_config.rivals = false;
+    m_config.diary = false;
+    m_config.traitor = false;
 
     m_infoWorker = NULL;
     m_fightWorker = NULL;
+    m_traitorWorker = NULL;
     m_currentRace = "0";
 
     m_cityMap["1"]="Dunning";
@@ -86,23 +91,6 @@ QString chAccount::opponent(const QString field) const
     return(m_gangstersTable->getPlayerData(pid, field));
 }
 
-void chAccount::chooseOpponent()
-{
-    if(!m_fightWorker) return;
-    QString pid;
-    pid = m_gangstersTable->randomPlayer(m_currentRace);
-    if(pid == "") {
-        if(m_currentRace != "0") {
-            raceChanged("0");
-            return;
-        }
-    }
-    m_fightWorker->setOpponent(pid);
-    m_currentOpponent = pid; // rausnehmen?
-
-    //qDebug() << "chAccount::chooseOpponent:" << pid << m_gangstersTable->getPlayerData(pid,"name") << m_gangstersTable->getPlayerData(pid,"fightsDone");
-}
-
 void chAccount::toggle(const QString option, const bool on)
 {
     if(option == "account") {
@@ -120,9 +108,16 @@ void chAccount::toggle(const QString option, const bool on)
             }
         }
 
+    } else if(option == "opponents") {
+        m_config.opponents = on;
+        if(on) {
+        } else {
+        }
+
     } else if(option == "rivals") {
         m_config.rivals = on;
         if(on) {
+            QTimer::singleShot(50, this, SLOT(fightRival()));
         } else {
         }
 
@@ -131,6 +126,17 @@ void chAccount::toggle(const QString option, const bool on)
         if(on) {
         } else {
         }
+
+    } else if(option == "traitor") {
+        m_config.traitor = on;
+        if(m_traitorWorker) {
+            if(on) {
+                m_traitorWorker->setOn();
+            } else {
+                m_traitorWorker->setOff();
+            }
+        }
+
     }
     qDebug() << "chAccount::toggle:" << option << on;
 }
@@ -141,6 +147,25 @@ void chAccount::click(const QString button)
         chooseOpponent();
     }
     //qDebug() << "chAccount::click" << button;
+}
+
+void chAccount::chooseOpponent()
+{
+    if(!m_fightWorker) return;
+    QString pid;
+    pid = m_gangstersTable->randomPlayer(m_currentRace);
+    if(pid == "") {
+        if(m_currentRace != "0") {
+            // ToDo:
+            // Überfall und Tagebuch beachten
+            raceChanged("0");
+            return;
+        }
+    }
+    m_fightWorker->setOpponent(pid);
+    m_currentOpponent = pid; // rausnehmen?
+
+    //qDebug() << "chAccount::chooseOpponent:" << pid << m_gangstersTable->getPlayerData(pid,"name") << m_gangstersTable->getPlayerData(pid,"fightsDone");
 }
 
 void chAccount::raceChanged(const QString race)
@@ -253,6 +278,10 @@ void chAccount::getResults(const QString result)
     m_gangstersTable->setPlayerData(pid, "level", opponent.value("level").toString());
     m_gangstersTable->setPlayerData(pid, "name", opponent.value("name").toString());
     m_gangstersTable->setPlayerData(pid, "race_id", opponent.value("race_id").toString());
+
+    if(pid == m_rival.r_id) {
+        m_rival.r_id = "";
+    }
 /*
     if((done + 1) == max) {
         if(m_infoWorker) m_infoWorker->fightsVip();
@@ -347,6 +376,15 @@ void chAccount::patenvillaData(const QString villa)
     //qDebug() << "\tchAccount::patenvillaData\n" << debug.toJson() << "\n";
 }
 
+void chAccount::battleData(const QString result)
+{
+    QByteArray data;
+    data.append(result);
+    QJsonDocument json = QJsonDocument::fromJson(data);
+    qDebug() << "\tchAccount::battleData\n" << json.toJson() << "\n";
+}
+
+
 void chAccount::loadFinished(QNetworkReply* reply)
 {
     QUrl url = reply->url();
@@ -375,6 +413,23 @@ void chAccount::loadFinished(QNetworkReply* reply)
             }
         } else if(path == "/fights/busy") {
             //if(m_infoWorker) m_infoWorker->fightsStart();
+        }
+    } else if(QString("battleNpc") == paths.at(0)) {
+        if(QString("start") == paths.at(1)) {
+            if(m_traitorWorker) {
+                int row = 0, col = 0;
+                if(paths.count() == 4) { // battleNpc/start/1/1
+                    col = paths.at(2).toInt();
+                    row = paths.at(3).toInt();
+                    if(paths.at(2).toInt() > 0 && paths.at(3).toInt() > 0) {
+                        m_traitorWorker->setTraitor(row,col);
+                    }
+                } else if(paths.count() == 3) {
+                    col = paths.at(2).toInt();
+                    row = 1;
+                    m_traitorWorker->setTraitor(row,col);
+                }
+            }
         }
     }
     //qDebug() << "\tchAccount::replyFinished" << path;
@@ -480,13 +535,19 @@ void chAccount::loadFinished(WebPage* page)
         connect(m_fightWorker, SIGNAL(fightsDone()), this, SLOT(chooseOpponent()));
     }
 
+    if(m_traitorWorker == NULL) {
+        m_traitorWorker = new traitorWorker();
+        m_traitorWorker->setNetworkAccessManager(page->networkAccessManager());
+        m_traitorWorker->setOff();
+    }
+
     if(m_infoWorker == NULL) {
         m_infoWorker = new infoWorker();
         m_infoWorker->setNetworkAccessManager(page->networkAccessManager());
         connect(m_infoWorker, SIGNAL(diarydata(QString)), this, SLOT(diaryData(QString)));
         connect(m_infoWorker, SIGNAL(enemysList(QString)), this, SLOT(enemysListJson(QString)));
         connect(m_infoWorker, SIGNAL(patenvilla(QString)), this, SLOT(patenvillaData(QString)));
-        //connect(m_infoWorker, SIGNAL(cooldownEnd()), m_fightWorker, SLOT(startFight()));
+        connect(m_infoWorker, SIGNAL(battleData(QString)), this, SLOT(battleData(QString)));
         m_infoWorker->setOn();
     }
 
@@ -582,6 +643,27 @@ QString chAccount::gangster(const QString field) const
     return(ret);
 }
 
+QString chAccount::traitor(const QString field) const
+{
+    QString ret;
+
+    if(field == "currentTime") {
+        int val = -1;
+        if(m_traitorWorker) val = 240 - m_traitorWorker->currentKWZ();
+        ret = QString("%1").arg(val);
+    } else if(field == "timeString") {
+        int val = -1;
+        if(m_traitorWorker) {
+            val = m_traitorWorker->currentKWZ();
+            QTime mid = QTime(0,0,0,0);
+            mid = mid.addSecs(val);
+            ret = mid.toString("HH:mm:ss");
+        }
+    }
+
+    return(ret);
+}
+
 QString chAccount::rival(const QString field) const
 {
     QString ret;
@@ -603,8 +685,6 @@ QString chAccount::rival(const QString field) const
             QTime mid = QTime(0,0,0,0);
             mid = mid.addSecs(m_rival.r_searchTime - (m_rival.r_searchTime - now.secsTo(m_rival.r_end)));
             ret = mid.toString("HH:mm:ss");
-        } else {
-            ret = "00:00:00";
         }
     }
 
@@ -616,6 +696,10 @@ void chAccount::fightRival()
     if(m_rival.r_id.isEmpty()) return;
     if(!m_fightWorker) return;
     if(!m_config.rivals) return;
+    if(m_rival.r_end > QDateTime::currentDateTime()) {
+        QTimer::singleShot(1+QDateTime::currentDateTime().secsTo(m_rival.r_end)*1000, this, SLOT(fightRival()));
+        return;
+    }
     m_fightWorker->setRival(m_rival.r_id);
     qDebug() << "chAccount::fightRival" << m_rival.r_id;
 }
@@ -640,12 +724,12 @@ void chAccount::rivalsData(const QString data)
                 m_rival.r_searchTime = timeAll;
                 QTimer::singleShot(((timeTo+1)*1000), this, SLOT(fightRival()));
             }
-
+/*
             QJsonDocument debug(rival);
             qDebug() << debug.toJson()
                      << "chAccount::rivalsData" << m_rival.r_end.toString() << "sek.\n"
                      << m_rival.r_searchTime << "sek. gesamt\n";
-
+*/
         } else if(rival.value("attack").toBool()) {
 
             QString rivalId = QString("%1").arg(rival.value("search_id").toInt());
@@ -655,12 +739,12 @@ void chAccount::rivalsData(const QString data)
                 m_rival.r_searchTime = timeAll;
                 QTimer::singleShot(50, this, SLOT(fightRival()));
             }
-
+/*
             QJsonDocument debug(rival);
             qDebug() << debug.toJson()
                      << "chAccount::rivalsAttack:"
                      << m_rival.r_searchTime << "sek. gesamt\n";
-
+*/
         } else {
             QJsonDocument debug(rival);
             //qDebug() << "sonstiger Rivale:\n" << debug.toJson();

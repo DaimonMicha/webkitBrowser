@@ -179,6 +179,11 @@ void Chicago1920::injectHtml(QWebFrame* mainFrame, chAccount* account)
 
     }
 
+    if(account->isActive("opponents")) {
+        QWebElement checker = body.findFirst("#opponentsChecker");
+        if(!checker.isNull()) checker.setAttribute("checked", "checked");
+    }
+
     if(account->isActive("rivals")) {
         QWebElement checker = body.findFirst("#rivalsChecker");
         if(!checker.isNull()) checker.setAttribute("checked", "checked");
@@ -186,6 +191,11 @@ void Chicago1920::injectHtml(QWebFrame* mainFrame, chAccount* account)
 
     if(account->isActive("diary")) {
         QWebElement checker = body.findFirst("#diaryChecker");
+        if(!checker.isNull()) checker.setAttribute("checked", "checked");
+    }
+
+    if(account->isActive("traitor")) {
+        QWebElement checker = body.findFirst("#traitorChecker");
         if(!checker.isNull()) checker.setAttribute("checked", "checked");
     }
 

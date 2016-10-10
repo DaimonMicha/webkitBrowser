@@ -10,14 +10,17 @@
 #include "chplayertable.h"
 #include "infoworker.h"
 #include "fightworker.h"
+#include "traitorworker.h"
 
 
 class botConfig
 {
 public:
     bool bot;
+    bool opponents;
     bool rivals;
     bool diary;
+    bool traitor;
     bool heist;
     bool villa;
 };
@@ -42,8 +45,10 @@ public:
 
     Q_INVOKABLE bool isActive(const QString option = "account") const {
         if(option == "account") return(m_config.bot);
+        if(option == "opponents") return(m_config.opponents);
         if(option == "rivals") return(m_config.rivals);
         if(option == "diary") return(m_config.diary);
+        if(option == "traitor") return(m_config.traitor);
         return(false);
     }
     Q_INVOKABLE bool isHeistActive() const { return(m_heistActive); }
@@ -58,6 +63,7 @@ public:
     Q_INVOKABLE QString gangster(const QString) const;
     Q_INVOKABLE QString opponent(const QString) const;
     Q_INVOKABLE QString rival(const QString) const;
+    Q_INVOKABLE QString traitor(const QString) const;
 
     void loadFinished(QNetworkReply*);
     void loadFinished(WebPage*);
@@ -87,6 +93,7 @@ public slots:
     void patenvillaData(const QString);
 
     void rivalsData(const QString);
+    void battleData(const QString);
 
     void heistWork();
     void heistGetResults(const QString);
@@ -113,6 +120,7 @@ private:
 
     infoWorker*             m_infoWorker;
     fightWorker*            m_fightWorker;
+    traitorWorker*          m_traitorWorker;
 
     QMap<QString, QString>  m_cityMap;
     botConfig               m_config;

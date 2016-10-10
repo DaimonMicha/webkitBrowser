@@ -56,7 +56,7 @@ void fightWorker::gangsterStatus(const QString topic, const QString value)
     } else if(topic == "currentStone") { // gangsterPunkte
         m_accPlayer.m_gp = value.toInt();
     }
-    qDebug() << "fightWorker::gangsterStatus" << topic << value;
+    //qDebug() << "fightWorker::gangsterStatus" << (topic + "\t" + value);
 }
 
 void fightWorker::workFinished(bool ok)

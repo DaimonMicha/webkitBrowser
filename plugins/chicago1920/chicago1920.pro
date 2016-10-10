@@ -21,7 +21,8 @@ SOURCES      += \
     fightworker.cpp \
     chplayertable.cpp \
     infoworker.cpp \
-    settings.cpp
+    settings.cpp \
+    traitorworker.cpp
 
 HEADERS      += \
         chicago1920.h \
@@ -30,7 +31,8 @@ HEADERS      += \
     fightworker.h \
     chplayertable.h \
     infoworker.h \
-    settings.h
+    settings.h \
+    traitorworker.h
 
 OTHER_FILES += \
     htmls/inject.html \

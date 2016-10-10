@@ -300,9 +300,8 @@ void ExtensionManager::loadFinished(WebPage *page)
 void ExtensionManager::log(const QString msg)
 {
     if(m_config.m_logFile.isOpen()) {
-        QDateTime now = QDateTime::currentDateTime();
-        //logString.append(now.toString("[yyyy-MM-dd HH:mm:ss]"));
         QTextStream outStream(&m_config.m_logFile);
+        QDateTime now = QDateTime::currentDateTime();
         outStream << now.toString("[yyyy-MM-dd HH:mm:ss] ");
 
         ExtensionInterface *iface = qobject_cast<ExtensionInterface*>(sender());
@@ -334,7 +333,6 @@ DebugDialog::DebugDialog(QWidget *parent)
 
 DebugDialog::~DebugDialog()
 {
-    qDebug() << "~DebugDialog";
 }
 
 void DebugDialog::logFileChooser()

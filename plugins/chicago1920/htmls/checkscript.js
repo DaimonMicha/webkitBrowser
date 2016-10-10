@@ -21,10 +21,10 @@ function checkRival() {
         if(currentTime < allTime) {
             jQuery("#rivalsProgress").show(0);
             jQuery("#rivalsTimer").show(0);
-            jQuery("#rivalsCheckerRow").show(0);
+            //jQuery("#rivalsCheckerRow").show(0);
         } else {
             jQuery("#rivalsTimer").hide(0);
-            jQuery("#rivalsCheckerRow").hide(0);
+            //jQuery("#rivalsCheckerRow").hide(0);
         }
     }
 
@@ -80,26 +80,50 @@ function checkGangster() {
 }
 
 
+function checkTraitor() {
+    var value;
+
+    var allTime = 240;
+    if(parseInt(jQuery("#traitorsProgress").attr("max")) !== allTime) {
+        jQuery("#traitorsProgress").attr("max", allTime);
+    }
+
+    var currentTime = parseInt(account.traitor("currentTime")) || 0;
+    if(parseInt(jQuery("#traitorsProgress").val()) !== currentTime) {
+        jQuery("#traitorsProgress").hide(0);
+        jQuery("#traitorsProgress").val(currentTime);
+        if(currentTime < allTime) {
+            jQuery("#traitorsProgress").show(0);
+            jQuery("#traitorsTimer").show(0);
+        } else {
+            jQuery("#traitorsTimer").hide(0);
+        }
+    }
+
+    var timeString = account.traitor("timeString");
+    if(jQuery("#traitorTimer").text() !== timeString) {
+        jQuery("#traitorTimer").text(timeString);
+    }
+
+}
+
+
+
 function checkProgress() {
         if(account.isActive()) {
-
-            if(account.mustReload()) {
-                if(document.title.lastIndexOf("Kampfwartezeit:") < 0) {
-                    countdownRest( account.kwz() ,"Kampfwartezeit:");
-                } else {
-                    window.location.reload();
-                    return;
+            var path = top.location.pathname;
+            if(path.lastIndexOf("battle") < 0) {
+                if(account.mustReload()) {
+                    if(document.title.lastIndexOf("Kampfwartezeit:") < 0) {
+                        countdownRest( account.kwz() ,"Kampfwartezeit:");
+                    }
                 }
             }
-
-            checkGangster();
-            checkOpponent();
-            checkRival();
-
-
-        } else {
-            // $j("#opponentsName").text(" ");
         }
+        checkGangster();
+        checkOpponent();
+        checkRival();
+        checkTraitor();
     }
 
     window.setInterval("checkProgress()",250);

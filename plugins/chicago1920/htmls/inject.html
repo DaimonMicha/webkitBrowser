@@ -14,20 +14,17 @@
     font-family: "Ubuntu Condensed", Arial, sans-serif;
     font-size: 1.2em;
 }
-#gangster {
+#gangster, #specials {
     background-color: rgba(0, 0, 0, 0.45);
     border: 3px solid grey;
 }
 #opponents {
-    position: absolute;
-    width: 140px;
-    top: 300px;
     background-color: rgba(0, 0, 0, 0.45);
     border: 3px solid grey;
 }
 #accountPlugin progress {
     width: 95%;
-    height: 20px;
+    height: 16px;
 }
 #accountPlugin button {
     background-color: #EE7443;
@@ -59,7 +56,13 @@
     font-size: 1em;
     font-weight: bold;
 }
-#gangsterName, #opponentsProfile {
+#gangsterName {
+    text-align: right;
+    font-size: 1.2em;
+    font-weight: bold;
+    padding-right: 2px;
+}
+#opponentsProfile {
     font-size: 1.1em;
 }
 -->
@@ -73,7 +76,7 @@
                     <td><input id="clickChecker" type="checkbox" onClick="account.toggle('account', this.checked);"></input></td>
                     <td class="klickMeisterLogo"><label for="clickChecker">Klick Meister</label></td>
                 </tr>
-                <tr><td colspan="2" id="gangsterName" align="right"></td></tr>
+                <tr><td colspan="2" id="gangsterName"></td></tr>
                 <tr><td colspan="2" class="kmHeader"></td></tr>
                 <tr><td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/fights/vip">Vip Liste</a></td></tr>
                 <tr><td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/secretfiles/index">Secret Files</a></td></tr>
@@ -84,11 +87,12 @@
             </tbody>
         </table>
     </div>
+    <br />
     <div id="opponents">
         <table id="fighterTable" class="hoverTable" width="100%">
             <tbody>
                 <tr>
-                    <td colspan="2" class="kmHeader"><a href="/conquest">&Uuml;berfall</a></td>
+                    <td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/conquest">&Uuml;berfall</a></td>
                 </tr>
                 <tr>
                     <td colspan="2" align="center">
@@ -113,6 +117,10 @@
                     <td class="topic"><b>Gegner:</b></td>
                     <td align="center"><button type="button" title="einen anderen Gangster (zuf&auml;llig) auswählen" onClick="account.click('opponent');">wechseln</button></td>
                 </tr>
+                <tr id="opponentsCheckerRow">
+                    <td><input id="opponentsChecker" type="checkbox" onClick="account.toggle('opponents', this.checked);"></input></td>
+                    <td><label for="opponentsChecker">angreifen</label></td>
+                </tr>
                 <tr>
                     <td colspan="2" align="center"><a id="opponentsProfile" title="das Profil dieses Gangsters aufrufen."><span id="opponentsName">&nbsp;</span></a>&nbsp;&nbsp;<span id="opponentsLevel" title="das Level dieses Gangsters"></span></td>
                 </tr>
@@ -126,7 +134,7 @@
         <table id="rivalsTable" class="hoverTable" width="100%">
             <tbody>
                 <tr>
-                    <td colspan="2" class="kmHeader"><a href="/rival/index">Rivalen</a>&nbsp;<div style="display: inline; font-size: 0.8em; font-weight: normal; text-align: right; padding-top: 5px; padding-right: 2px; float: right;" id="rivalTimer">00:00:00</div></td>
+                    <td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/rival/index">Rivalen</a>&nbsp;<div style="display: inline; font-size: 0.8em; font-weight: normal; text-align: right; padding-top: 5px; padding-right: 2px; float: right;" id="rivalTimer"></div></td>
                 </tr>
                 <tr id="rivalsTimer"><td colspan="2" align="center"><progress id="rivalsProgress" value="0" max="10">1 - 10</progress></td></tr>
                 <tr id="rivalsCheckerRow">
@@ -139,7 +147,7 @@
         <table id="diaryTable" class="hoverTable" width="100%">
             <tbody>
                 <tr>
-                    <td colspan="2" class="kmHeader"><a href="/challenge/diary">Tagebuch</a></td>
+                    <td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/challenge/diary">Tagebuch</a></td>
                 </tr>
                 <tr>
                     <td><input id="diaryChecker" type="checkbox" onClick="account.toggle('diary', this.checked);"></input></td>
@@ -162,6 +170,19 @@
         </table>
 -->
     </div> <!-- opponents -->
+    <br />
+    <div id="specials">
+        <table id="traitorTable" class="hoverTable" width="100%">
+            <tbody>
+                <tr><td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/battle/index/traitor">Verräter</a>&nbsp;<div style="display: inline; font-size: 0.8em; font-weight: normal; text-align: right; padding-top: 5px; padding-right: 2px; float: right;" id="traitorTimer"></div></td></tr>
+                <tr id="traitorsTimer"><td colspan="2" align="center"><progress id="traitorsProgress" value="0" max="10">1 - 20</progress></td></tr>
+                <tr>
+                    <td><input id="traitorChecker" type="checkbox" onClick="account.toggle('traitor', this.checked);"></input></td>
+                    <td><label for="traitorChecker">angreifen</label></td>
+                </tr>
+            </tbody>
+        </table>
+    </div> <!-- specials -->
 </div> <!-- #accountPlugin -->
 <!-- /accountPlugin -->
 

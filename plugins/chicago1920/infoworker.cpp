@@ -1,8 +1,5 @@
 #include "infoworker.h"
 
-#include <QWebFrame>
-#include <QWebElement>
-#include <QTimer>
 #include <QDateTime>
 #include <QCryptographicHash>
 #include <QJsonDocument>
@@ -20,6 +17,7 @@ infoWorker::infoWorker(QObject *parent) :
     m_workList << "fights/vip"
                << "placeOfHonour"
                //<< "patenvilla"
+               //<< "battle"
                << "challenge/diary";
 
     m_minCooldown = 403;
@@ -27,8 +25,6 @@ infoWorker::infoWorker(QObject *parent) :
 
     connect(m_workingPage->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()),
             this, SLOT(addJavaScriptObject()));
-    connect(m_workingPage->mainFrame(), SIGNAL(titleChanged(QString)),
-            this, SLOT(titleChanged(QString)));
     connect(m_workingPage->mainFrame(), SIGNAL(loadStarted()),
             this, SLOT(loadStarted()));
     connect(m_workingPage, SIGNAL(loadFinished(bool)),
@@ -49,54 +45,6 @@ QString infoWorker::gangster(const QString& field)
     return(QString());
 }
 
-void infoWorker::loadStarted()
-{
-    m_isLoading = true;
-}
-
-void infoWorker::titleChanged(const QString &)
-{
-    //qDebug() << "infoWorker::titleChanged" << title;
-}
-
-int infoWorker::randInt(int low, int high)
-{
-    return qrand() % ((high + 1) - low) + low;
-}
-
-QString infoWorker::pageTitle()
-{
-    QWebElement title = m_workingPage->mainFrame()->findFirstElement("title");
-    return(title.toPlainText().trimmed());
-}
-
-void infoWorker::addJavaScriptObject()
-{
-    m_workingPage->mainFrame()->addToJavaScriptWindowObject("worker", this);
-}
-
-void infoWorker::setOn()
-{
-    if(m_isActive) return;
-
-    m_isActive = true;
-    QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
-    qDebug() << "infoWorker::setOn" << pageTitle() << m_workList;
-}
-
-void infoWorker::setOff()
-{
-    if(!m_isActive) return;
-    m_isActive = false;
-    //qDebug() << "infoWorker::setOff" << pageTitle();
-}
-
-// diary data
-void infoWorker::diaryData(const QString result)
-{
-    emit(diarydata(result));
-}
-
 // Vip-List
 void infoWorker::enemysListJson(const QString result)
 {
@@ -110,24 +58,22 @@ void infoWorker::enemysListJson(const QString result)
     emit(enemysList(result));
 }
 
-// Patenvilla Daten
-void infoWorker::patenvillaData(const QString result)
-{
-    emit(patenvilla(result));
-}
-
 void infoWorker::loadNextPage()
 {
     if(!m_isActive) return;
 
-    if(m_isLoading) QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
+    if(m_isLoading) {
+        QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
+        return;
+    }
 
     if(m_workList.count() > 0) {
         QString url = m_workList.takeFirst();
         m_workingPage->mainFrame()->load(QUrl("http://www.chicago1920.com/" + url));
         return;
     } else {
-        QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
+        if(m_gangsterData.gd_name.isEmpty()) placeOfHonour();
+        else QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
     }
 }
 
@@ -144,10 +90,6 @@ void infoWorker::fightsVip()
     if(!m_isActive) return;
 
     m_workList.prepend("fights/vip");
-    if(m_gangsterData.gd_name.isEmpty()) {
-        m_workList.append("placeOfHonour");
-        m_workList.append("characters");
-    }
     QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
 }
 
@@ -155,6 +97,7 @@ void infoWorker::placeOfHonour()
 {
     if(!m_isActive) return;
 
+    m_workList.prepend("characters");
     m_workList.prepend("placeOfHonour");
     QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
 }
@@ -170,8 +113,8 @@ void infoWorker::characters()
 void infoWorker::fightsFinished()
 {
     QWebFrame* mainFrame = m_workingPage->mainFrame();
-    QUrl url = mainFrame->url();
-    QStringList paths = url.path().split("/",QString::SkipEmptyParts);
+    //QUrl url = mainFrame->url();
+    QStringList paths = mainFrame->url().path().split("/",QString::SkipEmptyParts);
     QVariant result;
 
     if(paths.count() == 1) return;
@@ -198,6 +141,22 @@ void infoWorker::fightsFinished()
     //if(!result.isNull()) qDebug() << "\t[infoWorker::fightsFinished]\n" << result.toMap().value("constructor").toMap().keys(); //.keys() auf "list" achten...
 }
 
+void infoWorker::gangsterStatus(const QString topic, const QString value)
+{
+    if(topic == "lifeCurrent") {
+    } else if(topic == "lifeMax") {
+        m_gangsterData.gd_max_life = value.toInt();
+    } else if(topic == "fullLifeAfter") {
+    } else if(topic == "currentCrystals") { // whisky
+        m_gangsterData.gd_whisky = value.toInt();
+    } else if(topic == "currentGold") { // dollar
+        m_gangsterData.gd_dollar = value.toInt();
+    } else if(topic == "currentStone") { // gangsterPunkte
+        m_gangsterData.gd_gp = value.toInt();
+    }
+    //qDebug() << "infoWorker::gangsterStatus" << (topic + "\t" + value);
+}
+
 void infoWorker::workFinished(bool ok)
 {
     m_isLoading = false;
@@ -209,6 +168,8 @@ void infoWorker::workFinished(bool ok)
     QVariant result;
 
     if(!paths.count()) return;
+
+    if(url.path() == "/signups/login") return;
 
     if(paths.at(0) == QString("fights")) {
 
@@ -225,7 +186,6 @@ void infoWorker::workFinished(bool ok)
                             QString link = mainFrame->findFirstElement("a.link_me").attribute("href");
                             m_gangsterData.gd_coded_id = link.split("/",QString::SkipEmptyParts).last();
                             if(!m_gangsterData.gd_coded_id.isEmpty()) m_workList.prepend("characters/profile/" + m_gangsterData.gd_coded_id);
-                            //QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
                         }
                     }
                 }
@@ -235,7 +195,6 @@ void infoWorker::workFinished(bool ok)
     } else if(paths.at(0) == QString("challenge")) {
         if(paths.count() == 2 && paths.at(1) == "diary") {
             mainFrame->evaluateJavaScript("new Ajax.Request('/challenge/diary_data',{asynchronous: false,method: 'GET',dataType: 'json',onSuccess: function(result){worker.diaryData(result.responseText);}});");
-            //QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
         }
     } else if(paths.at(0) == QString("characters")) {
         if(paths.count() == 1) {
@@ -254,7 +213,6 @@ void infoWorker::workFinished(bool ok)
                 }
             }
         }
-        //QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
     } else if(paths.at(0) == QString("patenvilla")) {
         if(paths.count() == 1) {
             QString question = "new Ajax.Request('/patenvilla/getData/";
@@ -263,10 +221,26 @@ void infoWorker::workFinished(bool ok)
             question.append("',{asynchronous: false,method: 'POST',dataType: 'json',onSuccess: function(result){worker.patenvillaData(result.responseText);}});");
             if(!m_gangsterData.gd_clan.isEmpty()) result = mainFrame->evaluateJavaScript(question);
         }
-        //QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
+
+    } else if(paths.at(0) == QString("battle")) {
+        if(paths.count() == 1) {
+            QString question = "new Ajax.Request('/battle/getBattleEventData";
+            question.append("',{asynchronous: false,method: 'POST',parameters: {'init':'get'},dataType: 'json',onSuccess: function(result){worker.battleEventData(result.responseText);}});");
+            result = mainFrame->evaluateJavaScript(question);
+        }
+
     } else {
 
     }
+
+    // read LifeBar variables
+    QString question = "worker.gangsterStatus('currentCrystals', currentCrystals);\n";
+    question.append("worker.gangsterStatus('currentGold', currentGold);\n");
+    question.append("worker.gangsterStatus('currentStone', currentStone);\n");
+    question.append("worker.gangsterStatus('lifeMax', lifeMax);\n");
+    question.append("worker.gangsterStatus('lifeCurrent', lifeCurrent);\n");
+    question.append("worker.gangsterStatus('fullLifeAfter', fullLifeAfter);\n");
+    result = mainFrame->evaluateJavaScript(question);
 
     QString logString;
     QDateTime now = QDateTime::currentDateTime();
