@@ -3,10 +3,18 @@
 
 #include <QObject>
 #include <QTimer>
+#include <QTimerEvent>
 #include <QWebPage>
 #include <QWebFrame>
 #include <QWebElement>
 
+
+
+class traitorData {
+public:
+    int         fightsDone;
+    int         fightsMax;
+};
 
 
 
@@ -38,12 +46,16 @@ public:
         return(m_currentKWZ);
     }
 
+protected:
+    void timerEvent(QTimerEvent *event);
+
 signals:
 
 public slots:
     void setOn() {
-        if(m_isActive) return;
+        //if(m_isActive) return;
         m_isActive = true;
+        if(!m_fightTimer) startFight();
     }
 
     void setOff() {
@@ -52,6 +64,7 @@ public slots:
 
     void getResults(const QString);
     void setTraitor(const int,const int);
+    void midnightReset();
 
 private slots:
     void addJavaScriptObject() {
@@ -72,6 +85,11 @@ private:
     int                 m_currentRow;
     int                 m_currentColumn;
     int                 m_currentKWZ;
+
+    int                 m_currentFightCounter;
+    int                 m_fightTimer;
+
+    traitorData         m_traitor;
 };
 
 #endif // TRAITORWORKER_H

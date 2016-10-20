@@ -55,6 +55,8 @@ public:
         return(title.toPlainText().trimmed());
     }
 
+    int status(const QString&);
+
 private:
     int randInt(int low, int high) {
         return qrand() % ((high + 1) - low) + low;

@@ -110,6 +110,14 @@ void infoWorker::characters()
     QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
 }
 
+void infoWorker::saveMax()
+{
+    if(!m_isActive) return;
+
+    m_workList.prepend("safe/maxeinzahlen");
+    QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
+}
+
 void infoWorker::fightsFinished()
 {
     QWebFrame* mainFrame = m_workingPage->mainFrame();
@@ -242,11 +250,12 @@ void infoWorker::workFinished(bool ok)
     question.append("worker.gangsterStatus('fullLifeAfter', fullLifeAfter);\n");
     result = mainFrame->evaluateJavaScript(question);
 
+    QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
+
     QString logString;
     QDateTime now = QDateTime::currentDateTime();
     logString.append(now.toString("[yyyy-MM-dd HH:mm:ss]"));
-    logString.append("  infoWorker::loadFinished (" + url.path());
+    logString.append(" infoWorker::loadFinished (" + url.path());
     logString.append(") '" + mainFrame->title() + "'");
     qDebug() << logString << m_workList;
-    QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
 }

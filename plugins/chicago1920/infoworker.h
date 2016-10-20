@@ -71,6 +71,7 @@ public slots:
     void fightsVip();
     void placeOfHonour();
     void characters();
+    void saveMax();
 
     // diary data
     void diaryData(const QString result) {

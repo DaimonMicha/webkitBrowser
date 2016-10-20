@@ -59,6 +59,23 @@ void fightWorker::gangsterStatus(const QString topic, const QString value)
     //qDebug() << "fightWorker::gangsterStatus" << (topic + "\t" + value);
 }
 
+int fightWorker::status(const QString& topic)
+{
+    int ret = 0;
+
+    if(topic == "maxLP") {
+        ret = m_accPlayer.m_maxLife;
+    } else if(topic == "dollar") {
+        ret = m_accPlayer.m_dollar;
+    } else if(topic == "whisky") {
+        ret = m_accPlayer.m_whisky;
+    } else if(topic == "gps") {
+        ret = m_accPlayer.m_gp;
+    }
+
+    return(ret);
+}
+
 void fightWorker::workFinished(bool ok)
 {
     if(!ok) return;
@@ -98,6 +115,7 @@ void fightWorker::workFinished(bool ok)
             } else if(QString("waitFight") == paths.at(1)) {
 
                 //qDebug() << "fightWorker::workFinished (waitFight): " << pageTitle();
+                QTimer::singleShot(randInt(266,23500), this, SLOT(waitFight()));
 
             } else if(QString("waitLp") == paths.at(1)) {
 
@@ -119,6 +137,8 @@ void fightWorker::workFinished(bool ok)
                     question.append("fighter.gangsterStatus('lifeCurrent', lifeCurrent);\n");
                     question.append("fighter.gangsterStatus('fullLifeAfter', fullLifeAfter);\n");
                     result = mainFrame->evaluateJavaScript(question);
+                } else {
+                    QTimer::singleShot(randInt(266,23500), this, SLOT(startFight()));
                 }
 
             } else if(QString("fight") == paths.at(1)) {
@@ -136,7 +156,7 @@ void fightWorker::workFinished(bool ok)
     QString logString;
     QDateTime now = QDateTime::currentDateTime();
     logString.append(now.toString("[yyyy-MM-dd HH:mm:ss]"));
-    logString.append("  fightWorker::loadFinished (" + url.path());
+    logString.append(" fightWorker::loadFinished (" + url.path());
     logString.append(") <" + mainFrame->title() + ">");
     qDebug() << logString.toLocal8Bit().data();
 }

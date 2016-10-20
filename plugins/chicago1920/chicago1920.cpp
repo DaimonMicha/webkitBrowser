@@ -199,6 +199,11 @@ void Chicago1920::injectHtml(QWebFrame* mainFrame, chAccount* account)
         if(!checker.isNull()) checker.setAttribute("checked", "checked");
     }
 
+    if(account->isActive("autosave")) {
+        QWebElement checker = body.findFirst("#autosaveChecker");
+        if(!checker.isNull()) checker.setAttribute("checked", "checked");
+    }
+
     di = "";
     if(readDataFile("checkscript.js", di) > 0) {
         mainFrame->evaluateJavaScript(di);

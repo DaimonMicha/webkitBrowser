@@ -12,11 +12,17 @@ traitorWorker::traitorWorker(QObject *parent) :
 {
     m_currentKWZ = 0;
 
-    m_minCooldown = 403;
+    m_minCooldown = 504;
     m_maxCooldown = 4267;
 
     m_currentRow = 0;
     m_currentColumn = 0;
+
+    m_traitor.fightsDone = 0;
+    m_traitor.fightsMax = 20;
+
+    m_currentFightCounter = 0;
+    m_fightTimer = 0;
 
     connect(m_workingPage->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()),
             this, SLOT(addJavaScriptObject()));
@@ -24,7 +30,15 @@ traitorWorker::traitorWorker(QObject *parent) :
             this, SLOT(loadFinished(bool)));
     connect(m_workingPage->mainFrame(), SIGNAL(titleChanged(QString)),
             this, SLOT(titleChanged(QString)));
-    m_timerActive = false;
+}
+
+void traitorWorker::timerEvent(QTimerEvent *event)
+{
+    if(event->timerId() == m_fightTimer) {
+        killTimer(m_fightTimer);
+        m_fightTimer = 0;
+        startFight();
+    }
 }
 
 void traitorWorker::setTraitor(const int row,const int column)
@@ -32,22 +46,33 @@ void traitorWorker::setTraitor(const int row,const int column)
     m_currentRow = row;
     m_currentColumn = column;
     int wTime = 240*1000 + randInt(m_minCooldown,m_maxCooldown);
-    QTimer::singleShot(wTime, this, SLOT(startFight()));
+    //QTimer::singleShot(wTime, this, SLOT(startFight()));
+    if(m_fightTimer != 0) {
+        killTimer(m_fightTimer);
+        m_fightTimer = 0;
+    }
+    m_fightTimer = startTimer(wTime);
     qDebug() << "traitorWorker::setTraitor" << row << column << wTime;
 }
 
 void traitorWorker::startFight()
 {
     if(!m_isActive) return;
+    if(m_currentColumn < 1 || m_currentRow < 1) return;
+    if(m_fightTimer) {
+        killTimer(m_fightTimer);
+        m_fightTimer = 0;
+    }
     if(pageTitle().contains("] Stadttournee Kampfwartezeit:")) {
         // ToDo: kwz errechnen und erneut einen Timer setzen.
+        //QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(startFight()));
+        m_fightTimer = startTimer(randInt(m_minCooldown,m_maxCooldown));
         return;
     }
-    if(m_currentColumn < 1 || m_currentRow < 1) return;
     QString path = QString("battleNpc/start/%1/%2").arg(m_currentColumn).arg(m_currentRow);
     QUrl url("http://www.chicago1920.com/"+path);
     m_workingPage->mainFrame()->load(url);
-    m_timerActive = false;
+
     qDebug() << "traitorWorker::startFight" << url.toString();
 }
 
@@ -59,22 +84,24 @@ void traitorWorker::titleChanged(const QString& title)
         QTime kwz = QTime::fromString(ts, "hh:mm:ss");
         QTime mid(0,0,0,0);
         m_currentKWZ = mid.secsTo(kwz);
-        m_timerActive = false;
-        //qDebug() << title << m_currentKWZ;
     } else if(title == "Chicago1920.com") {
-        if(!m_timerActive) {
-            m_timerActive = true;
-            qDebug() << title << "timerActive!";
-        }
+        m_currentKWZ = 0;
     } else {
     }
 
 }
 
-QString traitorWorker::traitor(const QString & field)
+QString traitorWorker::traitor(const QString& field)
 {
-    if(field == "") {
+    QString ret;
+
+    if(field == "fightsMax") {
+        ret = QString("%1").arg(m_traitor.fightsMax);
+    } else if(field == "fightsDone") {
+        ret = QString("%1").arg(m_traitor.fightsDone);
     }
+
+    return(ret);
 }
 
 void traitorWorker::getResults(const QString result)
@@ -86,19 +113,22 @@ void traitorWorker::getResults(const QString result)
 
     QJsonObject fights = json.object().value("fights").toObject();
 
-    int done = fights.value("doneFights").toInt() + 1;
-    int max = fights.value("maxFights").toInt();
+    m_traitor.fightsDone = fights.value("doneFights").toInt(); // + 1
+    m_traitor.fightsMax = fights.value("maxFights").toInt();
 
-    if(done > max) {
-        // ToDo: choose next traitor
-        if(m_currentColumn++ > 12) {
-            m_currentColumn = 1;
-            m_currentRow++;
-        }
+    if(m_traitor.fightsDone >= m_traitor.fightsMax) {
+        // choose next traitor
+        m_currentColumn++;
     }
 
-    qDebug() << "traitorWorker::getResults" << m_currentRow << m_currentColumn;
+    qDebug() << "traitorWorker::getResults" << m_traitor.fightsDone << m_traitor.fightsMax << m_currentColumn;
     //qDebug() << "traitorWorker::getResults \n" << json.toJson();
+}
+
+void traitorWorker::midnightReset()
+{
+    if(m_currentColumn > 0) m_currentColumn = 1;
+    if(m_currentRow > 0) m_currentRow = 1;
 }
 
 void traitorWorker::loadFinished(bool ok)
@@ -119,8 +149,19 @@ void traitorWorker::loadFinished(bool ok)
                     question.append(paths.at(2));
                     question.append("',{asynchronous: false,method: 'GET',dataType: 'json',onSuccess: function(result){worker.getResults(result.responseText);}});");
                     result = mainFrame->evaluateJavaScript(question);
-                    //int wTime = 240*1000 + randInt(m_minCooldown,m_maxCooldown);
-                    //QTimer::singleShot(wTime, this, SLOT(startFight()));
+                    m_currentFightCounter = 0;
+                }
+            }
+        }
+    } else if(paths.at(0) == QString("battle")) {
+        if(paths.count() > 1) {
+            if(QString("index") == paths.at(1)) {
+                // ToDo: test another traitor
+                if(++m_currentFightCounter > 2) {
+                    m_currentColumn++;
+                    m_currentFightCounter = 0;
+                    startFight();
+                    //setTraitor(m_currentRow, m_currentColumn);
                 }
             }
         }
@@ -129,8 +170,8 @@ void traitorWorker::loadFinished(bool ok)
     QString logString;
     QDateTime now = QDateTime::currentDateTime();
     logString.append(now.toString("[yyyy-MM-dd HH:mm:ss]"));
-    logString.append("  traitorWorker::loadFinished (" + mainFrame->url().path());
+    logString.append(" traitorWorker::loadFinished (" + mainFrame->url().path());
     logString.append(") <" + pageTitle() + ">");
-    qDebug() << logString;
+    qDebug() << logString.toLocal8Bit().data();
 
 }

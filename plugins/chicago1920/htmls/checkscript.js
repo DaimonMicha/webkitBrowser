@@ -21,10 +21,8 @@ function checkRival() {
         if(currentTime < allTime) {
             jQuery("#rivalsProgress").show(0);
             jQuery("#rivalsTimer").show(0);
-            //jQuery("#rivalsCheckerRow").show(0);
         } else {
             jQuery("#rivalsTimer").hide(0);
-            //jQuery("#rivalsCheckerRow").hide(0);
         }
     }
 
@@ -105,6 +103,13 @@ function checkTraitor() {
         jQuery("#traitorTimer").text(timeString);
     }
 
+    var fightsMax = parseInt(account.traitor("fightsMax")) || 20;
+    var fightsDone = parseInt(account.traitor("fightsDone")) || 0;
+    value = fightsDone + ' - ' + fightsMax;
+    if(jQuery("#traitorProgress").text() !== value) {
+        jQuery("#traitorProgress").text(value);
+    }
+
 }
 
 
@@ -112,13 +117,13 @@ function checkTraitor() {
 function checkProgress() {
         if(account.isActive()) {
             var path = top.location.pathname;
-            if(path.lastIndexOf("battle") < 0) {
+            //if(path.lastIndexOf("battle") < 0) {
                 if(account.mustReload()) {
                     if(document.title.lastIndexOf("Kampfwartezeit:") < 0) {
                         countdownRest( account.kwz() ,"Kampfwartezeit:");
                     }
                 }
-            }
+            //}
         }
         checkGangster();
         checkOpponent();

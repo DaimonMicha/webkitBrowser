@@ -31,6 +31,7 @@ chAccount::chAccount(const QString cookie, QObject *parent) :
     m_config.rivals = false;
     m_config.diary = false;
     m_config.traitor = false;
+    m_config.autosaver = false;
 
     m_infoWorker = NULL;
     m_fightWorker = NULL;
@@ -76,7 +77,7 @@ void chAccount::enemysListJson(const QString enemys)
         //qDebug() << "\n" << player.toVariantMap().keys();
     }
 
-    if(m_fightWorker && isActive() && m_fightWorker->opponent() == "") {
+    if(m_fightWorker && isActive("opponents") && m_fightWorker->opponent() == "") {
         chooseOpponent();
     }
 
@@ -94,24 +95,30 @@ QString chAccount::opponent(const QString field) const
 void chAccount::toggle(const QString option, const bool on)
 {
     if(option == "account") {
+        m_config.bot = on;
 
-        if(isActive()) {
-            m_config.bot = false;
+        if(on) {
+            if(m_infoWorker) m_infoWorker->setOn();
+            if(m_fightWorker && m_config.opponents) {
+                if(m_fightWorker->opponent() == "") chooseOpponent();
+                m_fightWorker->setOn();
+            }
+            if(m_traitorWorker && m_config.traitor) m_traitorWorker->setOn();
+        } else {
             if(m_infoWorker) m_infoWorker->setOff();
             if(m_fightWorker) m_fightWorker->setOff();
-        } else {
-            m_config.bot = true;
-            if(m_infoWorker) m_infoWorker->setOn();
-            if(m_fightWorker) {
-                m_fightWorker->setOn();
-                if(m_fightWorker->opponent() == "") chooseOpponent();
-            }
+            if(m_traitorWorker) m_traitorWorker->setOff();
         }
 
     } else if(option == "opponents") {
         m_config.opponents = on;
         if(on) {
+            if(m_fightWorker && isActive()) {
+                if(m_fightWorker->opponent() == "") chooseOpponent();
+                m_fightWorker->setOn();
+            }
         } else {
+            if(m_fightWorker) m_fightWorker->setOff();
         }
 
     } else if(option == "rivals") {
@@ -131,10 +138,16 @@ void chAccount::toggle(const QString option, const bool on)
         m_config.traitor = on;
         if(m_traitorWorker) {
             if(on) {
-                m_traitorWorker->setOn();
+                if(isActive()) m_traitorWorker->setOn();
             } else {
                 m_traitorWorker->setOff();
             }
+        }
+
+    } else if(option == "autosave") {
+        m_config.autosaver = on;
+        if(on) {
+        } else {
         }
 
     }
@@ -279,9 +292,6 @@ void chAccount::getResults(const QString result)
     m_gangstersTable->setPlayerData(pid, "name", opponent.value("name").toString());
     m_gangstersTable->setPlayerData(pid, "race_id", opponent.value("race_id").toString());
 
-    if(pid == m_rival.r_id) {
-        m_rival.r_id = "";
-    }
 /*
     if((done + 1) == max) {
         if(m_infoWorker) m_infoWorker->fightsVip();
@@ -310,10 +320,24 @@ void chAccount::getResults(const QString result)
     m_gangstersTable->setPlayerData(pid, "maxDamage", player2.value("fightDamage").toObject().value("to").toString());
     m_gangstersTable->setPlayerData(pid, "magicDamage", player2.value("magicDamage").toString());
 
+    if(m_config.bot) { // are we active?
+        if(m_fightWorker) {
+            if(m_config.autosaver) { // should we save the money?
+                if(m_fightWorker->status("dollar") > 5648) {
+                    if(m_infoWorker) m_infoWorker->saveMax();
+                }
+            }
+        }
+    }
     //QJsonDocument debug(player2);
 
     //qDebug() << "[chAccount::getResults]\nall" << json.toJson();
-    setDayOfYear(happens.date().dayOfYear());
+    if(pid == m_rival.r_id) {
+        m_rival.r_id = "";
+        qDebug() << "\t[chAccount::getResults]\n" << json.toJson();
+    } else {
+        setDayOfYear(happens.date().dayOfYear());
+    }
     qDebug() << "[chAccount::getResults] day:" << happens.date().dayOfYear() << m_gangstersTable->getPlayerData(pid, "name")
              << m_gangstersTable->getPlayerData(pid, "fightsDone")
              << m_gangstersTable->getPlayerData(pid, "fightsMax")
@@ -413,6 +437,8 @@ void chAccount::loadFinished(QNetworkReply* reply)
             }
         } else if(path == "/fights/busy") {
             //if(m_infoWorker) m_infoWorker->fightsStart();
+        } else if(path == "/fights/start_police") {
+            // ToDo: police-flag setzen
         }
     } else if(QString("battleNpc") == paths.at(0)) {
         if(QString("start") == paths.at(1)) {
@@ -626,8 +652,14 @@ void chAccount::setDayOfYear(int day)
 {
     if(m_currentDay == day) return;
     m_currentDay = day;
-    // ToDo:
     // Tages-Variablen zurücksetzen
+    if(m_traitorWorker) m_traitorWorker->midnightReset();
+    m_gangstersTable->midnightReset();
+    if(m_infoWorker) m_infoWorker->fightsVip();
+}
+
+void chAccount::midnightReset()
+{
 }
 
 QString chAccount::gangster(const QString field) const
@@ -659,6 +691,8 @@ QString chAccount::traitor(const QString field) const
             mid = mid.addSecs(val);
             ret = mid.toString("HH:mm:ss");
         }
+    } else {
+        if(m_traitorWorker) ret = m_traitorWorker->traitor(field);
     }
 
     return(ret);

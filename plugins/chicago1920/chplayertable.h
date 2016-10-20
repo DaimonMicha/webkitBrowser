@@ -15,10 +15,19 @@ public:
     void setPlayerData(QString id, QString field, QString data);
     QString getPlayerData(QString id, QString field);
     QString randomPlayer(QString race = "0");
+    void midnightReset();
 
 private:
-    int randInt(int low, int high);
-    int columnByName(const QString);
+    int randInt(int low, int high) {
+        return qrand() % ((high + 1) - low) + low;
+    }
+
+    int columnByName(const QString& field) {
+        for(int c=0; c < m_gangstersModel->columnCount(); ++c) {
+            if(field == m_gangstersModel->headerData(c, Qt::Horizontal).toString()) return(c);
+        }
+        return(-1);
+    }
 
 signals:
 

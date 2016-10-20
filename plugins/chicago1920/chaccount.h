@@ -23,7 +23,9 @@ public:
     bool traitor;
     bool heist;
     bool villa;
+    bool autosaver;
 };
+
 
 class rivalData
 {
@@ -32,6 +34,8 @@ public:
     int         r_searchTime;
     QDateTime   r_end;
 };
+
+
 
 class chAccount : public QObject
 {
@@ -49,6 +53,7 @@ public:
         if(option == "rivals") return(m_config.rivals);
         if(option == "diary") return(m_config.diary);
         if(option == "traitor") return(m_config.traitor);
+        if(option == "autosave") return(m_config.autosaver);
         return(false);
     }
     Q_INVOKABLE bool isHeistActive() const { return(m_heistActive); }
@@ -76,6 +81,7 @@ private:
     void parseRivals(QWebFrame*,const QStringList paths);
 
     void setDayOfYear(int);
+    void midnightReset();
 
 signals:
 

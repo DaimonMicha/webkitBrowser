@@ -51,17 +51,12 @@ chPlayerTable::chPlayerTable(QObject *parent) :
     m_filterModel->setDynamicSortFilter(true);
 }
 
-int chPlayerTable::randInt(int low, int high)
+void chPlayerTable::midnightReset()
 {
-    return qrand() % ((high + 1) - low) + low;
-}
-
-int chPlayerTable::columnByName(const QString field)
-{
-    for(int c=0; c < m_gangstersModel->columnCount(); ++c) {
-        if(field == m_gangstersModel->headerData(c, Qt::Horizontal).toString()) return(c);
+    for(int a = 0; a < m_gangstersModel->rowCount(); ++a) {
+        m_gangstersModel->item(a,columnByName("fightlimit"))->setText("false");
+        m_gangstersModel->item(a,columnByName("fightsDone"))->setText("0");
     }
-    return(-1);
 }
 
 void chPlayerTable::setPlayerData(QString id, QString field, QString data)
@@ -105,7 +100,7 @@ QString chPlayerTable::randomPlayer(QString race)
 {
     //ToDo: filtern auf fightlimit != true
     QString ret;
-    QSortFilterProxyModel*      fightlimitModel = new QSortFilterProxyModel();
+    QSortFilterProxyModel* fightlimitModel = new QSortFilterProxyModel();
     fightlimitModel->setSourceModel(m_gangstersModel);
     fightlimitModel->setFilterKeyColumn(columnByName("fightlimit"));
     fightlimitModel->setFilterFixedString("false");

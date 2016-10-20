@@ -4,7 +4,7 @@
 <style type="text/css">
 <!--
 #accountPlugin {
-    position: absolute;
+    position: fixed;
     float: left;
     width: 151px;
     height: 95%;
@@ -83,7 +83,10 @@
                 <tr><td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/loot">Loot Area</a></td></tr>
                 <tr><td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/guildvitrine">Erfolge</a></td></tr>
                 <tr><td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/razzia/dock">Docks</a></td></tr>
-                <tr><td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/safe/maxeinzahlen">maxSafe</a></td></tr>
+                <tr>
+                    <td><input id="autosaveChecker" type="checkbox" onClick="account.toggle('autosave', this.checked);"></input></td>
+                    <td class="kmHeader"><a href="http://www.chicago1920.com/safe/maxeinzahlen">maxSafe</a></td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -117,16 +120,16 @@
                     <td class="topic"><b>Gegner:</b></td>
                     <td align="center"><button type="button" title="einen anderen Gangster (zuf&auml;llig) auswählen" onClick="account.click('opponent');">wechseln</button></td>
                 </tr>
-                <tr id="opponentsCheckerRow">
-                    <td><input id="opponentsChecker" type="checkbox" onClick="account.toggle('opponents', this.checked);"></input></td>
-                    <td><label for="opponentsChecker">angreifen</label></td>
-                </tr>
                 <tr>
                     <td colspan="2" align="center"><a id="opponentsProfile" title="das Profil dieses Gangsters aufrufen."><span id="opponentsName">&nbsp;</span></a>&nbsp;&nbsp;<span id="opponentsLevel" title="das Level dieses Gangsters"></span></td>
                 </tr>
                 <tr>
                     <td class="topic"><b>Angriffe:</b></td>
                     <td align="center" id="opponentsProgress">0 - 10</td>
+                </tr>
+                <tr id="opponentsCheckerRow">
+                    <td><input id="opponentsChecker" type="checkbox" title="darf ich automatisch angreifen?" onClick="account.toggle('opponents', this.checked);"></input></td>
+                    <td><label for="opponentsChecker" title="darf ich automatisch angreifen?">angreifen</label></td>
                 </tr>
             </tbody>
         </table>
@@ -170,6 +173,7 @@
         </table>
 -->
     </div> <!-- opponents -->
+<!--
     <br />
     <div id="specials">
         <table id="traitorTable" class="hoverTable" width="100%">
@@ -177,12 +181,16 @@
                 <tr><td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/battle/index/traitor">Verräter</a>&nbsp;<div style="display: inline; font-size: 0.8em; font-weight: normal; text-align: right; padding-top: 5px; padding-right: 2px; float: right;" id="traitorTimer"></div></td></tr>
                 <tr id="traitorsTimer"><td colspan="2" align="center"><progress id="traitorsProgress" value="0" max="10">1 - 20</progress></td></tr>
                 <tr>
+                    <td class="topic"><b>Angriffe:</b></td>
+                    <td align="center" id="traitorProgress">0 - 20</td>
+                </tr>
+                <tr>
                     <td><input id="traitorChecker" type="checkbox" onClick="account.toggle('traitor', this.checked);"></input></td>
                     <td><label for="traitorChecker">angreifen</label></td>
                 </tr>
             </tbody>
         </table>
-    </div> <!-- specials -->
+    </div> --> <!-- specials -->
 </div> <!-- #accountPlugin -->
 <!-- /accountPlugin -->
 
