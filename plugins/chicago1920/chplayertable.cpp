@@ -54,6 +54,9 @@ chPlayerTable::chPlayerTable(QObject *parent) :
 void chPlayerTable::midnightReset()
 {
     for(int a = 0; a < m_gangstersModel->rowCount(); ++a) {
+        if(m_gangstersModel->item(a, columnByName("name"))->text() == "Polizei") {
+            m_gangstersModel->removeRow(a);
+        }
         m_gangstersModel->item(a,columnByName("fightlimit"))->setText("false");
         m_gangstersModel->item(a,columnByName("fightsDone"))->setText("0");
     }

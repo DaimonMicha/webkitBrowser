@@ -1,6 +1,9 @@
-<!DOCTYPE RCC><RCC version="1.0">
+<RCC>
     <qresource prefix="/chicago">
         <file>checkscript.js</file>
         <file>inject.html</file>
+        <file>jquery.nyroModal.custom.min.js</file>
+        <file>no.png</file>
+        <file>refresh.png</file>
     </qresource>
 </RCC>

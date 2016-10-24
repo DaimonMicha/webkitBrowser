@@ -15,6 +15,12 @@ public:
     void setPlayerData(QString id, QString field, QString data);
     QString getPlayerData(QString id, QString field);
     QString randomPlayer(QString race = "0");
+    void clear() {
+        for(int a = m_gangstersModel->rowCount() - 1; a >= 0; --a) {
+            m_gangstersModel->removeRow(a);
+        }
+    }
+
     void midnightReset();
 
 private:

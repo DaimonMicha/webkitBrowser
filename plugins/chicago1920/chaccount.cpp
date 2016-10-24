@@ -81,6 +81,7 @@ void chAccount::enemysListJson(const QString enemys)
         chooseOpponent();
     }
 
+    //qDebug() << "gangsters in list:" << m_gangstersTable->countGangsters();
     //qDebug() << "chAccount::enemysListJson\n" << json.toJson();
              //<< "\n" << json.object().value("list").toArray();
 }
@@ -158,8 +159,14 @@ void chAccount::click(const QString button)
 {
     if(button == "opponent") {
         chooseOpponent();
+    } else if(button == "reloadVip") {
+        if(m_infoWorker) {
+            m_gangstersTable->clear();
+            m_infoWorker->fightsVip();
+        }
+    } else {
+        qDebug() << "chAccount::click" << button;
     }
-    //qDebug() << "chAccount::click" << button;
 }
 
 void chAccount::chooseOpponent()

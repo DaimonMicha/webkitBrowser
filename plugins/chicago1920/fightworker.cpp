@@ -76,6 +76,20 @@ int fightWorker::status(const QString& topic)
     return(ret);
 }
 
+void fightWorker::readKwz()
+{
+    // evaluate the cooldown-time and send a signal.
+    QString title = pageTitle();
+    if(title.contains("] Kampfwartezeit:")) {
+        title = title.split("] ").first();
+        title.remove(0,1);
+        QTime kwz = QTime::fromString(title, "hh:mm:ss");
+        QTime mid(0,0,0,0);
+        m_currentKWZ = mid.secsTo(kwz);
+        emit(fightCooldown(m_currentKWZ));
+    }
+}
+
 void fightWorker::workFinished(bool ok)
 {
     if(!ok) return;
@@ -85,31 +99,24 @@ void fightWorker::workFinished(bool ok)
     QStringList paths = url.path().split("/",QString::SkipEmptyParts);
     QVariant result;
 
-    if(QString("fights") == paths.at(0) || QString("rivalNpc") == paths.at(0)) {
+    if(!paths.count()) return;
+
+    if(QString("fights") == paths.at(0)) {
 
         if(paths.count() > 1) {
 
             if(QString("results") == paths.at(1)) {
 
                 if(paths.count() == 3) {
-                    // evaluate the cooldown-time and send a signal.
-                    QString title = pageTitle();
-                    if(title.contains("] Kampfwartezeit:")) {
-                        title = title.split("] ").first();
-                        title.remove(0,1);
-                        QTime kwz = QTime::fromString(title, "hh:mm:ss");
-                        QTime mid(0,0,0,0);
-                        m_currentKWZ = mid.secsTo(kwz);
-                        emit(fightCooldown(m_currentKWZ));
-                    }
+                    readKwz();
 
                     QString question = "new Ajax.Request('/"+paths.at(0)+"/getResults/";
                     question.append(paths.at(2));
                     question.append("',{asynchronous: false,method: 'GET',dataType: 'json',onSuccess: function(result){fighter.getResults(result.responseText);}});");
                     result = mainFrame->evaluateJavaScript(question);
 
-                    QTimer::singleShot(randInt(266,23500), this, SLOT(waitFight()));
                     m_currentFightCounter = 0;
+                    QTimer::singleShot(randInt(266,23500), this, SLOT(waitFight()));
                 }
 
             } else if(QString("waitFight") == paths.at(1)) {
@@ -151,6 +158,31 @@ void fightWorker::workFinished(bool ok)
 
         }
 
+    } else if(QString("rivalNpc") == paths.at(0)) {
+        if(paths.count() > 1) {
+            if(QString("results") == paths.at(1)) {
+
+                m_currentRival = "";
+                if(paths.count() == 3) {
+                    readKwz();
+
+                    QString question = "new Ajax.Request('/"+paths.at(0)+"/getResults/";
+                    question.append(paths.at(2));
+                    question.append("',{asynchronous: false,method: 'GET',dataType: 'json',onSuccess: function(result){fighter.getResults(result.responseText);}});");
+                    //result = mainFrame->evaluateJavaScript(question);
+
+                    m_currentFightCounter = 0;
+                    QTimer::singleShot(randInt(266,23500), this, SLOT(waitFight()));
+                }
+
+            } else if(QString("waitFight") == paths.at(1)) {
+                QTimer::singleShot(randInt(266,23500), this, SLOT(waitFight()));
+            } else if(QString("waitLp") == paths.at(1)) {
+                qDebug() << "fightWorker::workFinished (waitLp): " << pageTitle();
+            } else if(QString("start") == paths.at(1)) {
+            } else if(QString("fight") == paths.at(1)) {
+            }
+        }
     }
 
     QString logString;

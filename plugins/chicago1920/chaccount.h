@@ -17,13 +17,13 @@ class botConfig
 {
 public:
     bool bot;
+    bool autosaver;
     bool opponents;
     bool rivals;
     bool diary;
     bool traitor;
     bool heist;
     bool villa;
-    bool autosaver;
 };
 
 
@@ -49,11 +49,11 @@ public:
 
     Q_INVOKABLE bool isActive(const QString option = "account") const {
         if(option == "account") return(m_config.bot);
+        if(option == "autosave") return(m_config.autosaver);
         if(option == "opponents") return(m_config.opponents);
         if(option == "rivals") return(m_config.rivals);
         if(option == "diary") return(m_config.diary);
         if(option == "traitor") return(m_config.traitor);
-        if(option == "autosave") return(m_config.autosaver);
         return(false);
     }
     Q_INVOKABLE bool isHeistActive() const { return(m_heistActive); }

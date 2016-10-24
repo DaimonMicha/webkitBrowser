@@ -58,6 +58,7 @@ public:
     int status(const QString&);
 
 private:
+    void readKwz();
     int randInt(int low, int high) {
         return qrand() % ((high + 1) - low) + low;
     }

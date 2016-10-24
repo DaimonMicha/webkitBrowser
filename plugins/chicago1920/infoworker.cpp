@@ -69,6 +69,7 @@ void infoWorker::loadNextPage()
 
     if(m_workList.count() > 0) {
         QString url = m_workList.takeFirst();
+        m_isLoading = true;
         m_workingPage->mainFrame()->load(QUrl("http://www.chicago1920.com/" + url));
         return;
     } else {
@@ -79,41 +80,36 @@ void infoWorker::loadNextPage()
 
 void infoWorker::fightsStart()
 {
-    if(!m_isActive) return;
-
+    if(m_workList.contains("fights")) return;
     m_workList.prepend("fights");
     QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
 }
 
 void infoWorker::fightsVip()
 {
-    if(!m_isActive) return;
-
-    m_workList.prepend("fights/vip");
+    if(m_workList.contains("fights/vip")) return;
+    m_workList.append("fights/vip");
     QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
 }
 
 void infoWorker::placeOfHonour()
 {
-    if(!m_isActive) return;
-
-    m_workList.prepend("characters");
+    characters();
+    if(m_workList.contains("placeOfHonour")) return;
     m_workList.prepend("placeOfHonour");
     QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
 }
 
 void infoWorker::characters()
 {
-    if(!m_isActive) return;
-
+    if(m_workList.contains("characters")) return;
     m_workList.prepend("characters");
     QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
 }
 
 void infoWorker::saveMax()
 {
-    if(!m_isActive) return;
-
+    if(m_workList.contains("safe/maxeinzahlen")) return;
     m_workList.prepend("safe/maxeinzahlen");
     QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
 }
@@ -145,8 +141,6 @@ void infoWorker::fightsFinished()
     } else if(paths.at(1) == QString("waitFight")) {
 
     }
-
-    //if(!result.isNull()) qDebug() << "\t[infoWorker::fightsFinished]\n" << result.toMap().value("constructor").toMap().keys(); //.keys() auf "list" achten...
 }
 
 void infoWorker::gangsterStatus(const QString topic, const QString value)
@@ -162,7 +156,6 @@ void infoWorker::gangsterStatus(const QString topic, const QString value)
     } else if(topic == "currentStone") { // gangsterPunkte
         m_gangsterData.gd_gp = value.toInt();
     }
-    //qDebug() << "infoWorker::gangsterStatus" << (topic + "\t" + value);
 }
 
 void infoWorker::workFinished(bool ok)
@@ -216,7 +209,6 @@ void infoWorker::workFinished(bool ok)
                     QString link = anchor.attribute("href");
                     if(link.startsWith("/alliances/profile")) {
                         m_gangsterData.gd_clan = link.split("/",QString::SkipEmptyParts).last();
-                        //qDebug() << "infoWorker - player.clan_id" << m_gangsterData.gd_clan;
                     }
                 }
             }
@@ -257,5 +249,5 @@ void infoWorker::workFinished(bool ok)
     logString.append(now.toString("[yyyy-MM-dd HH:mm:ss]"));
     logString.append(" infoWorker::loadFinished (" + url.path());
     logString.append(") '" + mainFrame->title() + "'");
-    qDebug() << logString << m_workList;
+    qDebug() << logString.toLocal8Bit().data() << m_workList;
 }

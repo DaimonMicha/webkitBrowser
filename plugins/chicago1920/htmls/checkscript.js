@@ -128,7 +128,7 @@ function checkProgress() {
         checkGangster();
         checkOpponent();
         checkRival();
-        checkTraitor();
+        //checkTraitor();
     }
 
     window.setInterval("checkProgress()",250);

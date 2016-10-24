@@ -29,6 +29,7 @@ private:
 
 private:
     QList<chAccount *>      m_accounts;
+    QList<QPointer<WebPage> > m_webPages;
 };
 
 #endif // CHICAGO1920_H

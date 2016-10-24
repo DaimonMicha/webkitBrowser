@@ -34,9 +34,9 @@ bool Chicago1920::isMyUrl(const QUrl &url) const
 
 void Chicago1920::loadSettings(QSettings &settings)
 {
+    Q_INIT_RESOURCE(data);
     settings.beginGroup(QLatin1String("chicago1920"));
     settings.endGroup();
-    Q_INIT_RESOURCE(data);
     // Create seed for the random
     // That is needed only once on application startup
     QTime time = QTime::currentTime();
@@ -90,8 +90,9 @@ void Chicago1920::loadFinished(WebPage* page)
     QList<QNetworkCookie> cookies = page->networkAccessManager()->cookieJar()->cookiesForUrl(url);
     QByteArray cValue;
     if(cookies.count()) cValue = cookies.at(0).value();
+    if(cValue.isEmpty()) return;
 
-    // ToDo: look for an account with this cookie
+    // look for an account with this cookie
     chAccount *current = NULL;
     if(m_accounts.count() > 0) foreach (chAccount *account, m_accounts) {
         if(account->cookieValue() == QString(cValue)) {
@@ -99,27 +100,30 @@ void Chicago1920::loadFinished(WebPage* page)
             break;
         }
     }
-    if(cValue.isEmpty()) return;
 
     if(current == NULL) {
         current = new chAccount(cValue);
         m_accounts.append(current);
     }
 
-    //QString path = url.path();
-
     page->mainFrame()->addToJavaScriptWindowObject("account", current);
-    //qDebug() << "\tChicago1920::loadFinished" << path;
-             //<< paths.at(0) << paths.at(1)
-             //<< result
-             //<< m_cookieValue;
-    //return;
     current->loadFinished(page);
 
     QWebElement pluginDiv = page->mainFrame()->findFirstElement("#accountPlugin");
     if(!pluginDiv.isNull()) return;
-
     injectHtml(page->mainFrame(), current);
+
+    for(int i = 0; i < m_webPages.size(); ++i) {
+        QWebPage *p = m_webPages.at(i);
+        if(!p) m_webPages.removeAt(i);
+    }
+
+    if(!m_webPages.contains(page)) {
+        m_webPages.append(page);
+    }
+
+    //qDebug() << "Chicago1920::loadFinished" << m_webPages.count() << "Tabs.";
+
 }
 
 int Chicago1920::readDataFile(const QString file, QString& data)
@@ -179,6 +183,11 @@ void Chicago1920::injectHtml(QWebFrame* mainFrame, chAccount* account)
 
     }
 
+    if(account->isActive("autosave")) {
+        QWebElement checker = body.findFirst("#autosaveChecker");
+        if(!checker.isNull()) checker.setAttribute("checked", "checked");
+    }
+
     if(account->isActive("opponents")) {
         QWebElement checker = body.findFirst("#opponentsChecker");
         if(!checker.isNull()) checker.setAttribute("checked", "checked");
@@ -193,17 +202,17 @@ void Chicago1920::injectHtml(QWebFrame* mainFrame, chAccount* account)
         QWebElement checker = body.findFirst("#diaryChecker");
         if(!checker.isNull()) checker.setAttribute("checked", "checked");
     }
-
+/*
     if(account->isActive("traitor")) {
         QWebElement checker = body.findFirst("#traitorChecker");
         if(!checker.isNull()) checker.setAttribute("checked", "checked");
     }
 
-    if(account->isActive("autosave")) {
-        QWebElement checker = body.findFirst("#autosaveChecker");
-        if(!checker.isNull()) checker.setAttribute("checked", "checked");
+    di = "";
+    if(readDataFile("jquery.nyroModal.custom.min.js", di) > 0) {
+        mainFrame->evaluateJavaScript(di);
     }
-
+*/
     di = "";
     if(readDataFile("checkscript.js", di) > 0) {
         mainFrame->evaluateJavaScript(di);
