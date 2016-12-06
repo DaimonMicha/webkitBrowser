@@ -7,7 +7,7 @@
 
 
 
-infoWorker::infoWorker(QObject *parent) :
+infoWorker::infoWorker(QNetworkAccessManager* manager, QObject *parent) :
     QObject(parent),
     m_isActive(false),
     m_workingPage(new QWebPage),
@@ -22,6 +22,10 @@ infoWorker::infoWorker(QObject *parent) :
 
     m_minCooldown = 403;
     m_maxCooldown = 5267;
+
+    setNetworkAccessManager(manager);
+
+    m_workingPage->setForwardUnsupportedContent(false);
 
     connect(m_workingPage->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()),
             this, SLOT(addJavaScriptObject()));
@@ -48,14 +52,12 @@ QString infoWorker::gangster(const QString& field)
 // Vip-List
 void infoWorker::enemysListJson(const QString result)
 {
-    // ToDo: gangster-id auslesen
+    // gangster-id auslesen
     QByteArray data;
     data.append(result);
     QJsonDocument json = QJsonDocument::fromJson(data);
-    m_gangsterData.gd_id = json.object().value("char_id").toString();
-    //qDebug() << "infoWorker::enemysListJson" << json.object().value("char_id");
 
-    emit(enemysList(result));
+    m_gangsterData.gd_id = json.object().value("char_id").toString();
 }
 
 void infoWorker::loadNextPage()
@@ -81,7 +83,7 @@ void infoWorker::loadNextPage()
 void infoWorker::fightsStart()
 {
     if(m_workList.contains("fights")) return;
-    m_workList.prepend("fights");
+    m_workList.append("fights");
     QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
 }
 
@@ -96,14 +98,14 @@ void infoWorker::placeOfHonour()
 {
     characters();
     if(m_workList.contains("placeOfHonour")) return;
-    m_workList.prepend("placeOfHonour");
+    m_workList.append("placeOfHonour");
     QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
 }
 
 void infoWorker::characters()
 {
     if(m_workList.contains("characters")) return;
-    m_workList.prepend("characters");
+    m_workList.append("characters");
     QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
 }
 
@@ -130,7 +132,7 @@ void infoWorker::fightsFinished()
         //qDebug() << question;
         result = mainFrame->evaluateJavaScript(question);
 
-        QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
+        //QTimer::singleShot(randInt(m_minCooldown,m_maxCooldown), this, SLOT(loadNextPage()));
 
     } else if(paths.at(1) == QString("start")) {
 
@@ -195,7 +197,7 @@ void infoWorker::workFinished(bool ok)
 
     } else if(paths.at(0) == QString("challenge")) {
         if(paths.count() == 2 && paths.at(1) == "diary") {
-            mainFrame->evaluateJavaScript("new Ajax.Request('/challenge/diary_data',{asynchronous: false,method: 'GET',dataType: 'json',onSuccess: function(result){worker.diaryData(result.responseText);}});");
+            //mainFrame->evaluateJavaScript("new Ajax.Request('/challenge/diary_data',{asynchronous: false,method: 'GET',dataType: 'json',onSuccess: function(result){worker.diaryData(result.responseText);}});");
         }
     } else if(paths.at(0) == QString("characters")) {
         if(paths.count() == 1) {
@@ -214,23 +216,8 @@ void infoWorker::workFinished(bool ok)
             }
         }
     } else if(paths.at(0) == QString("patenvilla")) {
-        if(paths.count() == 1) {
-            QString question = "new Ajax.Request('/patenvilla/getData/";
-            question.append(QCryptographicHash::hash(m_patenvillaSecret.toLatin1(), QCryptographicHash::Md5).toHex());
-            question.append("/" + m_gangsterData.gd_clan);
-            question.append("',{asynchronous: false,method: 'POST',dataType: 'json',onSuccess: function(result){worker.patenvillaData(result.responseText);}});");
-            if(!m_gangsterData.gd_clan.isEmpty()) result = mainFrame->evaluateJavaScript(question);
-        }
-
     } else if(paths.at(0) == QString("battle")) {
-        if(paths.count() == 1) {
-            QString question = "new Ajax.Request('/battle/getBattleEventData";
-            question.append("',{asynchronous: false,method: 'POST',parameters: {'init':'get'},dataType: 'json',onSuccess: function(result){worker.battleEventData(result.responseText);}});");
-            result = mainFrame->evaluateJavaScript(question);
-        }
-
     } else {
-
     }
 
     // read LifeBar variables

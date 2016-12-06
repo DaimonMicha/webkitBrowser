@@ -8,6 +8,7 @@
 #include "webview.h"
 
 #include "chplayertable.h"
+#include "dataparser.h"
 #include "infoworker.h"
 #include "fightworker.h"
 #include "traitorworker.h"
@@ -24,6 +25,9 @@ public:
     bool traitor;
     bool heist;
     bool villa;
+    int  maxMoney;
+    int  minWaitTime;
+    int  maxWaitTime;
 };
 
 
@@ -70,18 +74,18 @@ public:
     Q_INVOKABLE QString rival(const QString) const;
     Q_INVOKABLE QString traitor(const QString) const;
 
+    void dataReady(QNetworkReply*);
     void loadFinished(QNetworkReply*);
     void loadFinished(WebPage*);
 
 private:
+    void parseFights(const QStringList paths);
     void parseCharacters(WebPage*,const QStringList paths);
-    void parseChallenge(WebPage*,const QStringList paths);
-    void parseCbi(WebPage*,const QStringList paths);
-    void parseFights(WebPage*,const QStringList paths);
     void parseRivals(QWebFrame*,const QStringList paths);
 
     void setDayOfYear(int);
     void midnightReset();
+    void checkMoney();
 
 signals:
 
@@ -90,13 +94,9 @@ public slots:
     void click(const QString button = "nothing");
     void raceChanged(const QString);
 
-    void opponentsListJson(const QString);
-    void enemysListJson(const QString);
     void fightData(const QString);
     void getResults(const QString);
-    void diaryData(const QString);
     void getBattleEventData(const QString);
-    void patenvillaData(const QString);
 
     void rivalsData(const QString);
     void battleData(const QString);
@@ -109,8 +109,12 @@ public slots:
 private slots:
     void chooseOpponent();
     void fightRival();
+    void fightDone(int) {
+        m_mustReload = true;
+    }
 
 private:
+    botConfig               m_config;
     bool                    m_heistActive;
     bool                    m_mustReload;
     QString                 m_cookieValue;
@@ -122,15 +126,18 @@ private:
     qint32                  m_currentDay;
 
     QWebPage*               m_workingPage;
+
     chPlayerTable*          m_gangstersTable;
+    dataParser*             m_dataParser;
 
     infoWorker*             m_infoWorker;
     fightWorker*            m_fightWorker;
     traitorWorker*          m_traitorWorker;
 
-    QMap<QString, QString>  m_cityMap;
-    botConfig               m_config;
     rivalData               m_rival;
+
+    QNetworkReply*          p_lastReply;
+    QByteArray              p_replyData;
 };
 
 #endif // CHACCOUNT_H

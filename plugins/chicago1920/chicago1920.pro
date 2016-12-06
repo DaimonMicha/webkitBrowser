@@ -22,7 +22,8 @@ SOURCES      += \
     chplayertable.cpp \
     infoworker.cpp \
     settings.cpp \
-    traitorworker.cpp
+    traitorworker.cpp \
+    dataparser.cpp
 
 HEADERS      += \
         chicago1920.h \
@@ -32,7 +33,8 @@ HEADERS      += \
     chplayertable.h \
     infoworker.h \
     settings.h \
-    traitorworker.h
+    traitorworker.h \
+    dataparser.h
 
 OTHER_FILES += \
     htmls/inject.html \

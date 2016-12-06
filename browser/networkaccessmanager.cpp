@@ -90,7 +90,19 @@ QNetworkReply* NetworkAccessManager::createRequest(Operation op, const QNetworkR
     // this is a temporary hack until we properly use the pipelining flags from QtWebkit
     // pipeline everything! :)
     request.setAttribute(QNetworkRequest::HttpPipeliningAllowedAttribute, true);
-    return QNetworkAccessManager::createRequest(op, request, outgoingData);
+    QNetworkReply* reply = QNetworkAccessManager::createRequest(op, request, outgoingData);
+    connect(reply, SIGNAL(readyRead()), this, SLOT(readInternal()));
+    return(reply);
+}
+
+void NetworkAccessManager::readInternal()
+{
+    QNetworkReply* reply = qobject_cast<QNetworkReply *>(sender());
+    if(!reply) return;
+    emit(dataReady(reply));
+    // genauso gehts.
+    //QByteArray data = reply->peek(reply->bytesAvailable());
+    //qDebug() << "NetworkAccessManager::readInternal:" << reply->bytesAvailable() << data;
 }
 
 void NetworkAccessManager::requestFinished(QNetworkReply *reply)

@@ -21,7 +21,7 @@ Chicago1920::~Chicago1920()
 
 QWidget* Chicago1920::settingsWidget() const
 {
-    qDebug() << "\tget the Chicago1920::settingsWidget";
+    //qDebug() << "\tget the Chicago1920::settingsWidget";
     return(new Settings());
 }
 
@@ -35,12 +35,13 @@ bool Chicago1920::isMyUrl(const QUrl &url) const
 void Chicago1920::loadSettings(QSettings &settings)
 {
     Q_INIT_RESOURCE(data);
-    settings.beginGroup(QLatin1String("chicago1920"));
-    settings.endGroup();
     // Create seed for the random
     // That is needed only once on application startup
     QTime time = QTime::currentTime();
     qsrand((uint)time.msec());
+
+    settings.beginGroup(QLatin1String("chicago1920"));
+    settings.endGroup();
 
     qDebug() << "\tChicago1920::loadSettings";
 }
@@ -57,10 +58,52 @@ void Chicago1920::loadStarted(WebPage* page,const QUrl &url)
              //<< cookies.at(0).name() << cookies.at(0).value();
 }
 
+void Chicago1920::dataReady(QNetworkReply* reply)
+{
+    QUrl url = reply->url();
+    QString path = url.path();
+    if(path.endsWith(".swf")) return;
+    if(path.endsWith(".jpg")) return;
+    if(path.endsWith(".png")) return;
+    if(path.endsWith(".gif")) return;
+    if(path.endsWith(".ico")) return;
+    if(path.endsWith(".cur")) return;
+    if(path.endsWith(".css")) return;
+    if(path.endsWith(".mp3")) return;
+    if(path.endsWith(".js"))  return;
+
+    QList<QNetworkCookie> cookies = reply->manager()->cookieJar()->cookiesForUrl(url);
+    if(!cookies.count()) return;
+
+    QByteArray cValue = cookies.at(0).value();
+
+    chAccount *current = NULL;
+    if(m_accounts.count() > 0) foreach (chAccount *account, m_accounts) {
+        if(account->cookieValue() == QString(cValue)) {
+            current = account;
+            break;
+        }
+    }
+    if(current == NULL) {
+        return;
+    }
+
+    current->dataReady(reply);
+}
+
 void Chicago1920::loadFinished(QNetworkReply* reply)
 {
     QUrl url = reply->url();
-    if(!isMyUrl(url)) return;
+    QString path = url.path();
+    if(path.endsWith(".swf")) return;
+    if(path.endsWith(".jpg")) return;
+    if(path.endsWith(".png")) return;
+    if(path.endsWith(".gif")) return;
+    if(path.endsWith(".ico")) return;
+    if(path.endsWith(".cur")) return;
+    if(path.endsWith(".css")) return;
+    if(path.endsWith(".mp3")) return;
+    if(path.endsWith(".js"))  return;
 
     QList<QNetworkCookie> cookies = reply->manager()->cookieJar()->cookiesForUrl(url);
     QByteArray cValue;
@@ -78,9 +121,6 @@ void Chicago1920::loadFinished(QNetworkReply* reply)
     }
 
     current->loadFinished(reply);
-
-    //return;
-
 }
 
 void Chicago1920::loadFinished(WebPage* page)

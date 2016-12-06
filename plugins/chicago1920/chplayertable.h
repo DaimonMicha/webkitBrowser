@@ -5,23 +5,53 @@
 #include <QStandardItemModel>
 #include <QSortFilterProxyModel>
 
+
+
+
+class chAccountGangster
+{
+public:
+    QString     id;
+    QString     coded_id;
+    QString     name;
+    QString     level;
+    QString     clan;
+    int         whisky;
+    int         dollar;
+    int         gp;
+    int         max_life;
+};
+
+
+
+
 class chPlayerTable : public QObject
 {
     Q_OBJECT
 public:
     explicit chPlayerTable(QObject *parent = 0);
 
-    int countGangsters() const { return(m_gangstersModel->rowCount()); }
     void setPlayerData(QString id, QString field, QString data);
     QString getPlayerData(QString id, QString field);
     QString randomPlayer(QString race = "0");
-    void clear() {
-        for(int a = m_gangstersModel->rowCount() - 1; a >= 0; --a) {
-            m_gangstersModel->removeRow(a);
-        }
+    void midnightReset();
+    void setAccountGangster(const QString id) {
+        m_accountGangster.id = id;
     }
 
-    void midnightReset();
+    QString accountGangster() const {
+        return(m_accountGangster.id);
+    }
+
+    int countGangsters() const {
+        return(m_gangstersModel->rowCount());
+    }
+
+    void clear() {
+        for(int a = m_gangstersModel->rowCount(); a > 0; --a) {
+            m_gangstersModel->removeRow(a-1);
+        }
+    }
 
 private:
     int randInt(int low, int high) {
@@ -43,6 +73,7 @@ private:
     QStandardItemModel*         m_gangstersModel;
     QSortFilterProxyModel*      m_filterModel;
 
+    chAccountGangster           m_accountGangster;
 };
 
 #endif // CHPLAYERTABLE_H

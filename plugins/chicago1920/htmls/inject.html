@@ -27,8 +27,14 @@
     color: black;
     cursor: pointer;
 }
+#accountPlugin button.transparent {
+    background: none;
+}
+#accountPlugin button.transparent:hover {
+    background-color: white;
+}
 #accountPlugin td {
-    height: 25px;
+    height: 23px;
 }
 .klickMeisterLogo {
     text-align: center;
@@ -36,7 +42,7 @@
     font-weight: bold;
 }
 .hoverTable:hover {
-    background-color: rgba(241, 236, 215, 0.125);
+    background-color: rgba(241, 236, 215, 0.15);
 }
 .kmHeader, .kmHeader a {
     font-size: 1.2em;
@@ -62,6 +68,9 @@
 #opponentsProfile {
     font-size: 1.1em;
 }
+.red {
+  background-color: rgba(255, 205, 210, 0.5);
+}
 -->
 </style>
 
@@ -70,21 +79,21 @@
         <table id="gangsterTable" width="100%">
             <tbody>
                 <tr>
-                    <td><input id="clickChecker" type="checkbox" title="mach mich an!" onClick="account.toggle('account', this.checked);"></input></td>
+                    <td align="center"><input id="clickChecker" type="checkbox" title="mach mich an!" onClick="account.toggle('account', this.checked);"></input></td>
                     <td class="klickMeisterLogo"><label for="clickChecker" title="mach mich an!">Klick Meister</label></td>
                 </tr>
                 <tr><td colspan="2" id="gangsterName"></td></tr>
                 <tr><td colspan="2" class="kmHeader"></td></tr>
                 <tr>
-                    <td><button type="button" onClick="account.click('reloadVip');"><img title="Reload VIP-List" width="14px" src="data:image/png;base64,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"></button></td>
+                    <td align="center"><button type="button" class="transparent" title="Reload VIP-List" onClick="account.click('reloadVip');"><img width="16px" src="data:image/png;base64,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"></button></td>
                     <td class="kmHeader"><a href="http://www.chicago1920.com/fights/vip">Vip Liste</a></td>
                 </tr>
-                <tr><td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/secretfiles/index">Secret Files</a></td></tr>
-                <tr><td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/loot">Loot Area</a></td></tr>
-                <tr><td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/guildvitrine">Erfolge</a></td></tr>
+                <tr><td></td><td class="kmHeader"><a href="http://www.chicago1920.com/secretfiles/index">Secret Files</a></td></tr>
+                <tr><td></td><td class="kmHeader"><a href="http://www.chicago1920.com/loot">Loot Area</a></td></tr>
+                <tr><td></td><td class="kmHeader"><a href="http://www.chicago1920.com/guildvitrine">Erfolge</a></td></tr>
                 <!--<tr><td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/razzia/dock">Docks</a></td></tr>-->
                 <tr>
-                    <td><input id="autosaveChecker" type="checkbox" onClick="account.toggle('autosave', this.checked);"></input></td>
+                    <td align="center"><input id="autosaveChecker" type="checkbox" onClick="account.toggle('autosave', this.checked);"></input></td>
                     <td class="kmHeader"><a href="http://www.chicago1920.com/safe/maxeinzahlen">maxSafe</a></td>
                 </tr>
                 <tr><td colspan="2" align="center"><button type="button" title="Optionen" onClick="account.click('options');">Optionen</button></td></tr>
@@ -96,7 +105,8 @@
         <table id="fighterTable" class="hoverTable" width="100%">
             <tbody>
                 <tr>
-                    <td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/conquest">&Uuml;berfall</a></td>
+                    <td align="center"><input id="opponentsChecker" type="checkbox" title="darf ich automatisch angreifen?" onClick="account.toggle('opponents', this.checked);"></input></td>
+                    <td class="kmHeader"><a href="http://www.chicago1920.com/conquest">&Uuml;berfall</a></td>
                 </tr>
                 <tr>
                     <td colspan="2" align="center">
@@ -119,7 +129,7 @@
             <tbody>
                 <tr>
                     <td class="topic"><b>Gegner:</b></td>
-                    <td align="center"><button type="button" title="einen anderen Gangster (zuf&auml;llig) auswählen" onClick="account.click('opponent');">wechseln</button></td>
+                    <td align="center"><button type="button" class="transparent" title="einen anderen Gangster (zuf&auml;llig) auswählen" onClick="account.click('opponent');"><img width="16px" src="data:image/png;base64,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"></button></td>
                 </tr>
                 <tr>
                     <td colspan="2" align="center"><a id="opponentsProfile" title="das Profil dieses Gangsters aufrufen."><span id="opponentsName">&nbsp;</span></a>&nbsp;&nbsp;<span id="opponentsLevel" title="das Level dieses Gangsters"></span></td>
@@ -128,51 +138,33 @@
                     <td class="topic"><b>Angriffe:</b></td>
                     <td align="center" id="opponentsProgress">0 - 10</td>
                 </tr>
-                <tr id="opponentsCheckerRow">
-                    <td><input id="opponentsChecker" type="checkbox" title="darf ich automatisch angreifen?" onClick="account.toggle('opponents', this.checked);"></input></td>
-                    <td><label for="opponentsChecker" title="darf ich automatisch angreifen?">angreifen</label></td>
+                <tr>
+                    <td class="topic"><b>Beute:</b></td>
+                    <td align="center" id="opponentsLoot">0</td>
                 </tr>
+                <!-- <tr><td align="center" colspan="2"><button type="button" onClick="flashOpponent();">flash!</button></td></tr> -->
             </tbody>
         </table>
         <br />
         <table id="rivalsTable" class="hoverTable" width="100%">
             <tbody>
                 <tr>
-                    <td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/rival/index">Rivalen</a>&nbsp;<div style="display: inline; font-size: 0.8em; font-weight: normal; text-align: right; padding-top: 5px; padding-right: 2px; float: right;" id="rivalTimer"></div></td>
+                    <td align="center"><input id="rivalsChecker" type="checkbox" title="angreifen?" onClick="account.toggle('rivals', this.checked);"></input></td>
+                    <td class="kmHeader"><a href="http://www.chicago1920.com/rival/index">Rivalen</a></td>
                 </tr>
-                <tr id="rivalsTimer"><td colspan="2" align="center"><progress id="rivalsProgress" value="0" max="10">1 - 10</progress></td></tr>
-                <tr id="rivalsCheckerRow">
-                    <td><input id="rivalsChecker" type="checkbox" onClick="account.toggle('rivals', this.checked);"></input></td>
-                    <td><label for="rivalsChecker">angreifen</label></td>
-                </tr>
+                <tr id="rivalsTimer"><td colspan="2" align="right"><div style="width: 100%; font-size: 1.2em; font-weight: normal; text-align: right; padding-right: 5px;" id="rivalTimer"></div></td></tr>
+                <tr id="rivalsProgressRow"><td colspan="2" align="center"><progress id="rivalsProgress" value="0" max="10">1 - 10</progress></td></tr>
             </tbody>
         </table>
         <br />
         <table id="diaryTable" class="hoverTable" width="100%">
             <tbody>
                 <tr>
-                    <td colspan="2" class="kmHeader"><a href="http://www.chicago1920.com/challenge/diary">Tagebuch</a></td>
-                </tr>
-                <tr>
-                    <td><input id="diaryChecker" type="checkbox" onClick="account.toggle('diary', this.checked);"></input></td>
-                    <td><label for="diaryChecker">beachten</label></td>
+                    <td align="center"><input id="diaryChecker" type="checkbox" title="beachten?" onClick="account.toggle('diary', this.checked);"></input></td>
+                    <td class="kmHeader"><a href="http://www.chicago1920.com/challenge/diary">Tagebuch</a></td>
                 </tr>
             </tbody>
         </table>
-<!--
-        <br /><hr noshade /><br />
-        <table id="specialsTable" width="100%">
-            <tbody>
-                <tr>
-                    <td colspan="2" class="kmHeader">Heist</td>
-                </tr>
-                <tr>
-                    <td><input id="heistChecker" type="checkbox" onClick="account.toggle('heist', this.checked);"></input></td>
-                    <td><label for="heistChecker">GeldTransporter</label></td>
-                </tr>
-            </tbody>
-        </table>
--->
     </div> <!-- opponents -->
 <!--
     <br />
@@ -188,6 +180,17 @@
                 <tr>
                     <td><input id="traitorChecker" type="checkbox" onClick="account.toggle('traitor', this.checked);"></input></td>
                     <td><label for="traitorChecker">angreifen</label></td>
+                </tr>
+            </tbody>
+        </table>
+        <table id="heistTable" width="100%">
+            <tbody>
+                <tr>
+                    <td colspan="2" class="kmHeader">Heist</td>
+                </tr>
+                <tr>
+                    <td><input id="heistChecker" type="checkbox" onClick="account.toggle('heist', this.checked);"></input></td>
+                    <td><label for="heistChecker">GeldTransporter</label></td>
                 </tr>
             </tbody>
         </table>

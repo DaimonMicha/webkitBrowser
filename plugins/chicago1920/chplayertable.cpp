@@ -45,7 +45,8 @@ chPlayerTable::chPlayerTable(QObject *parent) :
             << "platting"
             << "minDamage"
             << "maxDamage"
-            << "magicDamage";
+            << "magicDamage"
+            << "type";
     m_gangstersModel->setHorizontalHeaderLabels(head);
     m_filterModel->setSourceModel(m_gangstersModel);
     m_filterModel->setDynamicSortFilter(true);
@@ -54,18 +55,25 @@ chPlayerTable::chPlayerTable(QObject *parent) :
 void chPlayerTable::midnightReset()
 {
     for(int a = 0; a < m_gangstersModel->rowCount(); ++a) {
+        m_gangstersModel->item(a,columnByName("fightlimit"))->setText("false");
+        m_gangstersModel->item(a,columnByName("fightsDone"))->setText("0");
         if(m_gangstersModel->item(a, columnByName("name"))->text() == "Polizei") {
             m_gangstersModel->removeRow(a);
         }
-        m_gangstersModel->item(a,columnByName("fightlimit"))->setText("false");
-        m_gangstersModel->item(a,columnByName("fightsDone"))->setText("0");
     }
 }
 
 void chPlayerTable::setPlayerData(QString id, QString field, QString data)
 {
     int col = columnByName(field);
-    if(col < 0) return;
+    if(col < 0) {
+        if(id == m_accountGangster.id) {
+            if(field == "whisky") m_accountGangster.whisky = data.toInt();
+            else if(field == "dollar") m_accountGangster.dollar = data.toInt();
+            else if(field == "gp") m_accountGangster.gp = data.toInt();
+        }
+        return;
+    }
     QStandardItem *playerItem;
     QList<QStandardItem *> rows = m_gangstersModel->findItems(id,Qt::MatchExactly,columnByName("id"));
     if(rows.count() == 0) {
@@ -80,14 +88,24 @@ void chPlayerTable::setPlayerData(QString id, QString field, QString data)
         playerItem = rows.at(0);
     }
     int row = playerItem->row();
-    m_gangstersModel->item(row, col)->setText(data);
+
+    // check row
+    playerItem = m_gangstersModel->item(row, col);
+    if(playerItem) playerItem->setText(data);
 }
 
 QString chPlayerTable::getPlayerData(QString id, QString field)
 {
     QString ret;
     int col = columnByName(field);
-    if(col < 0) return(ret);
+    if(col < 0) {
+        if(id == m_accountGangster.id) {
+            if(field == "whisky") ret = QString("%1").arg(m_accountGangster.whisky);
+            else if(field == "dollar") ret = QString("%1").arg(m_accountGangster.dollar);
+            else if(field == "gp") ret = QString("%1").arg(m_accountGangster.gp);
+        }
+        return(ret);
+    }
     QStandardItem *playerItem;
     QList<QStandardItem *> rows = m_gangstersModel->findItems(id);
     if(rows.count() == 0) {
@@ -103,8 +121,14 @@ QString chPlayerTable::randomPlayer(QString race)
 {
     //ToDo: filtern auf fightlimit != true
     QString ret;
+    QSortFilterProxyModel* typeModel = new QSortFilterProxyModel();
+    typeModel->setSourceModel(m_gangstersModel);
+    typeModel->setFilterKeyColumn(columnByName("type"));
+    typeModel->setFilterFixedString("reputation");
+    typeModel->setDynamicSortFilter(true);
+
     QSortFilterProxyModel* fightlimitModel = new QSortFilterProxyModel();
-    fightlimitModel->setSourceModel(m_gangstersModel);
+    fightlimitModel->setSourceModel(typeModel);
     fightlimitModel->setFilterKeyColumn(columnByName("fightlimit"));
     fightlimitModel->setFilterFixedString("false");
     fightlimitModel->setDynamicSortFilter(true);

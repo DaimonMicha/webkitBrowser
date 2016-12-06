@@ -9,6 +9,7 @@
 
 
 
+
 class gangsterData
 {
 public:
@@ -29,15 +30,11 @@ class infoWorker : public QObject
 {
     Q_OBJECT
 public:
-    infoWorker(QObject *parent = 0);
+    infoWorker(QNetworkAccessManager*, QObject *parent = 0);
 
     QString gangster(const QString &);
     Q_INVOKABLE bool isActive() const {
         return(m_isActive);
-    }
-
-    int randInt(int low, int high) {
-        return(qrand() % ((high + 1) - low) + low);
     }
 
     QString pageTitle() {
@@ -49,11 +46,12 @@ public:
         m_workingPage->setNetworkAccessManager(manager);
     }
 
+private:
+    int randInt(int low, int high) {
+        return(qrand() % ((high + 1) - low) + low);
+    }
+
 signals:
-    void diarydata(const QString);
-    void enemysList(const QString);
-    void patenvilla(const QString);
-    void battleData(const QString);
     void cooldownEnd();
 
 public slots:
@@ -73,20 +71,7 @@ public slots:
     void characters();
     void saveMax();
 
-    // diary data
-    void diaryData(const QString result) {
-        emit(diarydata(result));
-    }
-
     void enemysListJson(const QString);
-    // Patenvilla Daten
-    void patenvillaData(const QString result) {
-        emit(patenvilla(result));
-    }
-    void battleEventData(const QString data) {
-        emit(battleData(data));
-    }
-
     void gangsterStatus(const QString, const QString);
 
 private slots:

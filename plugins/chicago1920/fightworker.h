@@ -22,7 +22,7 @@ class fightWorker : public QObject
 {
     Q_OBJECT
 public:
-    fightWorker(QObject *parent = 0);
+    fightWorker(QNetworkAccessManager*, QObject *parent = 0);
 
     Q_INVOKABLE bool isActive() const {
         return(m_isActive);
@@ -39,11 +39,15 @@ public:
     void setOpponent(const QString opponent) {
         if(m_currentOpponent != opponent) m_currentOpponent = opponent;
         if(m_currentOpponent == "") m_isActive = false;
+        qDebug() << "fightWorker::setOpponent" << m_currentOpponent;
         waitFight();
     }
 
     void setRival(const QString rival) {
-        if(m_currentRival != rival) m_currentRival = rival;
+        if(m_currentRival != rival) {
+            m_currentRival = rival;
+            qDebug() << "fightWorker::setRival" << m_currentRival;
+        }
     }
 
     int currentKWZ() const {

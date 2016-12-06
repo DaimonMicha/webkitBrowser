@@ -28,6 +28,7 @@ ExtensionManager::ExtensionManager(QObject *parent) :
     m_extensionsModel->appendRow(m_botsItem);
 
     //connect(BrowserApplication::networkAccessManager(), SIGNAL(started()
+    connect(BrowserApplication::networkAccessManager(), SIGNAL(dataReady(QNetworkReply*)), this, SLOT(dataReady(QNetworkReply*)));
     connect(BrowserApplication::networkAccessManager(), SIGNAL(finished(QNetworkReply*)), this, SLOT(loadFinished(QNetworkReply*)));
 
     foreach(QObject *plugin, QPluginLoader::staticInstances()) {
@@ -256,6 +257,18 @@ void ExtensionManager::loadStarted(WebPage *page,const QUrl &url)
                 log(QString("%1::loadStarted (%2)").arg(i.key()->name()).arg(url.toString()));
             }
             i.key()->loadStarted(page,url);
+        }
+    }
+}
+
+void ExtensionManager::dataReady(QNetworkReply* reply)
+{
+    QUrl url = reply->url();
+    QMapIterator<ExtensionInterface *, QString> i(m_extensionList);
+    while(i.hasNext()) {
+        i.next();
+        if(i.key()->isMyUrl(url)) {
+            i.key()->dataReady(reply);
         }
     }
 }

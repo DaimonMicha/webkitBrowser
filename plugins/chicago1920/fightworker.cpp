@@ -10,7 +10,7 @@
 
 #include <QDebug>
 
-fightWorker::fightWorker(QObject *parent) :
+fightWorker::fightWorker(QNetworkAccessManager* manager, QObject *parent) :
     QObject(parent),
     m_isActive(false),
     m_workingPage(new QWebPage),
@@ -18,6 +18,11 @@ fightWorker::fightWorker(QObject *parent) :
 {
     m_currentOpponent = "";
     m_currentRival = "";
+
+    setNetworkAccessManager(manager);
+
+    m_workingPage->setForwardUnsupportedContent(false);
+
     connect(m_workingPage->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()),
             this, SLOT(addJavaScriptObject()));
     connect(m_workingPage, SIGNAL(loadFinished(bool)),
@@ -109,12 +114,6 @@ void fightWorker::workFinished(bool ok)
 
                 if(paths.count() == 3) {
                     readKwz();
-
-                    QString question = "new Ajax.Request('/"+paths.at(0)+"/getResults/";
-                    question.append(paths.at(2));
-                    question.append("',{asynchronous: false,method: 'GET',dataType: 'json',onSuccess: function(result){fighter.getResults(result.responseText);}});");
-                    result = mainFrame->evaluateJavaScript(question);
-
                     m_currentFightCounter = 0;
                     QTimer::singleShot(randInt(266,23500), this, SLOT(waitFight()));
                 }
@@ -149,11 +148,7 @@ void fightWorker::workFinished(bool ok)
                 }
 
             } else if(QString("fight") == paths.at(1)) {
-                //TrefferZonen
-                QString question = "new Ajax.Request('/"+paths.at(0)+"/fightData";
-                question.append("',{asynchronous: false,method: 'GET',dataType: 'json',onSuccess: function(result){fighter.fightData(result.responseText);}});");
-                result = mainFrame->evaluateJavaScript(question);
-                //qDebug() << "fightWorker::workFinished (fight): " << pageTitle();
+
             }
 
         }
@@ -162,15 +157,9 @@ void fightWorker::workFinished(bool ok)
         if(paths.count() > 1) {
             if(QString("results") == paths.at(1)) {
 
-                m_currentRival = "";
                 if(paths.count() == 3) {
+                    m_currentRival = "";
                     readKwz();
-
-                    QString question = "new Ajax.Request('/"+paths.at(0)+"/getResults/";
-                    question.append(paths.at(2));
-                    question.append("',{asynchronous: false,method: 'GET',dataType: 'json',onSuccess: function(result){fighter.getResults(result.responseText);}});");
-                    //result = mainFrame->evaluateJavaScript(question);
-
                     m_currentFightCounter = 0;
                     QTimer::singleShot(randInt(266,23500), this, SLOT(waitFight()));
                 }
@@ -178,7 +167,6 @@ void fightWorker::workFinished(bool ok)
             } else if(QString("waitFight") == paths.at(1)) {
                 QTimer::singleShot(randInt(266,23500), this, SLOT(waitFight()));
             } else if(QString("waitLp") == paths.at(1)) {
-                qDebug() << "fightWorker::workFinished (waitLp): " << pageTitle();
             } else if(QString("start") == paths.at(1)) {
             } else if(QString("fight") == paths.at(1)) {
             }

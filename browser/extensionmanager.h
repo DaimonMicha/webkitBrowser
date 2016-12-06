@@ -51,6 +51,7 @@ signals:
 public slots:
     void loadStarted(WebPage*,const QUrl &);
     void loadFinished(WebPage*);
+    void dataReady(QNetworkReply*);
     void loadFinished(QNetworkReply*);
 
 private slots:

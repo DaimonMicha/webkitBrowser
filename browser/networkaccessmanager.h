@@ -62,11 +62,15 @@ private:
     qint64 requestFinishedSecureCount;
     qint64 requestFinishedDownloadBufferCount;
 
+signals:
+    void dataReady(QNetworkReply*);
+
 public slots:
     void loadSettings();
     void requestFinished(QNetworkReply *reply);
 
 private slots:
+    void readInternal();
     void authenticationRequired(QNetworkReply *reply, QAuthenticator *auth);
     void proxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *auth);
 #ifndef QT_NO_OPENSSL

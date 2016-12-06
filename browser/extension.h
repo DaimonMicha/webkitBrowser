@@ -14,11 +14,12 @@ public:
     virtual ~ExtensionInterface() {}
 
     virtual QString name() const { return(QLatin1String("ExtensionInterface")); }
-    QWidget* settingsWidget() const { return(new QWidget()); }
+    virtual QWidget* settingsWidget() const { return(new QWidget()); }
     virtual bool isMyUrl(const QUrl &) const { return(false); }
 
     virtual void loadSettings(QSettings &) {}
     virtual void loadStarted(WebPage*,const QUrl &) {}
+    virtual void dataReady(QNetworkReply*) {}
     virtual void loadFinished(QNetworkReply*) {}
     virtual void loadFinished(WebPage*) {}
 };

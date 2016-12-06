@@ -15,6 +15,10 @@ function checkRival() {
     }
 
     var currentTime = parseInt(account.rival("currentTime")) || 0;
+    if(currentTime > 0) {
+        jQuery("#rivalsProgressRow").show(0);
+        jQuery("#rivalsTimer").show(0);
+    }
     if(parseInt(jQuery("#rivalsProgress").val()) !== currentTime) {
         jQuery("#rivalsProgress").hide(0);
         jQuery("#rivalsProgress").val(currentTime);
@@ -57,11 +61,17 @@ function checkOpponent() {
         jQuery("#opponentsLevel").text(value);
     }
 
-    var fightsMax = account.opponent("fightsMax") || 10;
     var fightsDone = account.opponent("fightsDone") || 0;
-    value = fightsDone + ' - ' + fightsMax;
+    var fightsMax = account.opponent("fightsMax") || 10;
+    value = fightsDone + '  - ' + fightsMax;
     if(jQuery("#opponentsProgress").text() !== value) {
         jQuery("#opponentsProgress").text(value);
+    }
+
+    var loot = account.opponent("lastLoot") || 0;
+    value = ' ' + loot + ' ';
+    if(jQuery("#opponentsLoot").text() !== value) {
+        jQuery("#opponentsLoot").text(value);
     }
 
 }
@@ -115,22 +125,40 @@ function checkTraitor() {
 
 
 function checkProgress() {
-        if(account.isActive()) {
-            var path = top.location.pathname;
-            //if(path.lastIndexOf("battle") < 0) {
-                if(account.mustReload()) {
-                    if(document.title.lastIndexOf("Kampfwartezeit:") < 0) {
-                        countdownRest( account.kwz() ,"Kampfwartezeit:");
-                    }
+    if(account.isActive()) {
+        var path = top.location.pathname;
+        if(path.lastIndexOf("battle") < 0) {
+            if(account.mustReload()) {
+                if(document.title.lastIndexOf("Kampfwartezeit:") < 0) {
+                    countdownRest( account.kwz() ,"Kampfwartezeit:");
+                    flashOpponent();
                 }
-            //}
+            }
         }
-        checkGangster();
-        checkOpponent();
-        checkRival();
-        //checkTraitor();
     }
+    checkGangster();
+    checkOpponent();
+    checkRival();
+    //checkTraitor();
+}
 
+
+function flashOpponent() {
+    jQuery("#opponentsTable").addClass("red");
+    window.setTimeout(function() {
+        jQuery("#opponentsTable").removeClass("red");
+        if(++round < 10) {
+            window.setTimeout(flashOpponent, 400);
+        } else {
+            round = 0;
+        }
+    }, 300);
+}
+
+var round = 0;
+
+    jQuery("#rivalsProgressRow").hide(0);
+    jQuery("#rivalsTimer").hide(0);
     window.setInterval("checkProgress()",250);
 
     //var pos = jQuery("table:first").offset();
