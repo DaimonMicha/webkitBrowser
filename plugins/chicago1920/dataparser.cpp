@@ -73,7 +73,7 @@ void dataParser::gangsterStatus(const QString topic, const QString value)
     } else if(topic == "currentStone") { // gangsterPunkte
         m_gangstersTable->setPlayerData(pid, "gp", value);
     }
-    qDebug() << "dataParser::gangsterStatus" << (topic + "\t" + value);
+    //qDebug() << "dataParser::gangsterStatus" << (topic + "\t" + value);
 }
 
 // Angriffs-Liste

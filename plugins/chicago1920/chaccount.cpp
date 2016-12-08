@@ -361,7 +361,7 @@ void chAccount::dataReady(QNetworkReply* reply)
 
     }
     p_replyData.append(reply->peek(reply->bytesAvailable()));
-    //qDebug() << "\t[chAccount::dataReady ]" << reply << reply->url().path() << reply->bytesAvailable();
+    //qDebug() << "\t[chAccount::dataReady]" << reply << reply->url().path() << reply->bytesAvailable();
 }
 
 void chAccount::parseCharacters(WebPage* page,const QStringList paths)
